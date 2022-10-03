@@ -27,7 +27,8 @@ const globalStyles = css({
     textTransform: "uppercase",
   },
   h2: {
-    margin: "30px 0 60px 0",
+    width: "100%",
+    margin: "0",
     color: deep,
     fontSize: "24px",
     fontWeight: "400",
@@ -36,14 +37,16 @@ const globalStyles = css({
     textAlign: "center",
   },
   h3: {
-    margin: "40px 0 30px 0",
+    width: "100%",
+    margin: "0",
     color: deep,
     fontSize: "20px",
     fontWeight: "400",
     textAlign: "left",
   },
   h4: {
-    margin: "40px 0 20px 0",
+    width: "100%",
+    margin: "0",
     fontSize: "18px",
     fontWeight: "400",
     textAlign: "left",
@@ -74,22 +77,27 @@ const globalStyles = css({
     right: "-2px",
   },
   p: {
-    margin: "20px 0",
+    width: "100%",
+    margin: "0",
     textAlign: "justify",
     lineHeight: spacing,
   },
   ul: {
-    margin: "30px 0",
+    width: "100%",
+    margin: "0",
     lineHeight: spacing,
   },
   hr: {
     height: "1px",
-    margin: "60px 0",
+    margin: "0",
     border: "none",
     background: gray,
   },
   strong: {
     fontWeight: "400",
+  },
+  form: {
+    display: "contents",
   },
 });
 

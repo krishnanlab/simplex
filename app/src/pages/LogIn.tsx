@@ -2,7 +2,8 @@ import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
 import Button from "@/components/Button";
 import Section from "@/components/Section";
-import { loggedInState } from "@/state";
+import { dummyLogin, loggedInState } from "@/state";
+import Flex from "@/components/Flex";
 
 const LogIn = () => {
   const [, setLoggedIn] = useAtom(loggedInState);
@@ -11,18 +12,16 @@ const LogIn = () => {
   return (
     <Section>
       <h2>Log In</h2>
-      <Button
-        text="Log In"
-        icon="right-to-bracket"
-        onClick={() => {
-          navigate("/");
-          setLoggedIn({
-            displayName: "Jane Smith",
-            email: "jane@smith.com",
-            institution: "University of Colorado",
-          });
-        }}
-      />
+      <Flex>
+        <Button
+          text="Log In"
+          icon="right-to-bracket"
+          onClick={() => {
+            navigate("/");
+            setLoggedIn(dummyLogin);
+          }}
+        />
+      </Flex>
     </Section>
   );
 };

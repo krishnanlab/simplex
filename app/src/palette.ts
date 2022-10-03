@@ -14,8 +14,8 @@ const gray = "#E0E0E0";
 const white = "#FFFFFF";
 
 // effects
-const round = "3px";
-const shadow = "0 4px 0px 0 #0000020, 0 0 5px 2px #00000040";
+const rounded = "3px";
+const shadow = "0 4px 2px 0 #00000010, 0 0 5px 2px #00000020";
 const fast = "0.1s ease";
 
 // text
@@ -31,7 +31,7 @@ export {
   black,
   gray,
   white,
-  round,
+  rounded,
   shadow,
   fast,
   serif,
@@ -44,5 +44,7 @@ library.add(
   fas.faBars,
   fas.faRightToBracket,
   far.faEnvelope,
-  fab.faGithub
+  fab.faGithub,
+  far.faFloppyDisk,
+  fas.faLock
 );

@@ -1,8 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import Section from "@/components/Section";
 import { loggedInState } from "@/state";
+import Section from "@/components/Section";
+import Field from "@/components/Field";
+import Flex from "@/components/Flex";
+import Button from "@/components/Button";
 
 const Account = () => {
   const [loggedIn] = useAtom(loggedInState);
@@ -15,12 +18,44 @@ const Account = () => {
   return (
     <Section>
       <h2>Account</h2>
-      <strong>Display Name</strong>
-      <div>{loggedIn?.displayName}</div>
-      <strong>Email</strong>
-      <div>{loggedIn?.email}</div>
-      <strong>Institution</strong>
-      <div>{loggedIn?.institution}</div>
+
+      <form>
+        <h3>Personal Info</h3>
+        <Flex>
+          <Field
+            name="Display Name:"
+            placeholder="Jane Smith"
+            defaultValue={loggedIn?.displayName || ""}
+          />
+          <Field
+            name="Email:"
+            optional={true}
+            placeholder="jane.smith@email.com"
+            defaultValue={loggedIn?.email || ""}
+          />
+          <Field
+            name="Institution:"
+            optional={true}
+            placeholder="University of Colorado"
+            defaultValue={loggedIn?.institution || ""}
+          />
+        </Flex>
+        <Flex>
+          <Button text="Save Info" icon="floppy-disk" />
+        </Flex>
+      </form>
+
+      <form>
+        <h3>Change Password</h3>
+        <Flex>
+          <Field name="Current Password:" type="password" />
+          <Field name="New Password:" type="password" />
+          <Field name="Confirm New Password:" type="password" />
+        </Flex>
+        <Flex>
+          <Button text="Change Password" icon="lock" />
+        </Flex>
+      </form>
     </Section>
   );
 };

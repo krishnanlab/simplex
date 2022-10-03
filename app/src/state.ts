@@ -6,4 +6,10 @@ interface LoggedIn {
   institution: string;
 }
 
-export const loggedInState = atom<LoggedIn | null>(null);
+export const dummyLogin = {
+  displayName: "Jane Smith",
+  email: "jane.smith@email.com",
+  institution: "University of Colorado",
+};
+
+export const loggedInState = atom<LoggedIn | null>(dummyLogin);

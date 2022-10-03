@@ -10,6 +10,9 @@ interface Props {
 const pageWidth = "1000px";
 
 const sectionStyle = css({
+  display: "flex",
+  flexDirection: "column",
+  gap: "60px",
   padding: `60px max(60px, calc((100% - ${pageWidth})/2));`,
 });
 

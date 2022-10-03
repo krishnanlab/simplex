@@ -1,12 +1,12 @@
+import { HTMLProps } from "react";
 import { css } from "@emotion/react";
-import { IconProp } from "@fortawesome/fontawesome-svg-core";
-import { accent, deep, fast, round, serif, white } from "@/palette";
+import { IconName } from "@fortawesome/fontawesome-svg-core";
+import { accent, deep, fast, rounded, white } from "@/palette";
 import Icon from "@/components/Icon";
 
 interface Props {
   text?: string;
-  icon?: IconProp;
-  [key: string]: any;
+  icon?: IconName;
 }
 
 const style = css({
@@ -16,13 +16,13 @@ const style = css({
   padding: "7.5px 15px",
   minWidth: "40px",
   minHeight: "40px",
-  fontSize: "1rem",
   gap: "10px",
   border: "none",
-  borderRadius: round,
+  borderRadius: rounded,
   background: accent,
   color: white,
-  fontFamily: serif,
+  fontSize: "inherit",
+  fontFamily: "inherit",
   appearance: "none",
   cursor: "pointer",
   transition: "background " + fast,
@@ -31,7 +31,11 @@ const style = css({
   },
 });
 
-const Button = ({ text, icon, ...props }: Props) => {
+const Button = ({
+  text,
+  icon,
+  ...props
+}: Props & HTMLProps<HTMLButtonElement>) => {
   return (
     <button css={style} {...props}>
       {text && <span>{text}</span>}
