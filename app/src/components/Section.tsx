@@ -7,12 +7,14 @@ interface Props {
 
 const pageWidth = "1000px";
 
-const Wrapper = styled.section(
+const StyledSection = styled.section(
   (): CSSObject => ({
     padding: `60px max(60px, calc((100% - ${pageWidth})/2));`,
   })
 );
 
-const Section = ({ children }: Props) => <Wrapper>{children}</Wrapper>;
+const Section = ({ children }: Props) => (
+  <StyledSection>{children}</StyledSection>
+);
 
 export default Section;

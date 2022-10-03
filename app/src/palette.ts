@@ -16,6 +16,7 @@ const shadow = "0 4px 0px 0 #0000020, 0 0 5px 2px #00000040";
 const fast = "0.1s ease";
 
 // text
+const serif = "'Roboto Slab', serif";
 const spacing = "1.5";
 const bold = {
   fontWeight: "400",
@@ -43,6 +44,7 @@ export {
   round,
   shadow,
   fast,
+  serif,
   spacing,
   bold,
   big,

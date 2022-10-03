@@ -1,10 +1,12 @@
 import { Link } from "react-router-dom";
+import { useAtom } from "jotai";
 import styled from "styled-components";
-import { pale, xl } from "@/palette";
+import { accent, gray, pale, white, xl } from "@/palette";
 import logo from "@/assets/logo.svg";
 import Flex from "@/components/Flex";
+import { loggedInState } from "@/state";
 
-const Container = styled.header({
+const StyledHeader = styled.header({
   padding: "30px",
   background: pale,
 });
@@ -24,21 +26,31 @@ const Title = styled.span({
   ...xl,
 });
 
-const Header = () => (
-  <Container>
-    <Flex hAlign="space">
-      <Home to="/">
-        <Logo data={logo} />
-        <Title>Simplex</Title>
-      </Home>
-      <Flex component="nav">
-        <Link to="about">About</Link>
-        <Link to="my-articles">My Articles</Link>
-        <Link to="account">Account</Link>
-        <Link to="logout">Log Out</Link>
+const Header = () => {
+  const [loggedIn] = useAtom(loggedInState);
+
+  return (
+    <StyledHeader>
+      <Flex hAlign="space">
+        <Home to="/">
+          <Logo data={logo} />
+          <Title>Simplex</Title>
+        </Home>
+        <Flex component="nav">
+          <Link to="about">About</Link>
+          {loggedIn && (
+            <>
+              <Link to="my-articles">My Articles</Link>
+              <Link to="account">Account</Link>
+              <Link to="logout">Log Out</Link>
+              <strong>{loggedIn.displayName}</strong>
+            </>
+          )}
+          {!loggedIn && <Link to="login">Log In</Link>}
+        </Flex>
       </Flex>
-    </Flex>
-  </Container>
-);
+    </StyledHeader>
+  );
+};
 
 export default Header;

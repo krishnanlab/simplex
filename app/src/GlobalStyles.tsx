@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import { light, black, fast } from "@/palette";
+import { light, black, fast, serif } from "@/palette";
 
 const GlobalStyles = createGlobalStyle({
   "*": {
@@ -7,7 +7,7 @@ const GlobalStyles = createGlobalStyle({
   },
   body: {
     margin: "0",
-    fontFamily: "'Roboto Slab', serif",
+    fontFamily: serif,
     fontSize: "16px",
     fontWeight: 300,
   },

@@ -39,7 +39,7 @@ interface StyleProps {
   $wrap: NonNullable<Props["wrap"]>;
 }
 
-const Div = styled.div(
+const StyledDiv = styled.div(
   (props: StyleProps): CSSObject => ({
     display: props.$display === "inline" ? "inline-flex" : "flex",
     justifyContent:
@@ -61,7 +61,7 @@ const Flex = ({
   component = "div",
   ...props
 }: Props) => (
-  <Div
+  <StyledDiv
     as={component}
     $display={display}
     $dir={dir}
