@@ -10,6 +10,7 @@ const globalStyles = css({
     fontFamily: serif,
     fontSize: "16px",
     fontWeight: "300",
+    lineHeight: spacing,
   },
   "#root": {
     display: "flex",
@@ -80,14 +81,13 @@ const globalStyles = css({
     width: "100%",
     margin: "0",
     textAlign: "justify",
-    lineHeight: spacing,
   },
   ul: {
     width: "100%",
     margin: "0",
-    lineHeight: spacing,
   },
   hr: {
+    width: "100%",
     height: "1px",
     margin: "0",
     border: "none",

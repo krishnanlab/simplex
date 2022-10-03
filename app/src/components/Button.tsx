@@ -14,7 +14,7 @@ const style = css({
   justifyContent: "center",
   alignItems: "center",
   padding: "7.5px 15px",
-  minWidth: "40px",
+  minWidth: "min(200px, 100%)",
   minHeight: "40px",
   gap: "10px",
   border: "none",

@@ -1,6 +1,7 @@
 import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import { deep, dark, pale } from "@/palette";
+import Flex from "./Flex";
 
 interface Props {
   fill?: "none" | "deep" | "dark";
@@ -10,9 +11,6 @@ interface Props {
 const pageWidth = "1000px";
 
 const sectionStyle = css({
-  display: "flex",
-  flexDirection: "column",
-  gap: "60px",
   padding: `60px max(60px, calc((100% - ${pageWidth})/2));`,
 });
 
@@ -32,7 +30,9 @@ const Section = ({ fill = "none", children }: Props) => (
       },
     ]}
   >
-    {children}
+    <Flex hAlign="stretch" dir="col" gap="big">
+      {children}
+    </Flex>
   </section>
 );
 

@@ -75,9 +75,9 @@ const About = () => (
 
       <hr />
 
-      <h3 id="faqs">Frequently Asked Questions</h3>
-
       <Flex dir="col">
+        <h3 id="faqs">Frequently Asked Questions</h3>
+
         <h4>Why did we build Simplex?</h4>
         <p>
           Jargon and technical language stand in the way of understanding most
@@ -94,9 +94,7 @@ const About = () => (
           and tools to help address these challenges. Simplex is a step in that
           direction.
         </p>
-      </Flex>
 
-      <Flex dir="col">
         <h4>How does Simplex quantify how understandable a word is?</h4>
         <p>
           Sorry, this gets a bit technical. We have developed a new measure that
@@ -115,9 +113,7 @@ const About = () => (
           a very adaptable method that can be applied to nearly any scientific
           field, without requiring any manual curation of a word list.
         </p>
-      </Flex>
 
-      <Flex dir="col">
         <h4>
           Aren’t there existing methods for measuring how difficult a particular
           piece of text is?

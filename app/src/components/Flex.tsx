@@ -6,7 +6,8 @@ interface Props {
   gap?: "none" | "tiny" | "small" | "medium" | "big";
   hAlign?: "left" | "center" | "right" | "stretch" | "space";
   vAlign?: "top" | "center" | "bottom" | "stretch" | "space";
-  wrap?: "true" | "false";
+  wrap?: boolean;
+  wrapPoint?: string;
   children: ReactNode;
   [key: string]: unknown;
 }
@@ -25,7 +26,7 @@ const gaps = {
   none: 0,
   tiny: 5,
   small: 10,
-  medium: 30,
+  medium: 20,
   big: 60,
 };
 
@@ -35,7 +36,8 @@ const Flex = ({
   gap = "medium",
   hAlign = "center",
   vAlign = "center",
-  wrap = "true",
+  wrap = false,
+  wrapPoint = "0px",
   children,
   ...props
 }: Props) => (
@@ -47,7 +49,11 @@ const Flex = ({
       justifyContent: dir === "col" ? aligns[vAlign] : aligns[hAlign],
       alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
       gap: gaps[gap],
-      flexWrap: wrap === "true" ? "wrap" : "nowrap",
+      flexWrap: wrap ? "wrap" : "nowrap",
+
+      [`@media (max-width: ${wrapPoint})`]: {
+        flexDirection: "column",
+      },
     }}
     {...props}
   >

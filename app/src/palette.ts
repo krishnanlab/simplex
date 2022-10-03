@@ -20,7 +20,7 @@ const fast = "0.1s ease";
 
 // text
 const serif = "'Roboto Slab', serif";
-const spacing = "2";
+const spacing = 2;
 
 export {
   deep,
