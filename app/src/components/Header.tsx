@@ -3,9 +3,10 @@ import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
 import { useAtom } from "jotai";
 import { pale, gray, fast, round } from "@/palette";
-import logo from "@/assets/logo.svg";
+import { ReactComponent as Logo } from "@/assets/logo.svg";
 import { loggedInState } from "@/state";
 import Icon from "@/components/Icon";
+import { restartAnimations } from "@/util/dom";
 
 const headerStyle = css({
   display: "flex",
@@ -78,9 +79,10 @@ const Header = () => {
   return (
     <header css={[headerStyle, wrapHeader]}>
       <div css={titleStyle}>
-        <object css={logoStyle} data={logo}>
-          logo
-        </object>
+        <Logo
+          css={logoStyle}
+          onMouseEnter={(event) => restartAnimations(event.target as Element)}
+        />
         <Link css={homeStyle} to="/">
           <h1>Simplex</h1>
         </Link>

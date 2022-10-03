@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" id="logo">
   <style>
     .fade {
       animation: fade 1s ease both;
@@ -7,11 +7,9 @@
 
     @keyframes fade {
       from {
-        transform: scale(0.9);
         opacity: 0;
       }
       to {
-        transform: scale(1);
         opacity: 1;
       }
     }

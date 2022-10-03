@@ -51,9 +51,12 @@ const globalStyles = css({
   a: {
     position: "relative",
     display: "inline-block",
-    color: black,
+    color: "currentColor",
     transition: "color " + fast,
     zIndex: "0",
+  },
+  "a:hover": {
+    color: black,
   },
   "a::before": {
     content: "''",

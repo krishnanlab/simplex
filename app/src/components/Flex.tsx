@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import { css } from "@emotion/react";
 
 interface Props {
   display?: "inline" | "block";
@@ -41,7 +40,7 @@ const Flex = ({
   ...props
 }: Props) => (
   <div
-    css={css({
+    css={{
       display: display === "inline" ? "inline-flex" : "flex",
       width: display === "block" ? "100%" : "",
       flexDirection: dir === "col" ? "column" : "row",
@@ -49,7 +48,7 @@ const Flex = ({
       alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
       gap: gaps[gap],
       flexWrap: wrap === "true" ? "wrap" : "nowrap",
-    })}
+    }}
     {...props}
   >
     {children}
