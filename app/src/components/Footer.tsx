@@ -12,7 +12,7 @@ const Footer = () => (
     <Flex dir="col">
       <span>
         A project of the{" "}
-        <a href="https://www.thekrishnanlab.org/">Krishnan Lab</a>, &copy; 2022
+        <a href="https://www.thekrishnanlab.org/">Krishnan Lab</a> &copy; 2022
       </span>
     </Flex>
   </StyledFooter>

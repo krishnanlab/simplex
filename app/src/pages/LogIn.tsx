@@ -12,6 +12,7 @@ const LogIn = () => {
     <Section>
       <Button
         text="Log In"
+        icon="right-to-bracket"
         onClick={() => {
           navigate("/");
           setLoggedIn({

@@ -8,6 +8,7 @@ interface Props {
   hAlign?: "left" | "center" | "right" | "stretch" | "space";
   vAlign?: "top" | "center" | "bottom" | "stretch" | "space";
   wrap?: "true" | "false";
+  breakpoint?: string;
   component?: ElementType;
   [key: string]: unknown;
 }
@@ -37,17 +38,24 @@ interface StyleProps {
   $hAlign: NonNullable<Props["hAlign"]>;
   $vAlign: NonNullable<Props["vAlign"]>;
   $wrap: NonNullable<Props["wrap"]>;
+  $breakpoint: NonNullable<Props["breakpoint"]>;
 }
 
 const StyledDiv = styled.div(
   (props: StyleProps): CSSObject => ({
     display: props.$display === "inline" ? "inline-flex" : "flex",
+    width: props.$display === "block" ? "100%" : "",
+    flexDirection: props.$dir === "col" ? "column" : "row",
     justifyContent:
       props.$dir === "col" ? aligns[props.$vAlign] : aligns[props.$hAlign],
     alignItems:
       props.$dir === "col" ? aligns[props.$hAlign] : aligns[props.$vAlign],
     gap: gaps[props.$gap],
-    flexWrap: props.$wrap ? "wrap" : "nowrap",
+    flexWrap: props.$wrap === "true" ? "wrap" : "nowrap",
+    [`@media (max-width: ${props.$breakpoint})`]: {
+      flexDirection: "column",
+      alignItems: "stretch",
+    },
   })
 );
 
@@ -58,6 +66,7 @@ const Flex = ({
   hAlign = "center",
   vAlign = "center",
   wrap = "true",
+  breakpoint = "0px",
   component = "div",
   ...props
 }: Props) => (
@@ -69,6 +78,7 @@ const Flex = ({
     $hAlign={hAlign}
     $vAlign={vAlign}
     $wrap={wrap}
+    $breakpoint={breakpoint}
     {...props}
   />
 );

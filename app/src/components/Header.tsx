@@ -1,7 +1,9 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
-import styled from "styled-components";
-import { accent, gray, pale, white, xl } from "@/palette";
+import styled, { CSSObject } from "styled-components";
+import { pale, big, xl, gray, fast, round } from "@/palette";
 import logo from "@/assets/logo.svg";
 import Flex from "@/components/Flex";
 import { loggedInState } from "@/state";
@@ -12,31 +14,81 @@ const StyledHeader = styled.header({
 });
 
 const Home = styled(Link)({
-  display: "flex",
-  alignItems: "center",
-  gap: "15px",
   textDecoration: "none",
 });
 
 const Logo = styled.object({
   width: "50px",
+  "@media (max-width: 400px)": {
+    width: "40px",
+  },
 });
 
 const Title = styled.span({
   ...xl,
+  "@media (max-width: 400px)": {
+    ...big,
+  },
 });
+
+const Button = styled.button(
+  (props: { $menuBreakpoint: string }): CSSObject => ({
+    width: "40px",
+    height: "40px",
+    background: "none",
+    border: "none",
+    borderRadius: round,
+    appearance: "none",
+    cursor: "pointer",
+    transition: "background " + fast,
+    "&:hover": {
+      background: gray,
+    },
+    [`@media not screen and (max-width: ${props.$menuBreakpoint})`]: {
+      display: "none",
+    },
+  })
+);
+
+const Nav = styled(Flex)(
+  (props: { $open: boolean; $menuBreakpoint: string }): CSSObject => ({
+    [`@media (max-width: ${props.$menuBreakpoint})`]: {
+      display: props.$open ? "" : "none",
+    },
+  })
+);
 
 const Header = () => {
   const [loggedIn] = useAtom(loggedInState);
+  const [open, setOpen] = useState(false);
+
+  const menuBreakpoint = loggedIn ? "800px" : "500px";
 
   return (
     <StyledHeader>
-      <Flex hAlign="space">
-        <Home to="/">
-          <Logo data={logo} />
-          <Title>Simplex</Title>
-        </Home>
-        <Flex component="nav">
+      <Flex hAlign="space" breakpoint={menuBreakpoint}>
+        <Flex display="inline" hAlign="space" gap="tiny" wrap="false">
+          <Flex display="inline" gap="small" wrap="false">
+            <Logo data={logo} />
+            <Home to="/">
+              <Title>Simplex</Title>
+            </Home>
+          </Flex>
+          <Button
+            $menuBreakpoint={menuBreakpoint}
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
+          >
+            <FontAwesomeIcon icon={open ? "times" : "bars"} />
+          </Button>
+        </Flex>
+        <Nav
+          display="inline"
+          component="nav"
+          $open={open}
+          $menuBreakpoint={menuBreakpoint}
+        >
           <Link to="about">About</Link>
           {loggedIn && (
             <>
@@ -47,7 +99,7 @@ const Header = () => {
             </>
           )}
           {!loggedIn && <Link to="login">Log In</Link>}
-        </Flex>
+        </Nav>
       </Flex>
     </StyledHeader>
   );
