@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import styled from "styled-components";
 import { pale, xl } from "@/palette";
 import logo from "@/assets/logo.svg";
@@ -6,6 +7,13 @@ import Flex from "@/components/Flex";
 const Container = styled.header({
   padding: "30px",
   background: pale,
+});
+
+const Home = styled(Link)({
+  display: "flex",
+  alignItems: "center",
+  gap: "15px",
+  textDecoration: "none",
 });
 
 const Logo = styled.object({
@@ -19,15 +27,15 @@ const Title = styled.span({
 const Header = () => (
   <Container>
     <Flex hAlign="space">
-      <Flex>
+      <Home to="/">
         <Logo data={logo} />
         <Title>Simplex</Title>
-      </Flex>
+      </Home>
       <Flex component="nav">
-        <span>About</span>
-        <span>My Articles</span>
-        <span>Account</span>
-        <span>Log Out</span>
+        <Link to="about">About</Link>
+        <Link to="my-articles">My Articles</Link>
+        <Link to="account">Account</Link>
+        <Link to="logout">Log Out</Link>
       </Flex>
     </Flex>
   </Container>

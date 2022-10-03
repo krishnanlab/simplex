@@ -30,15 +30,24 @@ const gaps = {
   big: 60,
 };
 
+interface StyleProps {
+  $display: NonNullable<Props["display"]>;
+  $dir: NonNullable<Props["dir"]>;
+  $gap: NonNullable<Props["gap"]>;
+  $hAlign: NonNullable<Props["hAlign"]>;
+  $vAlign: NonNullable<Props["vAlign"]>;
+  $wrap: NonNullable<Props["wrap"]>;
+}
+
 const Div = styled.div(
-  (props: Required<Props>): CSSObject => ({
-    display: props.display === "inline" ? "inline-flex" : "flex",
+  (props: StyleProps): CSSObject => ({
+    display: props.$display === "inline" ? "inline-flex" : "flex",
     justifyContent:
-      props.dir === "col" ? aligns[props.vAlign] : aligns[props.hAlign],
+      props.$dir === "col" ? aligns[props.$vAlign] : aligns[props.$hAlign],
     alignItems:
-      props.dir === "col" ? aligns[props.hAlign] : aligns[props.vAlign],
-    gap: gaps[props.gap],
-    flexWrap: props.wrap ? "wrap" : "nowrap",
+      props.$dir === "col" ? aligns[props.$hAlign] : aligns[props.$vAlign],
+    gap: gaps[props.$gap],
+    flexWrap: props.$wrap ? "wrap" : "nowrap",
   })
 );
 
@@ -54,7 +63,13 @@ const Flex = ({
 }: Props) => (
   <Div
     as={component}
-    {...{ display, dir, gap, hAlign, vAlign, wrap, component, ...props }}
+    $display={display}
+    $dir={dir}
+    $gap={gap}
+    $hAlign={hAlign}
+    $vAlign={vAlign}
+    $wrap={wrap}
+    {...props}
   />
 );
 
