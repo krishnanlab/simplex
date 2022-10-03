@@ -1,5 +1,5 @@
 import { createGlobalStyle } from "styled-components";
-import { light, black, fast, serif } from "@/palette";
+import { light, black, fast, serif, deep, spacing, gray } from "@/palette";
 
 const GlobalStyles = createGlobalStyle({
   "*": {
@@ -9,7 +9,7 @@ const GlobalStyles = createGlobalStyle({
     margin: "0",
     fontFamily: serif,
     fontSize: "16px",
-    fontWeight: 300,
+    fontWeight: "300",
   },
   "#root": {
     display: "flex",
@@ -18,6 +18,35 @@ const GlobalStyles = createGlobalStyle({
   },
   main: {
     flexGrow: "1",
+  },
+  h1: {
+    margin: "0",
+    fontSize: "22px",
+    fontWeight: "400",
+    letterSpacing: "5px",
+    textTransform: "uppercase",
+  },
+  h2: {
+    margin: "60px 0",
+    color: deep,
+    fontSize: "24px",
+    fontWeight: "400",
+    letterSpacing: "5px",
+    textTransform: "uppercase",
+    textAlign: "center",
+  },
+  h3: {
+    margin: "40px 0 30px 0",
+    color: deep,
+    fontSize: "20px",
+    fontWeight: "400",
+    textAlign: "left",
+  },
+  h4: {
+    margin: "40px 0 20px 0",
+    fontSize: "18px",
+    fontWeight: "400",
+    textAlign: "left",
   },
   a: {
     position: "relative",
@@ -28,18 +57,36 @@ const GlobalStyles = createGlobalStyle({
   },
   "a::before": {
     content: "''",
-    display: "block",
     position: "absolute",
     left: "-2px",
-    top: "-1px",
     right: "calc(100% + 4px)",
-    bottom: "-1px",
+    height: "1.5em",
+    top: "50%",
+    transform: "translateY(-50%)",
     background: light,
     transition: "right " + fast,
     zIndex: "-1",
   },
   "a:hover::before": {
     right: "-2px",
+  },
+  p: {
+    margin: "20px 0",
+    textAlign: "justify",
+    lineHeight: spacing,
+  },
+  ul: {
+    margin: "30px 0",
+    lineHeight: spacing,
+  },
+  hr: {
+    height: "1px",
+    margin: "60px 0",
+    border: "none",
+    background: gray,
+  },
+  strong: {
+    fontWeight: "400",
   },
 });
 

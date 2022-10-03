@@ -10,6 +10,7 @@ const LogIn = () => {
 
   return (
     <Section>
+      <h2>Log In</h2>
       <Button
         text="Log In"
         icon="right-to-bracket"

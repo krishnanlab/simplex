@@ -1,5 +1,9 @@
 import Section from "@/components/Section";
 
-const MyArticles = () => <Section>My Articles</Section>;
+const MyArticles = () => (
+  <Section>
+    <h2>My Articles</h2>
+  </Section>
+);
 
 export default MyArticles;

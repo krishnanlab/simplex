@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useAtom } from "jotai";
 import styled, { CSSObject } from "styled-components";
-import { pale, big, xl, gray, fast, round } from "@/palette";
+import { pale, gray, fast, round } from "@/palette";
 import logo from "@/assets/logo.svg";
 import Flex from "@/components/Flex";
 import { loggedInState } from "@/state";
@@ -19,16 +19,6 @@ const Home = styled(Link)({
 
 const Logo = styled.object({
   width: "50px",
-  "@media (max-width: 400px)": {
-    width: "40px",
-  },
-});
-
-const Title = styled.span({
-  ...xl,
-  "@media (max-width: 400px)": {
-    ...big,
-  },
 });
 
 const Button = styled.button(
@@ -71,7 +61,7 @@ const Header = () => {
           <Flex display="inline" gap="small" wrap="false">
             <Logo data={logo} />
             <Home to="/">
-              <Title>Simplex</Title>
+              <h1>Simplex</h1>
             </Home>
           </Flex>
           <Button

@@ -15,6 +15,7 @@ const StyledButton = styled.button({
   padding: "7.5px 15px",
   minWidth: "40px",
   minHeight: "40px",
+  fontSize: "1rem",
   gap: "10px",
   border: "none",
   borderRadius: round,

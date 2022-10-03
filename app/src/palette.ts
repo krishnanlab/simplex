@@ -20,20 +20,7 @@ const fast = "0.1s ease";
 
 // text
 const serif = "'Roboto Slab', serif";
-const spacing = "1.5";
-const bold = {
-  fontWeight: "400",
-};
-const big: CSSObject = {
-  fontSize: "20px",
-  fontWeight: "400",
-};
-const xl: CSSObject = {
-  fontSize: "24px",
-  fontWeight: "400",
-  letterSpacing: "5px",
-  textTransform: "uppercase",
-};
+const spacing = "2";
 
 export {
   deep,
@@ -49,9 +36,6 @@ export {
   fast,
   serif,
   spacing,
-  bold,
-  big,
-  xl,
 };
 
 // font awesome icons
