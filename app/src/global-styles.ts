@@ -1,7 +1,7 @@
-import { createGlobalStyle } from "styled-components";
+import { css } from "@emotion/react";
 import { light, black, fast, serif, deep, spacing, gray } from "@/palette";
 
-const GlobalStyles = createGlobalStyle({
+const globalStyles = css({
   "*": {
     boxSizing: "border-box",
   },
@@ -13,8 +13,8 @@ const GlobalStyles = createGlobalStyle({
   },
   "#root": {
     display: "flex",
-    "flex-direction": "column",
-    "min-height": "100vh",
+    flexDirection: "column",
+    minHeight: "100vh",
   },
   main: {
     flexGrow: "1",
@@ -27,7 +27,7 @@ const GlobalStyles = createGlobalStyle({
     textTransform: "uppercase",
   },
   h2: {
-    margin: "60px 0",
+    margin: "30px 0 60px 0",
     color: deep,
     fontSize: "24px",
     fontWeight: "400",
@@ -90,4 +90,4 @@ const GlobalStyles = createGlobalStyle({
   },
 });
 
-export default GlobalStyles;
+export default globalStyles;

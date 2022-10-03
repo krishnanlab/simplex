@@ -1,14 +1,15 @@
-import styled from "styled-components";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { css } from "@emotion/react";
+import { IconProp } from "@fortawesome/fontawesome-svg-core";
 import { accent, deep, fast, round, serif, white } from "@/palette";
+import Icon from "@/components/Icon";
 
 interface Props {
   text?: string;
-  icon?: string;
+  icon?: IconProp;
   [key: string]: any;
 }
 
-const StyledButton = styled.button({
+const style = css({
   display: "inline-flex",
   justifyContent: "center",
   alignItems: "center",
@@ -30,12 +31,12 @@ const StyledButton = styled.button({
   },
 });
 
-const Button = ({ text = "", icon = "", ...props }: Props) => {
+const Button = ({ text, icon, ...props }: Props) => {
   return (
-    <StyledButton {...props}>
+    <button css={style} {...props}>
       {text && <span>{text}</span>}
-      {icon && <FontAwesomeIcon icon={icon} />}
-    </StyledButton>
+      {icon && <Icon icon={icon} />}
+    </button>
   );
 };
 

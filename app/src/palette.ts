@@ -1,7 +1,7 @@
-import { CSSObject } from "styled-components";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as fas from "@fortawesome/free-solid-svg-icons";
 import * as far from "@fortawesome/free-regular-svg-icons";
+import * as fab from "@fortawesome/free-brands-svg-icons";
 
 // colors
 const deep = "#0081A7";
@@ -39,4 +39,10 @@ export {
 };
 
 // font awesome icons
-library.add(fas.faTimes, fas.faBars, fas.faRightToBracket);
+library.add(
+  fas.faTimes,
+  fas.faBars,
+  fas.faRightToBracket,
+  far.faEnvelope,
+  fab.faGithub
+);

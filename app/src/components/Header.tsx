@@ -1,52 +1,56 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { css, CSSObject } from "@emotion/react";
 import { useAtom } from "jotai";
-import styled, { CSSObject } from "styled-components";
 import { pale, gray, fast, round } from "@/palette";
 import logo from "@/assets/logo.svg";
-import Flex from "@/components/Flex";
 import { loggedInState } from "@/state";
+import Icon from "@/components/Icon";
 
-const StyledHeader = styled.header({
+const headerStyle = css({
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  gap: "20px",
   padding: "30px",
   background: pale,
 });
 
-const Home = styled(Link)({
+const titleStyle = css({
+  display: "flex",
+  alignItems: "center",
+  gap: "15px",
+});
+
+const navStyle = css({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  flexWrap: "wrap",
+  gap: "20px 30px",
+});
+
+const homeStyle = css({
   textDecoration: "none",
 });
 
-const Logo = styled.object({
+const logoStyle = css({
   width: "50px",
 });
 
-const Button = styled.button(
-  (props: { $menuBreakpoint: string }): CSSObject => ({
-    width: "40px",
-    height: "40px",
-    background: "none",
-    border: "none",
-    borderRadius: round,
-    appearance: "none",
-    cursor: "pointer",
-    transition: "background " + fast,
-    "&:hover": {
-      background: gray,
-    },
-    [`@media not screen and (max-width: ${props.$menuBreakpoint})`]: {
-      display: "none",
-    },
-  })
-);
-
-const Nav = styled(Flex)(
-  (props: { $open: boolean; $menuBreakpoint: string }): CSSObject => ({
-    [`@media (max-width: ${props.$menuBreakpoint})`]: {
-      display: props.$open ? "" : "none",
-    },
-  })
-);
+const buttonStyle = css({
+  width: "40px",
+  height: "40px",
+  background: "none",
+  border: "none",
+  borderRadius: round,
+  appearance: "none",
+  cursor: "pointer",
+  transition: "background " + fast,
+  "&:hover": {
+    background: gray,
+  },
+});
 
 const Header = () => {
   const [loggedIn] = useAtom(loggedInState);
@@ -54,44 +58,54 @@ const Header = () => {
 
   const menuBreakpoint = loggedIn ? "800px" : "500px";
 
+  const wrapHeader: CSSObject = {
+    [`@media (max-width: ${menuBreakpoint})`]: {
+      flexDirection: "column",
+    },
+  };
+
+  const hideButton = {
+    [`@media not screen and (max-width: ${menuBreakpoint})`]: {
+      display: "none",
+    },
+  };
+  const hideNav = {
+    [`@media (max-width: ${menuBreakpoint})`]: {
+      display: open ? "" : "none",
+    },
+  };
+
   return (
-    <StyledHeader>
-      <Flex hAlign="space" breakpoint={menuBreakpoint}>
-        <Flex display="inline" hAlign="space" gap="tiny" wrap="false">
-          <Flex display="inline" gap="small" wrap="false">
-            <Logo data={logo} />
-            <Home to="/">
-              <h1>Simplex</h1>
-            </Home>
-          </Flex>
-          <Button
-            $menuBreakpoint={menuBreakpoint}
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-            aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
-          >
-            <FontAwesomeIcon icon={open ? "times" : "bars"} />
-          </Button>
-        </Flex>
-        <Nav
-          display="inline"
-          component="nav"
-          $open={open}
-          $menuBreakpoint={menuBreakpoint}
+    <header css={[headerStyle, wrapHeader]}>
+      <div css={titleStyle}>
+        <object css={logoStyle} data={logo}>
+          logo
+        </object>
+        <Link css={homeStyle} to="/">
+          <h1>Simplex</h1>
+        </Link>
+        <button
+          css={[buttonStyle, hideButton]}
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
         >
-          <Link to="about">About</Link>
-          {loggedIn && (
-            <>
-              <Link to="my-articles">My Articles</Link>
-              <Link to="account">Account</Link>
-              <Link to="logout">Log Out</Link>
-              <strong>{loggedIn.displayName}</strong>
-            </>
-          )}
-          {!loggedIn && <Link to="login">Log In</Link>}
-        </Nav>
-      </Flex>
-    </StyledHeader>
+          <Icon icon={open ? "times" : "bars"} />
+        </button>
+      </div>
+      <nav css={[navStyle, hideNav]}>
+        <Link to="about">About</Link>
+        {loggedIn && (
+          <>
+            <Link to="my-articles">My Articles</Link>
+            <Link to="account">Account</Link>
+            <Link to="logout">Log Out</Link>
+            <strong>{loggedIn.displayName}</strong>
+          </>
+        )}
+        {!loggedIn && <Link to="login">Log In</Link>}
+      </nav>
+    </header>
   );
 };
 

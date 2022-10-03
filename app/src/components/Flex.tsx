@@ -1,5 +1,5 @@
-import { ElementType } from "react";
-import styled, { CSSObject } from "styled-components";
+import { ReactNode } from "react";
+import { css } from "@emotion/react";
 
 interface Props {
   display?: "inline" | "block";
@@ -8,8 +8,7 @@ interface Props {
   hAlign?: "left" | "center" | "right" | "stretch" | "space";
   vAlign?: "top" | "center" | "bottom" | "stretch" | "space";
   wrap?: "true" | "false";
-  breakpoint?: string;
-  component?: ElementType;
+  children: ReactNode;
   [key: string]: unknown;
 }
 
@@ -31,34 +30,6 @@ const gaps = {
   big: 60,
 };
 
-interface StyleProps {
-  $display: NonNullable<Props["display"]>;
-  $dir: NonNullable<Props["dir"]>;
-  $gap: NonNullable<Props["gap"]>;
-  $hAlign: NonNullable<Props["hAlign"]>;
-  $vAlign: NonNullable<Props["vAlign"]>;
-  $wrap: NonNullable<Props["wrap"]>;
-  $breakpoint: NonNullable<Props["breakpoint"]>;
-}
-
-const StyledDiv = styled.div(
-  (props: StyleProps): CSSObject => ({
-    display: props.$display === "inline" ? "inline-flex" : "flex",
-    width: props.$display === "block" ? "100%" : "",
-    flexDirection: props.$dir === "col" ? "column" : "row",
-    justifyContent:
-      props.$dir === "col" ? aligns[props.$vAlign] : aligns[props.$hAlign],
-    alignItems:
-      props.$dir === "col" ? aligns[props.$hAlign] : aligns[props.$vAlign],
-    gap: gaps[props.$gap],
-    flexWrap: props.$wrap === "true" ? "wrap" : "nowrap",
-    [`@media (max-width: ${props.$breakpoint})`]: {
-      flexDirection: "column",
-      alignItems: "stretch",
-    },
-  })
-);
-
 const Flex = ({
   display = "block",
   dir = "row",
@@ -66,21 +37,23 @@ const Flex = ({
   hAlign = "center",
   vAlign = "center",
   wrap = "true",
-  breakpoint = "0px",
-  component = "div",
+  children,
   ...props
 }: Props) => (
-  <StyledDiv
-    as={component}
-    $display={display}
-    $dir={dir}
-    $gap={gap}
-    $hAlign={hAlign}
-    $vAlign={vAlign}
-    $wrap={wrap}
-    $breakpoint={breakpoint}
+  <div
+    css={css({
+      display: display === "inline" ? "inline-flex" : "flex",
+      width: display === "block" ? "100%" : "",
+      flexDirection: dir === "col" ? "column" : "row",
+      justifyContent: dir === "col" ? aligns[vAlign] : aligns[hAlign],
+      alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
+      gap: gaps[gap],
+      flexWrap: wrap === "true" ? "wrap" : "nowrap",
+    })}
     {...props}
-  />
+  >
+    {children}
+  </div>
 );
 
 export default Flex;

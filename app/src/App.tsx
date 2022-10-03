@@ -1,7 +1,8 @@
 import { BrowserRouter, Routes, Route, Outlet } from "react-router-dom";
+import { Global } from "@emotion/react";
+import globalStyles from "@/global-styles";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import GlobalStyles from "@/GlobalStyles";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import MyArticles from "@/pages/MyArticles";
@@ -13,7 +14,7 @@ import LogOut from "@/pages/LogOut";
 
 const App = () => (
   <BrowserRouter>
-    <GlobalStyles />
+    <Global styles={globalStyles} />
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
