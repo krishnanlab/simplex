@@ -1,10 +1,9 @@
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import Flex from "@/components/Flex";
 
 const heroStyle = css({
-  fontSize: "20px",
+  fontSize: "1.3rem",
   textAlign: "center",
 });
 
@@ -13,9 +12,8 @@ const Home = () => (
     <Section fill="deep">
       <p css={heroStyle}>
         A lot of scientific and medical writing is hard to understand for
-        non-experts because it is full of jargon.
-        <br />
-        This tool helps you identify complexity in your writing and simplify it.
+        non-experts because it is full of jargon. This tool helps you identify
+        complexity in your writing and simplify it.
       </p>
     </Section>
 

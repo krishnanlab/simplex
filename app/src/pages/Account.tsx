@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAtom } from "jotai";
-import { loggedInState } from "@/state";
+import { loggedInState, exampleLogin } from "@/state";
 import Section from "@/components/Section";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
@@ -26,7 +26,7 @@ const Account = () => {
           <Field
             name="Display Name:"
             placeholder="Jane Smith"
-            defaultValue={loggedIn?.displayName || ""}
+            defaultValue={loggedIn?.name || ""}
           />
           <Field
             name="Email:"
@@ -49,9 +49,21 @@ const Account = () => {
       <form>
         <h3>Change Password</h3>
         <Grid>
-          <Field name="Current Password:" type="password" />
-          <Field name="New Password:" type="password" />
-          <Field name="Confirm New Password:" type="password" />
+          <Field
+            name="Current Password:"
+            type="password"
+            placeholder={exampleLogin.password}
+          />
+          <Field
+            name="New Password:"
+            type="password"
+            placeholder={exampleLogin.password}
+          />
+          <Field
+            name="Confirm New Password:"
+            type="password"
+            placeholder={exampleLogin.password}
+          />
         </Grid>
         <Flex>
           <Button text="Change Password" icon="lock" />

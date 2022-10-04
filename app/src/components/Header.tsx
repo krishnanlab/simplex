@@ -29,6 +29,7 @@ const navStyle = css({
   alignItems: "center",
   flexWrap: "wrap",
   gap: "20px 30px",
+  fontSize: "1.1rem",
 });
 
 const homeStyle = css({
@@ -57,7 +58,7 @@ const Header = () => {
   const [loggedIn] = useAtom(loggedInState);
   const [open, setOpen] = useState(false);
 
-  const menuBreakpoint = loggedIn ? "800px" : "500px";
+  const menuBreakpoint = loggedIn ? "840px" : "500px";
 
   const wrapHeader: CSSObject = {
     [`@media (max-width: ${menuBreakpoint})`]: {
@@ -104,7 +105,7 @@ const Header = () => {
             <Link to="my-articles">My Articles</Link>
             <Link to="account">Account</Link>
             <Link to="logout">Log Out</Link>
-            <strong>{loggedIn.displayName}</strong>
+            <strong>{loggedIn.name}</strong>
           </>
         )}
         {!loggedIn && <Link to="login">Log In</Link>}

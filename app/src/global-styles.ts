@@ -22,7 +22,7 @@ const globalStyles = css({
   },
   h1: {
     margin: "0",
-    fontSize: "22px",
+    fontSize: "1.4rem",
     fontWeight: "400",
     letterSpacing: "5px",
     textTransform: "uppercase",
@@ -30,7 +30,7 @@ const globalStyles = css({
   h2: {
     margin: "60px 0 40px 0",
     color: deep,
-    fontSize: "24px",
+    fontSize: "1.5rem",
     fontWeight: "400",
     letterSpacing: "5px",
     textTransform: "uppercase",
@@ -39,13 +39,13 @@ const globalStyles = css({
   h3: {
     margin: "40px 0 20px 0",
     color: deep,
-    fontSize: "20px",
+    fontSize: "1.2rem",
     fontWeight: "400",
     textAlign: "left",
   },
   h4: {
     margin: "40px 0 20px 0",
-    fontSize: "18px",
+    fontSize: "1.1rem",
     fontWeight: "400",
     textAlign: "left",
   },

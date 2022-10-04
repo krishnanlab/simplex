@@ -7,17 +7,31 @@ interface Props {
 
 const gridStyle = css({
   display: "grid",
-  gridTemplateColumns: "1fr 1fr 1fr",
   gap: "30px",
   margin: "40px 0",
-  "@media (max-width: 800px)": {
-    gridTemplateColumns: "1fr 1fr",
-  },
-  "@media (max-width: 500px)": {
-    gridTemplateColumns: "1fr",
-  },
 });
 
-const Grid = ({ children }: Props) => <div css={gridStyle}>{children}</div>;
+const Grid = ({ children }: Props) => {
+  const items = Array.isArray(children) ? children.length : 3;
+  const cols = [
+    {
+      "@media (min-width: 0)": {
+        gridTemplateColumns: "1fr",
+      },
+    },
+    {
+      "@media (min-width: 600px)": {
+        gridTemplateColumns: "1fr 1fr",
+      },
+    },
+    {
+      "@media (min-width: 900px)": {
+        gridTemplateColumns: "1fr 1fr 1fr",
+      },
+    },
+  ].slice(0, items);
+
+  return <div css={[gridStyle, ...cols]}>{children}</div>;
+};
 
 export default Grid;

@@ -40,11 +40,12 @@ export {
 
 // font awesome icons
 library.add(
-  fas.faTimes,
-  fas.faBars,
-  fas.faRightToBracket,
-  far.faEnvelope,
   fab.faGithub,
+  far.faEnvelope,
   far.faFloppyDisk,
-  fas.faLock
+  fas.faBars,
+  fas.faLock,
+  fas.faRightToBracket,
+  fas.faTimes,
+  fas.faUserPlus
 );

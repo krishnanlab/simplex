@@ -29,6 +29,10 @@ const inputStyle = css({
   fontWeight: "inherit",
   boxShadow: shadow,
   appearance: "none",
+  "&::placeholder": {
+    color: dark,
+    opacity: 0.5,
+  },
 });
 
 const Field = ({
