@@ -9,6 +9,7 @@ const gridStyle = css({
   display: "grid",
   gridTemplateColumns: "1fr 1fr 1fr",
   gap: "30px",
+  margin: "40px 0",
   "@media (max-width: 800px)": {
     gridTemplateColumns: "1fr 1fr",
   },

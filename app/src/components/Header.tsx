@@ -86,14 +86,16 @@ const Header = () => {
         <Link css={homeStyle} to="/">
           <h1>Simplex</h1>
         </Link>
-        <button
-          css={[buttonStyle, hideButton]}
-          onClick={() => setOpen(!open)}
-          aria-expanded={open}
-          aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
-        >
-          <Icon icon={open ? "times" : "bars"} />
-        </button>
+        <div style={{ width: 0 }}>
+          <button
+            css={[buttonStyle, hideButton]}
+            onClick={() => setOpen(!open)}
+            aria-expanded={open}
+            aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
+          >
+            <Icon icon={open ? "times" : "bars"} />
+          </button>
+        </div>
       </div>
       <nav css={[navStyle, hideNav]}>
         <Link to="about">About</Link>

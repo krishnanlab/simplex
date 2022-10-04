@@ -20,6 +20,7 @@ const labelStyle = css({
 const inputStyle = css({
   width: "100%",
   padding: "5px 10px",
+  marginBottom: "10px",
   minHeight: "40px",
   border: "none",
   borderRadius: rounded,
