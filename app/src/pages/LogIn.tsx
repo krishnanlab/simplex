@@ -6,6 +6,7 @@ import { exampleLogin, loggedInState } from "@/state";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Field from "@/components/Field";
+import Checkbox from "@/components/Checkbox";
 
 const LogIn = () => {
   const [, setLoggedIn] = useAtom(loggedInState);
@@ -22,10 +23,8 @@ const LogIn = () => {
           placeholder={exampleLogin.password}
         />
       </Grid>
-      <Flex>
+      <Flex dir="col">
         <Link to="/">Forgot password</Link>
-      </Flex>
-      <Flex>
         <Button
           text="Log In"
           icon="right-to-bracket"
@@ -64,7 +63,11 @@ const LogIn = () => {
           placeholder={exampleLogin.password}
         />
       </Grid>
-      <Flex>
+      <Flex dir="col">
+        <Checkbox
+          label="Subscribe to our newsletter"
+          defaultChecked={exampleLogin.newsletter}
+        />
         <Button
           text="Sign Up"
           icon="user-plus"

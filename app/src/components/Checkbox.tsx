@@ -18,8 +18,8 @@ const labelStyle = css({
 });
 
 const inputStyle = css({
-  width: "20px",
-  height: "20px",
+  width: "16px",
+  height: "16px",
   margin: "0",
   padding: "2px 4px",
   accentColor: deep,

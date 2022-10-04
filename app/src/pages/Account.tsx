@@ -7,6 +7,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Button from "@/components/Button";
+import Checkbox from "@/components/Checkbox";
 
 const Account = () => {
   const [loggedIn] = useAtom(loggedInState);
@@ -41,7 +42,11 @@ const Account = () => {
             defaultValue={loggedIn?.institution || ""}
           />
         </Grid>
-        <Flex>
+        <Flex dir="col">
+          <Checkbox
+            label="Subscribe to our newsletter"
+            defaultChecked={loggedIn?.newsletter}
+          />
           <Button text="Save Info" icon="floppy-disk" />
         </Flex>
       </form>
