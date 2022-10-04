@@ -26,7 +26,7 @@ const gaps = {
   none: 0,
   tiny: 5,
   small: 10,
-  medium: 20,
+  medium: 30,
   big: 60,
 };
 

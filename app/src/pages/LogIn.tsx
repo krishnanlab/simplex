@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { useAtom } from "jotai";
 import Button from "@/components/Button";
 import Section from "@/components/Section";
@@ -6,7 +6,6 @@ import { exampleLogin, loggedInState } from "@/state";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Field from "@/components/Field";
-import { Link } from "react-router-dom";
 
 const LogIn = () => {
   const [, setLoggedIn] = useAtom(loggedInState);
@@ -16,9 +15,9 @@ const LogIn = () => {
     <Section>
       <h2>Log In</h2>
       <Grid>
-        <Field name="Email:" placeholder={exampleLogin.email} />
+        <Field label="Email" placeholder={exampleLogin.email} />
         <Field
-          name="Password:"
+          label="Password"
           type="password"
           placeholder={exampleLogin.password}
         />
@@ -47,20 +46,20 @@ const LogIn = () => {
         <li>Get important updates via our newsletter.</li>
       </ul>
       <Grid>
-        <Field name="Display Name:" placeholder={exampleLogin.name} />
-        <Field name="Email:" optional={true} placeholder={exampleLogin.email} />
+        <Field label="Display Name" placeholder={exampleLogin.name} />
+        <Field label="Email" optional={true} placeholder={exampleLogin.email} />
         <Field
-          name="Institution:"
+          label="Institution"
           optional={true}
           placeholder={exampleLogin.institution}
         />
         <Field
-          name="Password:"
+          label="Password"
           type="password"
           placeholder={exampleLogin.password}
         />
         <Field
-          name="Confirm Password:"
+          label="Confirm Password"
           type="password"
           placeholder={exampleLogin.password}
         />

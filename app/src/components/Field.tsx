@@ -3,13 +3,9 @@ import { css } from "@emotion/react";
 import { dark, rounded, shadow } from "@/palette";
 
 interface Props {
-  name: string;
+  label: string;
   optional?: boolean;
 }
-
-const wrapperStyle = css({
-  flexGrow: "1",
-});
 
 const labelStyle = css({
   width: "100%",
@@ -19,9 +15,10 @@ const labelStyle = css({
 
 const inputStyle = css({
   width: "100%",
-  padding: "5px 10px",
   marginBottom: "10px",
   minHeight: "40px",
+  margin: "0",
+  padding: "5px 10px",
   border: "none",
   borderRadius: rounded,
   fontSize: "inherit",
@@ -36,13 +33,13 @@ const inputStyle = css({
 });
 
 const Field = ({
-  name,
+  label,
   optional = false,
   ...props
 }: Props & HTMLProps<HTMLInputElement>) => (
-  <label css={wrapperStyle}>
+  <label>
     <div css={labelStyle}>
-      {name} {optional ? "" : "*"}
+      {label}: {optional ? "" : "*"}
     </div>
     <input required={!optional} css={inputStyle} {...props} />
   </label>

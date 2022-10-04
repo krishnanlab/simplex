@@ -24,18 +24,18 @@ const Account = () => {
         <h3>Personal Info</h3>
         <Grid>
           <Field
-            name="Display Name:"
+            label="Display Name"
             placeholder="Jane Smith"
             defaultValue={loggedIn?.name || ""}
           />
           <Field
-            name="Email:"
+            label="Email"
             optional={true}
             placeholder="jane.smith@email.com"
             defaultValue={loggedIn?.email || ""}
           />
           <Field
-            name="Institution:"
+            label="Institution"
             optional={true}
             placeholder="University of Colorado"
             defaultValue={loggedIn?.institution || ""}
@@ -50,17 +50,17 @@ const Account = () => {
         <h3>Change Password</h3>
         <Grid>
           <Field
-            name="Current Password:"
+            label="Current Password"
             type="password"
             placeholder={exampleLogin.password}
           />
           <Field
-            name="New Password:"
+            label="New Password"
             type="password"
             placeholder={exampleLogin.password}
           />
           <Field
-            name="Confirm New Password:"
+            label="Confirm New Password"
             type="password"
             placeholder={exampleLogin.password}
           />

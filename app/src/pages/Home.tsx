@@ -1,6 +1,9 @@
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
+import Flex from "@/components/Flex";
+import Select from "@/components/Select";
+import Checkbox from "@/components/Checkbox";
 
 const heroStyle = css({
   fontSize: "1.3rem",
@@ -18,6 +21,20 @@ const Home = () => (
     </Section>
 
     <Section>
+      <Flex>
+        <Select
+          label="Audience"
+          options={[
+            "general",
+            "biology",
+            "chemistry",
+            "physics",
+            "computer science",
+            "mathematics",
+          ]}
+        />
+        <Checkbox label="Highlights" />
+      </Flex>
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
         tempor incididunt ut labore et dolore magna aliqua. Quis varius quam
