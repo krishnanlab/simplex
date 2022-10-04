@@ -1,39 +1,47 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100" id="logo">
   <style>
-    .fade {
-      animation: fade 1s ease both;
+    .blob {
+      animation: blob 2s ease both;
       animation-delay: 0.3s;
+      stroke-dasharray: 274.928;
     }
 
-    @keyframes fade {
-      from {
-        opacity: 0;
+    @keyframes blob {
+      0% {
+        stroke-opacity: 1;
+        fill-opacity: 0;
+        stroke-dashoffset: 274.928;
       }
-      to {
-        opacity: 1;
+      50% {
+        stroke-opacity: 1;
+        fill-opacity: 0;
+        stroke-dashoffset: 0;
+      }
+      100% {
+        stroke-opacity: 0;
+        fill-opacity: 1;
       }
     }
 
-    .draw {
-      animation: draw 1s ease both;
+    .feather {
+      animation: feather 1s ease both;
       stroke-dasharray: var(--length);
-      stroke-dashoffset: var(--length);
     }
 
-    .draw:nth-child(1) {
+    .feather:nth-child(1) {
       animation-delay: 0.3s;
     }
-    .draw:nth-child(2) {
+    .feather:nth-child(2) {
       animation-delay: 0.3s;
     }
-    .draw:nth-child(3) {
+    .feather:nth-child(3) {
       animation-delay: 1s;
     }
-    .draw:nth-child(4) {
+    .feather:nth-child(4) {
       animation-delay: 1s;
     }
 
-    @keyframes draw {
+    @keyframes feather {
       from {
         stroke-dashoffset: var(--length);
       }
@@ -42,9 +50,9 @@
       }
     }
   </style>
-  <g fill="#ffb4a2" transform="scale(1.16)">
+  <g fill="#ffb4a2" stroke="#ffb4a2" stroke-width="2" transform="scale(1.1)">
     <path
-      class="fade"
+      class="blob"
       d="
         M 40.00 0.00
         L 39.99 -0.70
@@ -412,7 +420,7 @@
     />
   </g>
   <g
-    transform="rotate(45) translate(0, 1)"
+    transform="rotate(45) scale(0.9) translate(0, 1)"
     fill="none"
     stroke="#f08080"
     stroke-width="3"
@@ -420,7 +428,7 @@
     stroke-linejoin="round"
   >
     <path
-      class="draw"
+      class="feather"
       style="--length: 132.537"
       d="
         M -7 17
@@ -429,7 +437,7 @@
       "
     />
     <path
-      class="draw"
+      class="feather"
       style="--length: 55"
       d="
         M 0 -20
@@ -437,7 +445,7 @@
       "
     />
     <path
-      class="draw"
+      class="feather"
       style="--length: 6.224"
       d="
         M 11.4 -14.4
@@ -445,7 +453,7 @@
       "
     />
     <path
-      class="draw"
+      class="feather"
       style="--length: 8.486"
       d="
         M 13 -4 
