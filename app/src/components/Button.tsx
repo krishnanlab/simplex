@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { ButtonHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { accent, deep, fast, rounded, white } from "@/palette";
@@ -35,7 +35,7 @@ const Button = ({
   text,
   icon,
   ...props
-}: Props & HTMLProps<HTMLButtonElement>) => {
+}: Props & ButtonHTMLAttributes<HTMLButtonElement>) => {
   return (
     <button css={style} {...props}>
       {text && <span>{text}</span>}

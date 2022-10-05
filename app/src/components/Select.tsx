@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { SelectHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import { dark, deep } from "@/palette";
 import { capitalize } from "@/util/string";
@@ -29,7 +29,7 @@ const Field = ({
   label,
   options,
   ...props
-}: Props & HTMLProps<HTMLSelectElement>) => (
+}: Props & SelectHTMLAttributes<HTMLSelectElement>) => (
   <label>
     <span css={labelStyle}>{label}:</span>
     <select css={selectStyle} {...props}>

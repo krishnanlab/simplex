@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import { dark, rounded, shadow } from "@/palette";
 
@@ -36,12 +36,12 @@ const Field = ({
   label,
   optional = false,
   ...props
-}: Props & HTMLProps<HTMLInputElement>) => (
+}: Props & InputHTMLAttributes<HTMLInputElement>) => (
   <label>
     <div css={labelStyle}>
       {label}: {optional ? "" : "*"}
     </div>
-    <input required={!optional} css={inputStyle} {...props} />
+    <input required={!optional} css={inputStyle} {...props} type={props.type} />
   </label>
 );
 

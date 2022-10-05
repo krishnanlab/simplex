@@ -1,4 +1,4 @@
-import { HTMLProps } from "react";
+import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import { deep } from "@/palette";
 
@@ -26,7 +26,10 @@ const inputStyle = css({
   cursor: "pointer",
 });
 
-const Field = ({ label, ...props }: Props & HTMLProps<HTMLInputElement>) => (
+const Field = ({
+  label,
+  ...props
+}: Props & InputHTMLAttributes<HTMLInputElement>) => (
   <label css={wrapperStyle}>
     <input type="checkbox" css={inputStyle} {...props}></input>
     <span css={labelStyle}>{label}</span>
