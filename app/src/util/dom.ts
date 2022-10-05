@@ -8,7 +8,7 @@ export const restartAnimations = (element: Element): void => {
     );
 
   // play in reverse
-  const reverseSpeed = 5;
+  const reverseSpeed = 4;
   animations.forEach((animation) => {
     animation.playbackRate = -reverseSpeed;
     animation.cancel();
