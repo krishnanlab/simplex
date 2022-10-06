@@ -1,0 +1,61 @@
+<html>
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="-50 -50 100 100">
+      <path />
+    </svg>
+    <script>
+      const sin = (degrees) => Math.sin((2 * Math.PI * degrees) / 360);
+      const cos = (degrees) => Math.cos((2 * Math.PI * degrees) / 360);
+      const clamp = (value, min, max) => Math.max(min, Math.min(value, max));
+      const abs = Math.abs;
+      const sign = Math.sign;
+      const sqrt = Math.sqrt;
+      const sq = (value) => Math.pow(value, 2);
+
+      // semi-circle wave (looks smoother than sine wave) between -1 and 1
+      // https://www.desmos.com/calculator/acpvw3owwl
+      // inspiration: https://math.stackexchange.com/questions/2781755/semicircle-periodic-wave
+      const wave = (degrees, width = 30, power = 1.5) => {
+        // return sin((360 * degrees) / width);
+        const circle = (x) => sqrt(1 - sq(x / power));
+        const hump = (x) => 1 + (circle(x) - 1) / (1 - circle(1));
+        const ramp = (x) => -1 + (4 / width) * (x % (width / 2));
+        const side = (x) => sign(sin((360 * x) / width));
+        return side(degrees) * hump(ramp(degrees));
+      };
+
+      // oscillation between 0 and 1 with smooth sine wave transition
+      // https://www.desmos.com/calculator/ix9bq782ym
+      const oscillate = (degrees, width = 360, spread = 40) => {
+        const amplitude = width / spread;
+        // https://stackoverflow.com/a/11409978/2180570
+        const triangle =
+          amplitude / 2 -
+          ((2 * amplitude) / width) * abs((degrees % width) - width / 2);
+        const clipped = clamp(triangle, -1, 1);
+        return 0.5 + 0.5 * sin(90 * clipped);
+      };
+
+      // generate circle points
+      const points = [];
+      for (let angle = 0; angle <= 360; angle++) {
+        const r = 40 + 3 * wave(angle + 30 / 4) * oscillate(angle);
+        const x = cos(angle) * r;
+        const y = -sin(angle) * r;
+        points.push([x, y]);
+      }
+
+      // generate svg path
+      d = points
+        .map(([x, y], index) =>
+          [index ? "L" : "M", x.toFixed(2), y.toFixed(2)].join(" ")
+        )
+        .concat("z")
+        .join("\n");
+
+      // set path
+      document.querySelector("path").setAttribute("d", d);
+      console.log(d);
+    </script>
+  </body>
+</html>
