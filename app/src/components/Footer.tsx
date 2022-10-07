@@ -18,7 +18,7 @@ const Footer = () => (
       <a href="https://github.com/krishnanlab">
         <Icon icon="envelope" />
       </a>
-      <a href="mailto:arjun@msu.edu">
+      <a href="mailto:arjun.krishnan@cuanschutz.edu">
         <Icon icon="github" />
       </a>
     </Flex>

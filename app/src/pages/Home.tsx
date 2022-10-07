@@ -14,8 +14,8 @@ const Home = () => (
   <>
     <Section fill="deep">
       <p css={heroStyle}>
-        A lot of scientific and medical writing is hard to understand for
-        non-experts because it is full of jargon. This tool helps you identify
+        Scientific and medical writing is often hard for non-experts to
+        understand because it&apos;s full of jargon. Simplex helps you identify
         complexity in your writing and simplify it.
       </p>
     </Section>

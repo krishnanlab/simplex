@@ -143,7 +143,8 @@ const About = () => (
         questions, issues, or would like to collaborate with us, please reach
         out to us on the{" "}
         <a href="https://github.com/krishnanlab">Krishnan Lab Github org</a>, or
-        write directly to <a href="mailto:arjun@msu.edu">Arjun Krishnan</a>.
+        write directly to{" "}
+        <a href="mailto:arjun.krishnan@cuanschutz.edu">Arjun Krishnan</a>.
       </p>
 
       <h3 id="newsletter">Newsletter</h3>
