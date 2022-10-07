@@ -38,3 +38,24 @@ const getAnimationLength = (animation: Animation) => {
 // get css duration in ms
 const getDurationMs = (duration: string) =>
   (parseFloat(duration) || 0) * (duration.indexOf("ms") !== -1 ? 1 : 1000);
+
+// get (correct) innerText of contenteditable
+export const getInnerText = (element: HTMLElement) => {
+  const clone = document.createElement("div");
+  clone.innerHTML = element.innerHTML;
+  clone.style.whiteSpace = "pre";
+  for (const child of clone.childNodes) {
+    if (typeof child === "string") {
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = child;
+      clone.replaceChild(wrapper, child);
+    }
+    if (child instanceof Element) {
+      child.querySelector("br")?.replaceWith(" ");
+    }
+  }
+  document.body.append(clone);
+  const text = clone.innerText;
+  clone.remove();
+  return text;
+};
