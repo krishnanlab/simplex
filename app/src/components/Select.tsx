@@ -3,9 +3,10 @@ import { css } from "@emotion/react";
 import { dark, deep } from "@/palette";
 import { capitalize } from "@/util/string";
 
-interface Props {
+interface Props<Option> {
   label: string;
-  options: Array<string>;
+  options: readonly Option[];
+  onChange: (value: Option) => unknown;
 }
 
 const labelStyle = css({
@@ -25,14 +26,20 @@ const selectStyle = css({
   cursor: "pointer",
 });
 
-const Field = ({
+const Field = <Option extends string>({
   label,
   options,
+  onChange = () => null,
   ...props
-}: Props & SelectHTMLAttributes<HTMLSelectElement>) => (
+}: Props<Option> &
+  Omit<SelectHTMLAttributes<HTMLSelectElement>, "options" | "onChange">) => (
   <label>
     <span css={labelStyle}>{label}:</span>
-    <select css={selectStyle} {...props}>
+    <select
+      css={selectStyle}
+      {...props}
+      onChange={(event) => onChange(event.target.value as Option)}
+    >
       {options.map((option, index) => (
         <option key={index} value={option}>
           {capitalize(option)}

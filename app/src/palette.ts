@@ -43,9 +43,10 @@ library.add(
   fab.faGithub,
   far.faEnvelope,
   far.faFloppyDisk,
+  far.faLightbulb,
+  far.faQuestionCircle,
   fas.faBars,
   fas.faLock,
-  far.faLightbulb,
   fas.faRightToBracket,
   fas.faTimes,
   fas.faUserPlus

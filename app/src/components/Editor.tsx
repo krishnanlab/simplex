@@ -2,24 +2,32 @@ import { useEffect, useCallback, useRef, useMemo } from "react";
 import { css } from "@emotion/react";
 import { useAtom } from "jotai";
 import { light, shadow, accent } from "@/palette";
-import { textState, showHighlightsState } from "@/pages/Tool";
+import {
+  textState,
+  showHighlightsState,
+  highlightsState,
+  loadingState,
+} from "@/pages/Tool";
+import Spinner from "@/components/Spinner";
+
+const textStyle = {
+  margin: "0",
+  padding: "15px 20px",
+  fontFamily: "inherit",
+  lineHeight: "inherit",
+  fontSize: "inherit",
+  fontWeight: "inherit",
+  border: "none",
+  outline: "none",
+  background: "none",
+};
 
 const wrapperStyle = css({
   position: "relative",
   display: "flex",
+  margin: "20px 0",
   boxShadow: shadow,
   resize: "none",
-  "& > *": {
-    margin: "0",
-    padding: "15px 20px",
-    fontFamily: "inherit",
-    lineHeight: "inherit",
-    fontSize: "inherit",
-    fontWeight: "inherit",
-    border: "none",
-    outline: "none",
-    background: "none",
-  },
   "&:focus-within": {
     outline: accent,
   },
@@ -34,6 +42,7 @@ const underlayStyle = css({
   overflowY: "auto",
   userSelect: "none",
   zIndex: "-1",
+  ...textStyle,
   "& > mark": {
     background: "none",
     color: "transparent",
@@ -48,6 +57,13 @@ const inputStyle = css({
   resize: "vertical",
   overflowY: "auto",
   zIndex: "1",
+  ...textStyle,
+});
+
+const spinnerStyle = css({
+  position: "absolute",
+  top: "20px",
+  right: "20px",
 });
 
 // references
@@ -58,28 +74,16 @@ const inputStyle = css({
 
 const label = "Type or paste text";
 
-// dummy func
-const scoreStore: Record<string, number> = {};
-const getWordScore = (word: string) =>
-  scoreStore[word] || (scoreStore[word] = Math.random());
-
 const Editor = () => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
+
   const [text, setText] = useAtom(textState);
   const [showHighlights] = useAtom(showHighlightsState);
 
-  const content = useMemo(
-    () =>
-      text
-        .split(/(\S+)/)
-        .filter((text) => text)
-        .map((text, index, array) => ({
-          text: index === array.length - 1 ? text.replace(/\n$/, "\n ") : text,
-          color: light + Math.floor(getWordScore(text) * 255).toString(16),
-        })),
-    [text]
-  );
+  const [highlights] = useAtom(highlightsState);
+
+  const [loading] = useAtom(loadingState);
 
   const matchScroll = useCallback(() => {
     if (!underlay.current || !input.current) return;
@@ -88,20 +92,32 @@ const Editor = () => {
 
   useEffect(() => {
     matchScroll();
-  }, [matchScroll, text, showHighlights]);
+  }, [highlights, matchScroll, text, showHighlights]);
 
   return (
     <div css={wrapperStyle}>
       {showHighlights && (
         <div ref={underlay} css={underlayStyle}>
-          {content.map(({ text, color }, index) => {
+          {highlights.map(({ text, score }, index, array) => {
             if (text.trim())
               return (
-                <mark key={index} style={{ background: color }}>
+                <mark
+                  key={index}
+                  style={{
+                    background:
+                      light +
+                      Math.floor((255 * score) / 100)
+                        .toString(16)
+                        .padStart(2, "0"),
+                  }}
+                >
                   {text}
                 </mark>
               );
-            else return text;
+            else
+              return index === array.length - 1
+                ? text.replace(/\n$/, "\n ")
+                : text;
           })}
         </div>
       )}
@@ -113,7 +129,8 @@ const Editor = () => {
         aria-label={label}
         value={text}
         onChange={(event) => setText(event.target.value)}
-      ></textarea>
+      />
+      {loading && <Spinner css={spinnerStyle} />}
     </div>
   );
 };

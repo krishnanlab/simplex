@@ -14,7 +14,7 @@ const style = css({
 
 const Footer = () => (
   <footer css={style}>
-    <Flex gap="medium" margin={false}>
+    <Flex gap="medium">
       <a href="https://github.com/krishnanlab">
         <Icon icon="envelope" />
       </a>
