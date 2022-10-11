@@ -45,6 +45,7 @@ library.add(
   far.faFloppyDisk,
   fas.faBars,
   fas.faLock,
+  far.faLightbulb,
   fas.faRightToBracket,
   fas.faTimes,
   fas.faUserPlus

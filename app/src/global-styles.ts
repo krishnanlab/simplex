@@ -93,6 +93,10 @@ const globalStyles = css({
   form: {
     display: "contents",
   },
+  ".spacer": {
+    content: "''",
+    flexGrow: "1",
+  },
 });
 
 export default globalStyles;

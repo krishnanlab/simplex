@@ -1,10 +1,7 @@
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import Flex from "@/components/Flex";
-import Select from "@/components/Select";
-import Checkbox from "@/components/Checkbox";
-import Editor from "@/components/Editor";
+import Tool from "@/pages/Tool";
 
 const heroStyle = css({
   fontSize: "1.3rem",
@@ -22,21 +19,7 @@ const Home = () => (
     </Section>
 
     <Section>
-      <Flex>
-        <Select
-          label="Audience"
-          options={[
-            "general",
-            "biology",
-            "chemistry",
-            "physics",
-            "computer science",
-            "mathematics",
-          ]}
-        />
-        <Checkbox label="Highlights" />
-      </Flex>
-      <Editor />
+      <Tool />
     </Section>
 
     <Section fill="dark">

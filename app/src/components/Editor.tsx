@@ -1,95 +1,119 @@
-import { useState, FormEvent, Fragment, ClipboardEvent } from "react";
+import { useEffect, useCallback, useRef, useMemo } from "react";
 import { css } from "@emotion/react";
-import { light, dark, shadow, accent } from "@/palette";
-import { getInnerText } from "@/util/dom";
+import { useAtom } from "jotai";
+import { light, shadow, accent } from "@/palette";
+import { textState, showHighlightsState } from "@/pages/Tool";
 
 const wrapperStyle = css({
   position: "relative",
-  height: "300px",
-  minHeight: "100px",
-  maxHeight: "90vh",
-  resize: "vertical",
-  overflowY: "auto",
+  display: "flex",
   boxShadow: shadow,
+  resize: "none",
   "& > *": {
-    position: "absolute",
-    width: "100%",
-    minHeight: "100%",
+    margin: "0",
     padding: "15px 20px",
+    fontFamily: "inherit",
+    lineHeight: "inherit",
+    fontSize: "inherit",
+    fontWeight: "inherit",
+    border: "none",
     outline: "none",
-    whiteSpace: "pre",
+    background: "none",
   },
   "&:focus-within": {
     outline: accent,
   },
 });
 
-const placeholderStyle = css({
-  "&::before": {
-    content: "attr(placeholder)",
-    opacity: 0.5,
-    color: dark,
-    pointerEvents: "none",
+const underlayStyle = css({
+  position: "absolute",
+  width: "100%",
+  height: "100%",
+  whiteSpace: "pre-wrap",
+  overflowWrap: "break-word",
+  overflowY: "auto",
+  userSelect: "none",
+  zIndex: "-1",
+  "& > mark": {
+    background: "none",
+    color: "transparent",
   },
 });
 
-const underlayStyle = css({
-  color: "transparent",
-  pointerEvents: "none",
+const inputStyle = css({
+  width: "100%",
+  height: "300px",
+  minHeight: "100px",
+  maxHeight: "90vh",
+  resize: "vertical",
+  overflowY: "auto",
+  zIndex: "1",
 });
+
+// references
+// https://github.com/lonekorean/highlight-within-textarea/blob/master/jquery.highlight-within-textarea.js
+// alternatives
+// https://github.com/bonafideduck/react-highlight-within-textarea
+// https://github.com/facebook/lexical
 
 const label = "Type or paste text";
 
+// dummy func
+const scoreStore: Record<string, number> = {};
+const getWordScore = (word: string) =>
+  scoreStore[word] || (scoreStore[word] = Math.random());
+
 const Editor = () => {
-  const [text, setText] = useState("");
+  const underlay = useRef<HTMLDivElement>(null);
+  const input = useRef<HTMLTextAreaElement>(null);
+  const [text, setText] = useAtom(textState);
+  const [showHighlights] = useAtom(showHighlightsState);
 
-  const onPaste = (event: ClipboardEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const text = event.clipboardData.getData("text/plain");
-    // document.execCommand("insertHTML", false, text);
-    const selection = window.getSelection();
-    if (!selection?.rangeCount) return;
-    selection.deleteFromDocument();
-    selection.getRangeAt(0).insertNode(document.createTextNode(text));
-    setText(text);
-  };
+  const content = useMemo(
+    () =>
+      text
+        .split(/(\S+)/)
+        .filter((text) => text)
+        .map((text, index, array) => ({
+          text: index === array.length - 1 ? text.replace(/\n$/, "\n ") : text,
+          color: light + Math.floor(getWordScore(text) * 255).toString(16),
+        })),
+    [text]
+  );
 
-  const onInput = (event: FormEvent<HTMLDivElement>) => {
-    setText(getInnerText(event.target as HTMLElement));
-  };
+  const matchScroll = useCallback(() => {
+    if (!underlay.current || !input.current) return;
+    underlay.current.scrollTop = input.current.scrollTop;
+  }, []);
 
-  const content = text
-    .split(/(\s)/)
-    .map((word) => ({ text: word, score: Math.random() }));
+  useEffect(() => {
+    matchScroll();
+  }, [matchScroll, text, showHighlights]);
 
   return (
     <div css={wrapperStyle}>
-      <div css={underlayStyle}>
-        {content.map((word, index) => {
-          if (word.text === "\n") return <br key={index} />;
-          if (word.text.match(/^\s$/))
-            return <Fragment key={index}>&nbsp;</Fragment>;
-          if (word.text === "") return null;
-          const color = light + Math.floor(word.score * 255).toString(16);
-          return (
-            <span key={index} style={{ background: color }}>
-              {word.text}
-            </span>
-          );
-        })}
-      </div>
-      <div
-        css={content.length === 0 ? placeholderStyle : null}
-        contentEditable
+      {showHighlights && (
+        <div ref={underlay} css={underlayStyle}>
+          {content.map(({ text, color }, index) => {
+            if (text.trim())
+              return (
+                <mark key={index} style={{ background: color }}>
+                  {text}
+                </mark>
+              );
+            else return text;
+          })}
+        </div>
+      )}
+      <textarea
+        ref={input}
+        css={inputStyle}
+        onScroll={matchScroll}
         placeholder={label}
-        onPaste={onPaste}
-        onInput={onInput}
-        suppressContentEditableWarning={true}
-        role="textbox"
-        aria-placeholder={label}
         aria-label={label}
-        aria-multiline="true"
-      />
+        value={text}
+        onChange={(event) => setText(event.target.value)}
+      ></textarea>
     </div>
   );
 };
