@@ -11,35 +11,30 @@ export const audiences = [
 
 export type Audience = typeof audiences[number];
 
-// dummy func
+// dummy api
 const scoreStore: Record<string, number> = {};
 const getWordScore = (word: string) =>
   scoreStore[word] || (scoreStore[word] = Math.random() * 100);
 
 export const analyze = async (
-  text = "",
-  audience: Audience = "general",
-  ignoreList = ""
+  words: Array<string>,
+  audience: Audience,
+  ignoreWords: Array<string>
 ) => {
-  const ignore = ignoreList
-    .split(",")
-    .map((word) => word.trim())
-    .filter((word) => word);
+  const scores: Record<string, number> = {};
+  for (const word of words)
+    scores[word] = ignoreWords.includes(word)
+      ? 0
+      : getWordScore(word) / (audiences.indexOf(audience) + 1);
 
-  const highlights = text
-    .split(/(\S+)/)
-    .filter((text) => text)
-    .map((text) => ({
-      text,
-      score: ignore.includes(text)
-        ? 0
-        : getWordScore(text) / (audiences.indexOf(audience) + 1),
-    }));
+  const calc =
+    Object.values(scores).reduce((sum, val) => sum + val, 0) /
+      Object.values(scores).length || 0;
 
-  const complexity = Math.random() * 100;
-  const gradeLevel = "collegiate";
+  const complexity = calc;
+  const gradeLevel = calc;
 
   await sleep(300);
 
-  return { highlights, complexity, gradeLevel };
+  return { scores, complexity, gradeLevel };
 };

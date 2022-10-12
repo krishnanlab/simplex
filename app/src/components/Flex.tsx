@@ -22,11 +22,11 @@ const aligns = {
 };
 
 const gaps = {
-  none: 0,
-  tiny: 5,
-  small: 10,
-  medium: 30,
-  big: 60,
+  none: "0",
+  tiny: "5px",
+  small: "10px",
+  medium: "30px",
+  big: "60px",
 };
 
 const Flex = ({

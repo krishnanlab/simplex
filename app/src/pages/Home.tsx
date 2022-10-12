@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import Tool from "@/pages/Tool";
+import Tool from "@/components/Tool";
 
 const heroStyle = css({
   fontSize: "1.3rem",

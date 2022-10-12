@@ -1,16 +1,10 @@
-import { useEffect, useCallback, useRef, useMemo } from "react";
+import { useEffect, useCallback, useRef } from "react";
+import useResizeObserver from "@react-hook/resize-observer";
 import { css } from "@emotion/react";
-import { useAtom } from "jotai";
 import { light, shadow, accent } from "@/palette";
-import {
-  textState,
-  showHighlightsState,
-  highlightsState,
-  loadingState,
-} from "@/pages/Tool";
 import Spinner from "@/components/Spinner";
 
-const textStyle = {
+const commonStyle = {
   margin: "0",
   padding: "15px 20px",
   fontFamily: "inherit",
@@ -20,6 +14,7 @@ const textStyle = {
   border: "none",
   outline: "none",
   background: "none",
+  overscrollBehavior: "none",
 };
 
 const wrapperStyle = css({
@@ -28,21 +23,28 @@ const wrapperStyle = css({
   margin: "20px 0",
   boxShadow: shadow,
   resize: "none",
+  overflow: "hidden",
   "&:focus-within": {
     outline: accent,
   },
 });
 
+const scrollbar = 50;
+
 const underlayStyle = css({
   position: "absolute",
-  width: "100%",
-  height: "100%",
+  top: "0",
+  right: `-${scrollbar}px`,
+  bottom: "0",
+  left: "0",
+  paddingRight: scrollbar + 20 + "px !important",
   whiteSpace: "pre-wrap",
   overflowWrap: "break-word",
+  overflowX: "hidden",
   overflowY: "auto",
   userSelect: "none",
   zIndex: "-1",
-  ...textStyle,
+  ...commonStyle,
   "& > mark": {
     background: "none",
     color: "transparent",
@@ -57,7 +59,7 @@ const inputStyle = css({
   resize: "vertical",
   overflowY: "auto",
   zIndex: "1",
-  ...textStyle,
+  ...commonStyle,
 });
 
 const spinnerStyle = css({
@@ -74,16 +76,25 @@ const spinnerStyle = css({
 
 const label = "Type or paste text";
 
-const Editor = () => {
+interface Props {
+  text: string;
+  setText: (value: string) => void;
+  words: Array<string>;
+  showHighlights: boolean;
+  scores: Record<string, number>;
+  loading: boolean;
+}
+
+const Editor = ({
+  text,
+  setText,
+  words,
+  showHighlights,
+  scores,
+  loading,
+}: Props) => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
-
-  const [text, setText] = useAtom(textState);
-  const [showHighlights] = useAtom(showHighlightsState);
-
-  const [highlights] = useAtom(highlightsState);
-
-  const [loading] = useAtom(loadingState);
 
   const matchScroll = useCallback(() => {
     if (!underlay.current || !input.current) return;
@@ -92,32 +103,33 @@ const Editor = () => {
 
   useEffect(() => {
     matchScroll();
-  }, [highlights, matchScroll, text, showHighlights]);
+  }, [words, showHighlights, matchScroll]);
+  useResizeObserver(input, matchScroll);
 
   return (
     <div css={wrapperStyle}>
       {showHighlights && (
         <div ref={underlay} css={underlayStyle}>
-          {highlights.map(({ text, score }, index, array) => {
-            if (text.trim())
+          {words.map((word, index, array) => {
+            if (word.trim())
               return (
                 <mark
                   key={index}
                   style={{
                     background:
                       light +
-                      Math.floor((255 * score) / 100)
+                      Math.floor((255 * (scores[word] || 0)) / 100)
                         .toString(16)
                         .padStart(2, "0"),
                   }}
                 >
-                  {text}
+                  {word}
                 </mark>
               );
             else
               return index === array.length - 1
-                ? text.replace(/\n$/, "\n ")
-                : text;
+                ? word.replace(/\n$/, "\n ")
+                : word;
           })}
         </div>
       )}
