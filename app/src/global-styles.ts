@@ -1,5 +1,16 @@
 import { css } from "@emotion/react";
-import { light, black, fast, serif, deep, spacing, gray } from "@/palette";
+import {
+  light,
+  black,
+  fast,
+  serif,
+  deep,
+  gray,
+  spacing,
+  plus,
+  big,
+  title,
+} from "@/palette";
 
 const globalStyles = css({
   "*": {
@@ -22,31 +33,23 @@ const globalStyles = css({
   },
   h1: {
     margin: "0",
-    fontSize: "1.4rem",
-    fontWeight: "400",
-    letterSpacing: "5px",
-    textTransform: "uppercase",
+    ...title,
   },
   h2: {
     margin: "60px 0 40px 0",
     color: deep,
-    fontSize: "1.5rem",
-    fontWeight: "400",
-    letterSpacing: "5px",
-    textTransform: "uppercase",
     textAlign: "center",
+    ...title,
   },
   h3: {
     margin: "40px 0 20px 0",
     color: deep,
-    fontSize: "1.2rem",
-    fontWeight: "400",
+    ...big,
     textAlign: "left",
   },
   h4: {
     margin: "40px 0 20px 0",
-    fontSize: "1.1rem",
-    fontWeight: "400",
+    ...plus,
     textAlign: "left",
   },
   a: {
@@ -64,7 +67,7 @@ const globalStyles = css({
     position: "absolute",
     left: "-2px",
     right: "calc(100% + 4px)",
-    height: "1.5em",
+    height: "80%",
     top: "50%",
     transform: "translateY(-50%)",
     background: light,

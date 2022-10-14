@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
 import Button from "@/components/Button";
 import Select from "@/components/Select";
@@ -10,8 +11,22 @@ import { exampleText } from "@/assets/example.json";
 import { light } from "@/palette";
 import { audiences, analyze, Audience } from "@/api/tool";
 import { sleep } from "@/util/debug";
+import Spinner from "@/components/Spinner";
 
-const Tool = () => {
+const spinnerStyle = css({
+  position: "fixed",
+  bottom: "15px",
+  right: "15px",
+  fontSize: "1.5rem",
+});
+
+interface Props {
+  page?: "home" | "article";
+}
+
+type Versions = Array<"original" | Date>;
+
+const Tool = ({ page = "home" }: Props) => {
   // input state
   const [text, setText] = useState("");
   const words = useMemo(
@@ -42,7 +57,7 @@ const Tool = () => {
     let latest = true;
 
     (async () => {
-      // debounce
+      // debounce when any input changes
       await sleep(500);
 
       if (!latest) return;
@@ -76,11 +91,21 @@ const Tool = () => {
   return (
     <>
       <Flex hAlign="space">
-        <Button
-          text="Try Example"
-          icon="lightbulb"
-          onClick={() => setText(exampleText)}
-        />
+        {page === "home" && (
+          <Button
+            text="Try Example"
+            icon="lightbulb"
+            onClick={() => setText(exampleText)}
+          />
+        )}
+        {page === "article" && (
+          <Select
+            label="Version"
+            options={["original", new Date(), new Date()]}
+            value="original"
+            onChange={() => null}
+          />
+        )}
         <Flex display="inline">
           <Select
             label="Audience"
@@ -95,7 +120,7 @@ const Tool = () => {
           />
         </Flex>
       </Flex>
-      <Editor {...{ text, setText, words, showHighlights, scores, loading }} />
+      <Editor {...{ text, setText, words, showHighlights, scores }} />
       <Flex>
         <Flex display="inline" gap="small">
           <Stat
@@ -116,6 +141,8 @@ const Tool = () => {
           label="Words"
           value={text.split(/\s+/).filter((word) => word).length}
         />
+      </Flex>
+      <Flex>
         <Stat
           label="Overall Complexity"
           value={complexity.toFixed(0)}
@@ -133,6 +160,7 @@ const Tool = () => {
         placeholder="word, word, word"
         onChange={(event) => setIgnoreText(event.target.value)}
       />
+      {loading && <Spinner css={spinnerStyle} />}
     </>
   );
 };

@@ -34,7 +34,7 @@ export const analyze = async (
   const complexity = calc;
   const gradeLevel = calc;
 
-  await sleep(300);
+  await sleep(1000);
 
   return { scores, complexity, gradeLevel };
 };

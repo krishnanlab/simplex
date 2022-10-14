@@ -2,9 +2,10 @@ import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
 import Tool from "@/components/Tool";
+import { big } from "@/palette";
 
 const heroStyle = css({
-  fontSize: "1.3rem",
+  ...big,
   textAlign: "center",
 });
 

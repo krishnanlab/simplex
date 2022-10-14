@@ -26,7 +26,7 @@ const selectStyle = css({
   cursor: "pointer",
 });
 
-const Field = <Option extends string>({
+const Field = <Option extends string | Date>({
   label,
   options,
   onChange = () => null,
@@ -41,8 +41,9 @@ const Field = <Option extends string>({
       onChange={(event) => onChange(event.target.value as Option)}
     >
       {options.map((option, index) => (
-        <option key={index} value={option}>
-          {capitalize(option)}
+        <option key={index} value={String(option)}>
+          {typeof option === "string" && capitalize(option)}
+          {option instanceof Date && option.toLocaleString()}
         </option>
       ))}
     </select>

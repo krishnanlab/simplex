@@ -2,20 +2,6 @@ import { useEffect, useCallback, useRef } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
 import { css } from "@emotion/react";
 import { light, shadow, accent } from "@/palette";
-import Spinner from "@/components/Spinner";
-
-const commonStyle = {
-  margin: "0",
-  padding: "15px 20px",
-  fontFamily: "inherit",
-  lineHeight: "inherit",
-  fontSize: "inherit",
-  fontWeight: "inherit",
-  border: "none",
-  outline: "none",
-  background: "none",
-  overscrollBehavior: "none",
-};
 
 const wrapperStyle = css({
   position: "relative",
@@ -37,6 +23,8 @@ const underlayStyle = css({
   right: `-${scrollbar}px`,
   bottom: "0",
   left: "0",
+  margin: "0",
+  padding: "15px 20px",
   paddingRight: scrollbar + 20 + "px !important",
   whiteSpace: "pre-wrap",
   overflowWrap: "break-word",
@@ -44,7 +32,7 @@ const underlayStyle = css({
   overflowY: "auto",
   userSelect: "none",
   zIndex: "-1",
-  ...commonStyle,
+  overscrollBehavior: "none",
   "& > mark": {
     background: "none",
     color: "transparent",
@@ -56,16 +44,19 @@ const inputStyle = css({
   height: "300px",
   minHeight: "100px",
   maxHeight: "90vh",
+  margin: "0",
+  padding: "15px 20px",
+  background: "none",
+  fontFamily: "inherit",
+  lineHeight: "inherit",
+  fontSize: "inherit",
+  fontWeight: "inherit",
+  border: "none",
+  outline: "none",
   resize: "vertical",
   overflowY: "auto",
   zIndex: "1",
-  ...commonStyle,
-});
-
-const spinnerStyle = css({
-  position: "absolute",
-  top: "20px",
-  right: "20px",
+  overscrollBehavior: "none",
 });
 
 // references
@@ -82,17 +73,9 @@ interface Props {
   words: Array<string>;
   showHighlights: boolean;
   scores: Record<string, number>;
-  loading: boolean;
 }
 
-const Editor = ({
-  text,
-  setText,
-  words,
-  showHighlights,
-  scores,
-  loading,
-}: Props) => {
+const Editor = ({ text, setText, words, showHighlights, scores }: Props) => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
 
@@ -142,7 +125,6 @@ const Editor = ({
         value={text}
         onChange={(event) => setText(event.target.value)}
       />
-      {loading && <Spinner css={spinnerStyle} />}
     </div>
   );
 };

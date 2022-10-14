@@ -1,5 +1,5 @@
 import { css, SerializedStyles, keyframes } from "@emotion/react";
-import { dark } from "@/palette";
+import { dark, white } from "@/palette";
 
 interface Props {
   css?: SerializedStyles;
@@ -25,6 +25,12 @@ const spinnerStyle = css({
 
 const Spinner = ({ className }: Props) => (
   <svg css={spinnerStyle} className={className} viewBox="-5 -5 10 10">
+    <path
+      fill="none"
+      stroke={white}
+      strokeWidth="2"
+      d="M -4 0 A 4 4 0 0 1 4 0 A 4 4 0 0 1 -4 0"
+    />
     <path
       fill="none"
       stroke={dark}

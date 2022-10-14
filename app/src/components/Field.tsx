@@ -7,6 +7,11 @@ interface Props {
   optional?: boolean;
 }
 
+const wrapperStyle = css({
+  display: "block",
+  margin: "40px 0",
+});
+
 const labelStyle = css({
   width: "100%",
   color: dark,
@@ -37,7 +42,7 @@ const Field = ({
   optional = false,
   ...props
 }: Props & InputHTMLAttributes<HTMLInputElement>) => (
-  <label>
+  <label css={wrapperStyle}>
     <div css={labelStyle}>
       {label}: {optional ? "" : "*"}
     </div>

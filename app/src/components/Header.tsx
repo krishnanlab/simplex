@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
 import { useAtom } from "jotai";
-import { pale, gray, fast, rounded } from "@/palette";
+import { pale, gray, fast, rounded, plus } from "@/palette";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
 import { loggedInState } from "@/state";
 import Icon from "@/components/Icon";
@@ -29,7 +29,8 @@ const navStyle = css({
   alignItems: "center",
   flexWrap: "wrap",
   gap: "20px 30px",
-  fontSize: "1.1rem",
+  ...plus,
+  fontWeight: "300",
 });
 
 const homeStyle = css({
