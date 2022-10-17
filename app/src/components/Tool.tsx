@@ -194,7 +194,9 @@ const Tool = ({ fresh = true }: Props) => {
             onChange={setText}
             scores={state.scores}
             showHighlights={state.showHighlights}
-            disabled={state.selectedVersion === "original" || !editable}
+            disabled={
+              state.selectedVersion === "original" || !(fresh || editable)
+            }
           />
           <Results />
           <MoreControls />
@@ -329,7 +331,7 @@ const ReadonlyMetadata = () => {
 };
 
 const Metadata = () => {
-  const { title, source, editable, dispatch } = useContext(Context);
+  const { fresh, title, source, editable, dispatch } = useContext(Context);
 
   return (
     <Grid>
@@ -337,7 +339,7 @@ const Metadata = () => {
         label="Title"
         placeholder="Article title"
         form="main-form"
-        disabled={!editable}
+        disabled={!(fresh || editable)}
         value={title}
         onChange={(event) => dispatch(setValue("title", event.target.value))}
       />
@@ -346,7 +348,7 @@ const Metadata = () => {
         optional={true}
         placeholder="https://some-website.com/"
         form="main-form"
-        disabled={!editable}
+        disabled={!(fresh || editable)}
         value={source}
         onChange={(event) => dispatch(setValue("source", event.target.value))}
       />
