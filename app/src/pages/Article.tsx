@@ -3,7 +3,7 @@ import Tool from "@/components/Tool";
 
 const Article = () => (
   <Section>
-    <Tool page="article" />
+    <Tool fresh={false} />
   </Section>
 );
 

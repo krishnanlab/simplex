@@ -1,15 +1,6 @@
+import { isWord } from "./../util/string";
+import { Audience, audiences } from "@/api/types";
 import { sleep } from "@/util/debug";
-
-export const audiences = [
-  "general",
-  "biology",
-  "chemistry",
-  "physics",
-  "computer science",
-  "mathematics",
-] as const;
-
-export type Audience = typeof audiences[number];
 
 // dummy api
 const scoreStore: Record<string, number> = {};
@@ -23,9 +14,10 @@ export const analyze = async (
 ) => {
   const scores: Record<string, number> = {};
   for (const word of words)
-    scores[word] = ignoreWords.includes(word)
-      ? 0
-      : getWordScore(word) / (audiences.indexOf(audience) + 1);
+    if (isWord(word))
+      scores[word] = ignoreWords.includes(word)
+        ? 0
+        : getWordScore(word) / (audiences.indexOf(audience) + 1);
 
   const calc =
     Object.values(scores).reduce((sum, val) => sum + val, 0) /
@@ -34,7 +26,7 @@ export const analyze = async (
   const complexity = calc;
   const gradeLevel = calc;
 
-  await sleep(1000);
+  await sleep(100);
 
   return { scores, complexity, gradeLevel };
 };

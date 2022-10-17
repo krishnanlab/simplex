@@ -13,7 +13,7 @@ const labelStyle = css({ color: dark, lineHeight: 1 });
 const valueStyle = css({ color: deep, lineHeight: 1 });
 
 const Stat = ({ tooltip, label, value }: Props) => (
-  <Flex display="inline" gap="tiny">
+  <Flex display="inline" gap="tiny" hAlign="left">
     {tooltip && <Icon icon="question-circle" title={tooltip} />}
     {label && (
       <span css={labelStyle}>

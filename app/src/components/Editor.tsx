@@ -1,7 +1,8 @@
-import { useEffect, useCallback, useRef } from "react";
+import { useEffect, useCallback, useRef, useMemo } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
 import { css } from "@emotion/react";
-import { light, shadow, accent } from "@/palette";
+import { light, shadow, accent, offWhite } from "@/palette";
+import { splitWords } from "@/util/string";
 
 const wrapperStyle = css({
   position: "relative",
@@ -10,8 +11,13 @@ const wrapperStyle = css({
   boxShadow: shadow,
   resize: "none",
   overflow: "hidden",
+  zIndex: "0",
   "&:focus-within": {
     outline: accent,
+  },
+  "&[data-disabled='true']": {
+    background: offWhite,
+    boxShadow: "none",
   },
 });
 
@@ -68,16 +74,24 @@ const inputStyle = css({
 const label = "Type or paste text";
 
 interface Props {
-  text: string;
-  setText: (value: string) => void;
-  words: Array<string>;
+  value: string;
+  onChange: (value: string) => void;
   showHighlights: boolean;
   scores: Record<string, number>;
+  disabled?: boolean;
 }
 
-const Editor = ({ text, setText, words, showHighlights, scores }: Props) => {
+const Editor = ({
+  value,
+  onChange,
+  showHighlights,
+  scores,
+  disabled = false,
+}: Props) => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
+
+  const words = useMemo(() => splitWords(value), [value]);
 
   const matchScroll = useCallback(() => {
     if (!underlay.current || !input.current) return;
@@ -90,11 +104,11 @@ const Editor = ({ text, setText, words, showHighlights, scores }: Props) => {
   useResizeObserver(input, matchScroll);
 
   return (
-    <div css={wrapperStyle}>
+    <div css={wrapperStyle} data-disabled={disabled}>
       {showHighlights && (
         <div ref={underlay} css={underlayStyle}>
           {words.map((word, index, array) => {
-            if (word.trim())
+            if (scores[word])
               return (
                 <mark
                   key={index}
@@ -122,8 +136,10 @@ const Editor = ({ text, setText, words, showHighlights, scores }: Props) => {
         onScroll={matchScroll}
         placeholder={label}
         aria-label={label}
-        value={text}
-        onChange={(event) => setText(event.target.value)}
+        required={true}
+        disabled={disabled}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
       />
     </div>
   );

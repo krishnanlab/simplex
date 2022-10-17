@@ -1,6 +1,7 @@
-import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 
-interface LoggedIn {
+export interface LoggedIn {
+  id: number;
   name: string;
   email: string;
   institution: string;
@@ -8,6 +9,7 @@ interface LoggedIn {
 }
 
 export const exampleLogin = {
+  id: 123,
   name: "Jane Smith",
   email: "jane.smith@email.com",
   institution: "University of Colorado",
@@ -15,4 +17,7 @@ export const exampleLogin = {
   newsletter: true,
 };
 
-export const loggedInState = atom<LoggedIn | null>(exampleLogin);
+export const loggedInState = atomWithStorage<LoggedIn | null>(
+  "loggedIn",
+  exampleLogin
+);

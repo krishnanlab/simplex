@@ -12,6 +12,7 @@ const accent = "#F08080";
 const dark = "#6D6875";
 const black = "#000000";
 const gray = "#E0E0E0";
+const offWhite = "#F8F8F8";
 const white = "#FFFFFF";
 
 // effects
@@ -48,6 +49,7 @@ export {
   dark,
   black,
   gray,
+  offWhite,
   white,
   rounded,
   shadow,
@@ -67,9 +69,11 @@ library.add(
   far.faFloppyDisk,
   far.faLightbulb,
   far.faQuestionCircle,
+  far.faTrashAlt,
   fas.faBars,
   fas.faLock,
   fas.faRightToBracket,
+  fas.faShareNodes,
   fas.faTimes,
   fas.faUserPlus
 );

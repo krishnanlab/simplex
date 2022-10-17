@@ -10,6 +10,7 @@ import {
   plus,
   big,
   title,
+  offWhite,
 } from "@/palette";
 
 const globalStyles = css({
@@ -99,6 +100,11 @@ const globalStyles = css({
   ".spacer": {
     content: "''",
     flexGrow: "1",
+  },
+  "[disabled]": {
+    background: offWhite,
+    color: "inherit",
+    boxShadow: "none !important",
   },
 });
 

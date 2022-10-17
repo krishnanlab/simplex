@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@emotion/babel-plugin": "^11.10.2",
+    "@simbathesailor/use-what-changed": "^2.0.0",
     "@types/node": "^18.7.23",
     "@types/react": "^18.0.17",
     "@types/react-dom": "^18.0.6",

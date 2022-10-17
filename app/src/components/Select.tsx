@@ -5,8 +5,8 @@ import { capitalize } from "@/util/string";
 
 interface Props<Option> {
   label: string;
-  options: readonly Option[];
-  onChange: (value: Option) => unknown;
+  options?: readonly Option[];
+  onChange?: (value: Option, index: number) => unknown;
 }
 
 const labelStyle = css({
@@ -15,6 +15,7 @@ const labelStyle = css({
 });
 
 const selectStyle = css({
+  width: "110px",
   margin: "0",
   padding: "7px 5px",
   background: "none",
@@ -23,10 +24,12 @@ const selectStyle = css({
   fontSize: "inherit",
   fontFamily: "inherit",
   fontWeight: "inherit",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
   cursor: "pointer",
 });
 
-const Field = <Option extends string | Date>({
+const Field = <Option extends string>({
   label,
   options,
   onChange = () => null,
@@ -38,12 +41,13 @@ const Field = <Option extends string | Date>({
     <select
       css={selectStyle}
       {...props}
-      onChange={(event) => onChange(event.target.value as Option)}
+      onChange={(event) =>
+        onChange(event.target.value as Option, event.target.selectedIndex)
+      }
     >
-      {options.map((option, index) => (
-        <option key={index} value={String(option)}>
-          {typeof option === "string" && capitalize(option)}
-          {option instanceof Date && option.toLocaleString()}
+      {options?.map((option, index) => (
+        <option key={index} value={option}>
+          {capitalize(option)}
         </option>
       ))}
     </select>

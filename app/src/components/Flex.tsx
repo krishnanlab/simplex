@@ -48,8 +48,8 @@ const Flex = ({
       alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
       gap: gaps[gap],
       flexWrap: wrap ? "wrap" : "nowrap",
-      "&> *": {
-        margin: "0",
+      "& > *": {
+        margin: "0 !important",
       },
       "section > &": {
         margin: "30px 0",
