@@ -3,9 +3,10 @@ import { css } from "@emotion/react";
 import { dark, deep } from "@/palette";
 import { capitalize } from "@/util/string";
 
-interface Props {
+interface Props<Option> {
   label: string;
-  options: Array<string>;
+  options?: readonly Option[];
+  onChange?: (value: Option, index: number) => unknown;
 }
 
 const labelStyle = css({
@@ -14,6 +15,7 @@ const labelStyle = css({
 });
 
 const selectStyle = css({
+  width: "110px",
   margin: "0",
   padding: "7px 5px",
   background: "none",
@@ -22,18 +24,28 @@ const selectStyle = css({
   fontSize: "inherit",
   fontFamily: "inherit",
   fontWeight: "inherit",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
   cursor: "pointer",
 });
 
-const Field = ({
+const Field = <Option extends string>({
   label,
   options,
+  onChange = () => null,
   ...props
-}: Props & SelectHTMLAttributes<HTMLSelectElement>) => (
+}: Props<Option> &
+  Omit<SelectHTMLAttributes<HTMLSelectElement>, "options" | "onChange">) => (
   <label>
     <span css={labelStyle}>{label}:</span>
-    <select css={selectStyle} {...props}>
-      {options.map((option, index) => (
+    <select
+      css={selectStyle}
+      {...props}
+      onChange={(event) =>
+        onChange(event.target.value as Option, event.target.selectedIndex)
+      }
+    >
+      {options?.map((option, index) => (
         <option key={index} value={option}>
           {capitalize(option)}
         </option>

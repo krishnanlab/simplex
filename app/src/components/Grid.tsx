@@ -9,6 +9,9 @@ const gridStyle = css({
   display: "grid",
   gap: "30px",
   margin: "40px 0",
+  "& > *": {
+    margin: "0 !important",
+  },
 });
 
 const Grid = ({ children }: Props) => {

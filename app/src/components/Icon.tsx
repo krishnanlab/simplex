@@ -1,3 +1,4 @@
+import { HTMLAttributes } from "react";
 import {
   findIconDefinition,
   IconPrefix,
@@ -19,9 +20,9 @@ const findIcon = (icon: IconName) => {
   return null;
 };
 
-const Icon = ({ icon }: Props) => {
+const Icon = ({ icon, ...props }: Props & HTMLAttributes<SVGElement>) => {
   const match = findIcon(icon);
-  if (match) return <FontAwesomeIcon icon={match} />;
+  if (match) return <FontAwesomeIcon icon={match} {...props} />;
   else return <></>;
 };
 

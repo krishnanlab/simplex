@@ -10,7 +10,7 @@ const Citation = () => (
     C. Youn, J. Shah, M. Artuso, A. Yannakopoulos, N. Hawkins, J. Zubek, A.
     Krishnan
     <br />
-    URL: <Link to="https://gosimplex.app">https://gosimplex.app</Link>
+    URL: <Link to="https://simplex.io">https://simplex.io</Link>
   </p>
 );
 

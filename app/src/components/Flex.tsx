@@ -7,7 +7,6 @@ interface Props {
   hAlign?: "left" | "center" | "right" | "stretch" | "space";
   vAlign?: "top" | "center" | "bottom" | "stretch" | "space";
   wrap?: boolean;
-  margin?: boolean;
   children: ReactNode;
   [key: string]: unknown;
 }
@@ -23,11 +22,11 @@ const aligns = {
 };
 
 const gaps = {
-  none: 0,
-  tiny: 5,
-  small: 10,
-  medium: 30,
-  big: 60,
+  none: "0",
+  tiny: "5px",
+  small: "10px",
+  medium: "30px",
+  big: "60px",
 };
 
 const Flex = ({
@@ -37,7 +36,6 @@ const Flex = ({
   hAlign = "center",
   vAlign = "center",
   wrap = true,
-  margin = true,
   children,
   ...props
 }: Props) => (
@@ -50,7 +48,12 @@ const Flex = ({
       alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
       gap: gaps[gap],
       flexWrap: wrap ? "wrap" : "nowrap",
-      margin: margin ? "40px 0" : "0",
+      "& > *": {
+        margin: "0 !important",
+      },
+      "section > &": {
+        margin: "30px 0",
+      },
     }}
     {...props}
   >
