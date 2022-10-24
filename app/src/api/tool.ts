@@ -1,5 +1,5 @@
 import { isWord } from "./../util/string";
-import { Audience, audiences } from "@/api/types";
+import { Audience, audiences } from "@/types";
 import { sleep } from "@/util/debug";
 
 // dummy api

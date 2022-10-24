@@ -21,11 +21,11 @@ import Grid from "./Grid";
 import Spinner from "@/components/Spinner";
 import { exampleText } from "@/assets/example.json";
 import { light } from "@/palette";
-import { audiences, Audience } from "@/api/types";
+import { audiences, Audience, ReadAuthor } from "@/types";
 import { analyze } from "@/api/tool";
 import { sleep } from "@/util/debug";
 import { getArticle } from "@/api/article";
-import { exampleLogin, LoggedIn, loggedInState } from "@/state";
+import { exampleLogin, loggedInState } from "@/state";
 import { formatDate, splitComma, splitWords } from "@/util/string";
 
 const spinnerStyle = css({
@@ -39,7 +39,7 @@ interface State {
   // input
   audience: Audience;
   showHighlights: boolean;
-  selectedVersion: "original" | "simplified";
+  version: "original" | "simplified";
   originalText: string;
   simplifiedText: string;
   ignoreWords: Array<string>;
@@ -50,13 +50,13 @@ interface State {
   gradeLevel: number;
 
   // metadata
-  id: string;
+  id: number;
   title: string;
   source: string;
 
   // read-only metadata
   date: Date;
-  author: LoggedIn;
+  author: ReadAuthor;
 
   // other state
   loading: boolean;
@@ -88,10 +88,10 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const defaultState: State = {
-  id: "",
+  id: 0,
   audience: "general",
   showHighlights: true,
-  selectedVersion: "simplified",
+  version: "simplified",
   originalText: "",
   simplifiedText: "",
   ignoreWords: [],
@@ -133,15 +133,11 @@ const Tool = ({ fresh = true }: Props) => {
 
   // computed
   const text =
-    state.selectedVersion === "original"
-      ? state.originalText
-      : state.simplifiedText;
+    state.version === "original" ? state.originalText : state.simplifiedText;
   const setText = (text: string) =>
     dispatch(
       setValue(
-        state.selectedVersion === "original"
-          ? "originalText"
-          : "simplifiedText",
+        state.version === "original" ? "originalText" : "simplifiedText",
         text
       )
     );
@@ -185,7 +181,7 @@ const Tool = ({ fresh = true }: Props) => {
         <Context.Provider
           value={{ fresh, ...state, dispatch, text, setText, editable }}
         >
-          {!fresh && <h2>{state.id}</h2>}
+          {!fresh && <h2>Article</h2>}
           {!fresh && <Metadata />}
           {!fresh && <ReadonlyMetadata />}
           <Controls />
@@ -194,9 +190,7 @@ const Tool = ({ fresh = true }: Props) => {
             onChange={setText}
             scores={state.scores}
             showHighlights={state.showHighlights}
-            disabled={
-              state.selectedVersion === "original" || !(fresh || editable)
-            }
+            disabled={state.version === "original" || !(fresh || editable)}
           />
           <Results />
           <MoreControls />
@@ -214,7 +208,7 @@ const Tool = ({ fresh = true }: Props) => {
 export default Tool;
 
 const Controls = () => {
-  const { dispatch, fresh, selectedVersion, audience, showHighlights } =
+  const { dispatch, fresh, version, audience, showHighlights } =
     useContext(Context);
 
   return (
@@ -231,8 +225,8 @@ const Controls = () => {
           <Select
             label="Version"
             options={["original", "simplified"]}
-            value={selectedVersion}
-            onChange={(key) => dispatch(setValue("selectedVersion", key))}
+            value={version}
+            onChange={(key) => dispatch(setValue("version", key))}
           />
         )}
         <Flex display="inline">

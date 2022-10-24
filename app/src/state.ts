@@ -1,12 +1,6 @@
-import { atomWithStorage } from "jotai/utils";
+import { ReadAuthor } from "@/types";
 
-export interface LoggedIn {
-  id: number;
-  name: string;
-  email: string;
-  institution: string;
-  newsletter: boolean;
-}
+import { atomWithStorage } from "jotai/utils";
 
 export const exampleLogin = {
   id: 123,
@@ -17,7 +11,7 @@ export const exampleLogin = {
   newsletter: true,
 };
 
-export const loggedInState = atomWithStorage<LoggedIn | null>(
+export const loggedInState = atomWithStorage<ReadAuthor | null>(
   "loggedIn",
   exampleLogin
 );

@@ -1,13 +1,13 @@
 import { exampleText } from "@/assets/example.json";
-import { Article } from "@/api/types";
+import { ReadArticle } from "@/types";
 import { sleep } from "@/util/debug";
 import { exampleLogin } from "@/state";
 
-export const getArticle = async (): Promise<Article> => {
+export const getArticle = async (): Promise<ReadArticle> => {
   await sleep(100);
 
   return {
-    id: "dummy-article-id",
+    id: 123,
     author: exampleLogin,
     date: new Date(),
     title: "Dummy article title",
