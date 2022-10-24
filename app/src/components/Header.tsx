@@ -100,6 +100,7 @@ const Header = () => {
         </div>
       </div>
       <nav css={[navStyle, hideNav]}>
+        <Link to="/">Editor</Link>
         <Link to="about">About</Link>
         {loggedIn && (
           <>
