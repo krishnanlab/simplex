@@ -1,16 +1,19 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
 import Section from "@/components/Section";
-import { loggedInState } from "@/state";
+import { logout } from "@/api/account";
+import { GlobalState } from "@/App";
 
 const LogOut = () => {
-  const [, setLoggedIn] = useAtom(loggedInState);
+  const { setLoggedIn } = useContext(GlobalState);
   const navigate = useNavigate();
 
   useEffect(() => {
-    setLoggedIn(null);
-    navigate("/");
+    (async () => {
+      await logout();
+      setLoggedIn(null);
+      navigate("/");
+    })();
   });
 
   return <Section>Logging Out</Section>;

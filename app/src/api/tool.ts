@@ -11,7 +11,7 @@ export const analyze = async (
   words: Array<string>,
   audience: Audience,
   ignoreWords: Array<string>
-) => {
+): Promise<Analysis> => {
   const scores: Record<string, number> = {};
   for (const word of words)
     if (isWord(word))
@@ -30,3 +30,9 @@ export const analyze = async (
 
   return { scores, complexity, gradeLevel };
 };
+
+export interface Analysis {
+  scores: Record<string, number>;
+  complexity: number;
+  gradeLevel: number;
+}

@@ -15,7 +15,3 @@ export const splitComma = (value: string) =>
     .split(",")
     .map((part) => part.trim())
     .filter((part) => part);
-
-// format date
-export const formatDate = (date: Date) =>
-  date.toLocaleString("en", { dateStyle: "medium", timeStyle: "short" });

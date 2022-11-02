@@ -1,12 +1,11 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
-import { useAtom } from "jotai";
 import { pale, gray, fast, rounded, plus } from "@/palette";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
-import { loggedInState } from "@/state";
 import Icon from "@/components/Icon";
 import { restartAnimations } from "@/util/dom";
+import { GlobalState } from "@/App";
 
 const headerStyle = css({
   display: "flex",
@@ -56,10 +55,10 @@ const buttonStyle = css({
 });
 
 const Header = () => {
-  const [loggedIn] = useAtom(loggedInState);
+  const { loggedIn } = useContext(GlobalState);
   const [open, setOpen] = useState(false);
 
-  const menuBreakpoint = loggedIn ? "840px" : "500px";
+  const menuBreakpoint = loggedIn ? "920px" : "640px";
 
   const wrapHeader: CSSObject = {
     [`@media (max-width: ${menuBreakpoint})`]: {
@@ -110,7 +109,12 @@ const Header = () => {
             <strong>{loggedIn.name}</strong>
           </>
         )}
-        {!loggedIn && <Link to="login">Log In</Link>}
+        {!loggedIn && (
+          <>
+            <Link to="login">Log In</Link>
+            <Link to="signup">Sign Up</Link>
+          </>
+        )}
       </nav>
     </header>
   );

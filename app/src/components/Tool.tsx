@@ -8,7 +8,6 @@ import {
 } from "react";
 import { createPortal } from "react-dom";
 import { Link } from "react-router-dom";
-import { useAtom } from "jotai";
 import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
 import Button from "@/components/Button";
@@ -19,14 +18,15 @@ import Stat from "@/components/Stat";
 import Field from "@/components/Field";
 import Grid from "./Grid";
 import Spinner from "@/components/Spinner";
+import Ago from "@/components/Ago";
 import { exampleText } from "@/assets/example.json";
 import { light } from "@/palette";
-import { audiences, Audience, ReadAuthor } from "@/types";
-import { analyze } from "@/api/tool";
+import { audiences, Audience, ReadArticle } from "@/types";
+import { analyze, Analysis } from "@/api/tool";
 import { sleep } from "@/util/debug";
 import { getArticle } from "@/api/article";
-import { exampleLogin, loggedInState } from "@/state";
-import { formatDate, splitComma, splitWords } from "@/util/string";
+import { splitComma, splitWords } from "@/util/string";
+import { GlobalState } from "@/App";
 
 const spinnerStyle = css({
   position: "fixed",
@@ -35,33 +35,18 @@ const spinnerStyle = css({
   fontSize: "1.5rem",
 });
 
-interface State {
-  // input
+export interface Controls {
   audience: Audience;
   showHighlights: boolean;
   version: "original" | "simplified";
-  originalText: string;
-  simplifiedText: string;
-  ignoreWords: Array<string>;
+}
 
-  // results
-  scores: Record<string, number>;
-  complexity: number;
-  gradeLevel: number;
-
-  // metadata
-  id: number;
-  title: string;
-  source: string;
-
-  // read-only metadata
-  date: Date;
-  author: ReadAuthor;
-
-  // other state
+type State = {
   loading: boolean;
   analyzing: boolean;
-}
+} & Controls &
+  ReadArticle &
+  Analysis;
 
 type Action = ReturnType<typeof setValue | typeof spreadValue>;
 
@@ -88,20 +73,21 @@ const reducer = (state: State, action: Action): State => {
 };
 
 const defaultState: State = {
-  id: 0,
+  id: "0",
   audience: "general",
   showHighlights: true,
   version: "simplified",
   originalText: "",
   simplifiedText: "",
   ignoreWords: [],
+  collections: [],
   scores: {},
   complexity: 0,
   gradeLevel: 0,
   title: "",
   source: "",
   date: new Date(),
-  author: exampleLogin,
+  author: { id: "", name: "", institution: "" },
   loading: false,
   analyzing: false,
 };
@@ -129,7 +115,7 @@ export const Context = createContext<
 
 const Tool = ({ fresh = true }: Props) => {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const [loggedIn] = useAtom(loggedInState);
+  const { loggedIn } = useContext(GlobalState);
 
   // computed
   const text =
@@ -319,7 +305,7 @@ const ReadonlyMetadata = () => {
           author.name + ", " + author.institution + (editable ? " (You)" : "")
         }
       />
-      <Stat label="Last Saved" value={formatDate(date)} />
+      <Stat label="Last Saved" value={<Ago date={date} />} />
     </Grid>
   );
 };

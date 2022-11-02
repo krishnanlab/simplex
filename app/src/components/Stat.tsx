@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
@@ -6,7 +7,7 @@ import { dark, deep } from "@/palette";
 interface Props {
   tooltip?: string;
   label?: string;
-  value?: string | number;
+  value?: string | number | ReactNode;
 }
 
 const labelStyle = css({ color: dark, lineHeight: 1 });

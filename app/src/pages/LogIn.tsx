@@ -1,82 +1,64 @@
+import { useCallback, FormEventHandler, useContext, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { useAtom } from "jotai";
 import Button from "@/components/Button";
 import Section from "@/components/Section";
-import { exampleLogin, loggedInState } from "@/state";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Field from "@/components/Field";
-import Checkbox from "@/components/Checkbox";
+import { login } from "@/api/account";
+import { GlobalState } from "@/App";
 
 const LogIn = () => {
-  const [, setLoggedIn] = useAtom(loggedInState);
+  const { loggedIn, setLoggedIn } = useContext(GlobalState);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (loggedIn) navigate("/account");
+  });
+
+  const onLogin: FormEventHandler<HTMLFormElement> = useCallback(
+    async (event) => {
+      event.preventDefault();
+
+      const { email, password } = Object.fromEntries(
+        new FormData(event.target as HTMLFormElement)
+      ) as Record<string, string>;
+
+      try {
+        const loggedIn = await login({ email, password });
+        setLoggedIn(loggedIn);
+        navigate("/");
+      } catch (error) {
+        window.alert("There was a problem logging in.");
+        console.error(error);
+      }
+    },
+    [navigate, setLoggedIn]
+  );
 
   return (
     <Section>
       <h2>Log In</h2>
       <Grid>
-        <Field label="Email" placeholder={exampleLogin.email} />
         <Field
-          label="Password"
-          type="password"
-          placeholder={exampleLogin.password}
-        />
-      </Grid>
-      <Flex dir="col">
-        <Link to="/">Forgot password</Link>
-        <Button
-          text="Log In"
-          icon="right-to-bracket"
-          onClick={() => {
-            navigate("/");
-            setLoggedIn(exampleLogin);
-          }}
-        />
-      </Flex>
-
-      <h3>Sign Up</h3>
-      <p>
-        <strong>Why sign up?</strong>
-      </p>
-      <ul>
-        <li>Track revisions to your articles.</li>
-        <li>Organize your articles into collections and share them.</li>
-        <li>Get important updates via our newsletter.</li>
-      </ul>
-      <Grid>
-        <Field label="Display Name" placeholder={exampleLogin.name} />
-        <Field label="Email" optional={true} placeholder={exampleLogin.email} />
-        <Field
-          label="Institution"
-          optional={true}
-          placeholder={exampleLogin.institution}
+          label="Email"
+          name="email"
+          placeholder="jane.smith@email.com"
+          form="login"
         />
         <Field
           label="Password"
+          name="password"
           type="password"
-          placeholder={exampleLogin.password}
-        />
-        <Field
-          label="Confirm Password"
-          type="password"
-          placeholder={exampleLogin.password}
+          placeholder="**********"
+          form="login"
         />
       </Grid>
       <Flex dir="col">
-        <Checkbox
-          label="Subscribe to our newsletter"
-          defaultChecked={exampleLogin.newsletter}
-        />
-        <Button
-          text="Sign Up"
-          icon="user-plus"
-          onClick={() => {
-            navigate("/");
-            setLoggedIn(exampleLogin);
-          }}
-        />
+        <Link to="/forgot-password">Forgot password</Link>
+        <Button text="Log In" icon="right-to-bracket" form="login" />
       </Flex>
+      <form id="login" onSubmit={onLogin}></form>
     </Section>
   );
 };
