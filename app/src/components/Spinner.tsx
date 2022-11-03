@@ -1,5 +1,6 @@
+import { createPortal } from "react-dom";
 import { css, SerializedStyles, keyframes } from "@emotion/react";
-import { dark, white } from "@/palette";
+import { dark, pale } from "@/palette";
 
 interface Props {
   css?: SerializedStyles;
@@ -8,7 +9,7 @@ interface Props {
 
 const spin = keyframes({
   from: {
-    strokeDashoffset: "25.13",
+    strokeDashoffset: "62.83",
   },
   to: {
     strokeDashoffset: "0",
@@ -16,28 +17,33 @@ const spin = keyframes({
 });
 
 const spinnerStyle = css({
-  height: "1.2em",
+  position: "fixed",
+  bottom: "15px",
+  right: "15px",
+  height: "30px",
   "& > path": {
-    strokeDasharray: "18.85 6.28",
+    strokeDasharray: "47.12 15.71",
     animation: spin + " 1s linear infinite",
   },
 });
 
-const Spinner = ({ className }: Props) => (
-  <svg css={spinnerStyle} className={className} viewBox="-5 -5 10 10">
-    <path
-      fill="none"
-      stroke={white}
-      strokeWidth="2"
-      d="M -4 0 A 4 4 0 0 1 4 0 A 4 4 0 0 1 -4 0"
-    />
-    <path
-      fill="none"
-      stroke={dark}
-      strokeWidth="1"
-      d="M -4 0 A 4 4 0 0 1 4 0 A 4 4 0 0 1 -4 0"
-    />
-  </svg>
-);
+const Spinner = ({ className }: Props) =>
+  createPortal(
+    <svg css={spinnerStyle} className={className} viewBox="-12 -12 24 24">
+      <path
+        fill="none"
+        stroke={pale}
+        strokeWidth="4"
+        d="M -10 0 A 10 10 0 0 1 10 0 A 10 10 0 0 1 -10 0"
+      />
+      <path
+        fill="none"
+        stroke={dark}
+        strokeWidth="3"
+        d="M -10 0 A 10 10 0 0 1 10 0 A 4 4 0 0 1 -10 0"
+      />
+    </svg>,
+    document.body
+  );
 
 export default Spinner;

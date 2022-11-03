@@ -1,10 +1,12 @@
 import { ButtonHTMLAttributes } from "react";
+import { Link, LinkProps, To } from "react-router-dom";
 import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { accent, black, deep, fast, rounded, white } from "@/palette";
+import { accent, black, deep, fast, pale, rounded, white } from "@/palette";
 import Icon from "@/components/Icon";
 
 interface Props {
+  to?: To;
   text?: string;
   icon?: IconName;
   fill?: boolean;
@@ -21,14 +23,18 @@ const style = css({
   background: "none",
   border: "none",
   borderRadius: rounded,
-  color: accent,
+  color: deep,
   fontSize: "inherit",
   fontFamily: "inherit",
+  textDecoration: "none",
   appearance: "none",
   cursor: "pointer",
   transition: `background ${fast}, color ${fast}`,
   "&:hover": {
     color: black,
+  },
+  "&:before": {
+    display: "none",
   },
 });
 
@@ -41,17 +47,36 @@ const fillStyle = css({
   },
 });
 
+const squareStyle = css({
+  padding: "0",
+  width: "30px",
+  height: "30px",
+  minHeight: "unset",
+  "&:hover": {
+    background: pale,
+  },
+});
+
 const Button = ({
+  to,
   text,
   icon,
   fill = true,
   ...props
-}: Props & ButtonHTMLAttributes<HTMLButtonElement>) => {
+}: Props &
+  Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
+  Partial<LinkProps>) => {
+  const Component = to ? Link : "button";
+
   return (
-    <button css={[style, fill ? fillStyle : null]} {...props}>
+    <Component
+      to={to || ""}
+      css={[style, fill ? fillStyle : null, icon && !text ? squareStyle : null]}
+      {...props}
+    >
       {text && <span>{text}</span>}
       {icon && <Icon icon={icon} />}
-    </button>
+    </Component>
   );
 };
 

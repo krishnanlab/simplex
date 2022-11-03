@@ -5,9 +5,11 @@ import ReactTimeAgo from "react-time-ago";
 TimeAgo.addDefaultLocale(en);
 
 interface Props {
-  date: Date;
+  date: string;
 }
 
-const Ago = ({ date }: Props) => <ReactTimeAgo date={date} locale="en-US" />;
+const Ago = ({ date }: Props) => (
+  <ReactTimeAgo date={new Date(date)} locale="en-US" />
+);
 
 export default Ago;

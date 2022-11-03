@@ -39,7 +39,7 @@ const LogIn = () => {
   return (
     <Section>
       <h2>Log In</h2>
-      <Grid>
+      <Grid cols={2}>
         <Field
           label="Email"
           name="email"

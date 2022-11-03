@@ -13,8 +13,8 @@ type Signup = WriteAuthor & {
   password: string;
 };
 
-export const signup = async (params: Signup) =>
-  await request<ReadAuthor>("/signup", {
+export const signup = (params: Signup) =>
+  request<ReadAuthor>("/signup", {
     method: "POST",
     body: JSON.stringify(params),
   });
@@ -24,18 +24,18 @@ interface Login {
   password: string;
 }
 
-export const login = async (params: Login) =>
-  await request<ReadAuthor>("/login", {
+export const login = (params: Login) =>
+  request<ReadAuthor>("/login", {
     method: "POST",
     body: JSON.stringify(params),
   });
 
-export const logout = async () => await request("/logout", { method: "POST" });
+export const logout = () => request("/logout", { method: "POST" });
 
 type SaveInfo = WriteAuthor;
 
-export const saveInfo = async (props: SaveInfo) =>
-  await request<ReadAuthor>("/save-info", {
+export const saveInfo = (props: SaveInfo) =>
+  request<ReadAuthor>("/save-info", {
     method: "POST",
     body: JSON.stringify(props),
   });
@@ -45,14 +45,14 @@ interface ChangePassword {
   fresh: string;
 }
 
-export const changePassword = async (props: ChangePassword) =>
-  await request("/change-password", {
+export const changePassword = (props: ChangePassword) =>
+  request("/change-password", {
     method: "POST",
     body: JSON.stringify(props),
   });
 
-export const forgotPassword = async (props: Pick<ReadAuthor, "email">) =>
-  await request("/forgot-password", {
+export const forgotPassword = (props: Pick<ReadAuthor, "email">) =>
+  request("/forgot-password", {
     method: "POST",
     body: JSON.stringify(props),
   });

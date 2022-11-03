@@ -15,3 +15,13 @@ export const splitComma = (value: string) =>
     .split(",")
     .map((part) => part.trim())
     .filter((part) => part);
+
+// shorten url text
+export const shortenURl = (value: string) => {
+  try {
+    const url = new URL(value);
+    return url.hostname + url.pathname;
+  } catch (error) {
+    return value;
+  }
+};

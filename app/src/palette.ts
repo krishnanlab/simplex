@@ -75,5 +75,8 @@ library.add(
   fas.faRightToBracket,
   fas.faShareNodes,
   fas.faTimes,
-  fas.faUserPlus
+  fas.faUserPlus,
+  far.faPenToSquare,
+  far.faTrashCan,
+  fas.faPlus
 );

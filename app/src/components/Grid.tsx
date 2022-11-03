@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { css } from "@emotion/react";
 
 interface Props {
+  cols?: number;
   children: ReactNode;
 }
 
@@ -14,9 +15,9 @@ const gridStyle = css({
   },
 });
 
-const Grid = ({ children }: Props) => {
-  const items = Array.isArray(children) ? children.length : 3;
-  const cols = [
+const Grid = ({ cols = 3, children }: Props) => {
+  // const items = Array.isArray(children) ? children.length : 3;
+  const breakpoints = [
     {
       "@media (min-width: 0)": {
         gridTemplateColumns: "1fr",
@@ -32,9 +33,9 @@ const Grid = ({ children }: Props) => {
         gridTemplateColumns: "1fr 1fr 1fr",
       },
     },
-  ].slice(0, items);
+  ].slice(0, cols);
 
-  return <div css={[gridStyle, ...cols]}>{children}</div>;
+  return <div css={[gridStyle, ...breakpoints]}>{children}</div>;
 };
 
 export default Grid;

@@ -26,7 +26,7 @@ export type WriteAuthor = Omit<ReadAuthor, "id">;
 export interface ReadArticle {
   id: string;
   author: PublicReadAuthor;
-  date: Date;
+  date: string;
   title: string;
   source: string;
   originalText: string;
@@ -44,7 +44,8 @@ export type WriteAritcle = Pick<
 
 export interface ReadCollection {
   id: string;
-  date: Date;
+  author: PublicReadAuthor;
+  date: string;
   title: string;
   description: string;
   articles: Array<ReadArticle["id"]>;

@@ -27,6 +27,7 @@ import { sleep } from "@/util/debug";
 import { getArticle } from "@/api/article";
 import { splitComma, splitWords } from "@/util/string";
 import { GlobalState } from "@/App";
+import { useParams } from "react-router";
 
 const spinnerStyle = css({
   position: "fixed",
@@ -86,7 +87,7 @@ const defaultState: State = {
   gradeLevel: 0,
   title: "",
   source: "",
-  date: new Date(),
+  date: new Date().toISOString(),
   author: { id: "", name: "", institution: "" },
   loading: false,
   analyzing: false,
@@ -116,6 +117,7 @@ export const Context = createContext<
 const Tool = ({ fresh = true }: Props) => {
   const [state, dispatch] = useReducer(reducer, defaultState);
   const { loggedIn } = useContext(GlobalState);
+  const { id } = useParams();
 
   // computed
   const text =
@@ -133,13 +135,13 @@ const Tool = ({ fresh = true }: Props) => {
   // load article
   useEffect(() => {
     (async () => {
-      if (fresh) return;
+      if (fresh || !id) return;
       dispatch(setValue("loading", true));
-      const article = await getArticle();
+      const article = await getArticle(id);
       dispatch(spreadValue(article));
       dispatch(setValue("loading", false));
     })();
-  }, [fresh]);
+  }, [fresh, id]);
 
   // analyze text
   useEffect(() => {
@@ -295,10 +297,10 @@ const MoreControls = () => {
 };
 
 const ReadonlyMetadata = () => {
-  const { author, date, editable } = useContext(Context);
+  const { author, date, collections, editable } = useContext(Context);
 
   return (
-    <Grid>
+    <Grid cols={2}>
       <Stat
         label="Author"
         value={
@@ -306,6 +308,7 @@ const ReadonlyMetadata = () => {
         }
       />
       <Stat label="Last Saved" value={<Ago date={date} />} />
+      <Stat value={`In ${collections.length} collection(s)`} />
     </Grid>
   );
 };

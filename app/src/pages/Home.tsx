@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import Tool from "@/components/Tool";
+import Article from "@/pages/Article";
 import { big } from "@/palette";
 import { useEffect } from "react";
 
@@ -33,9 +33,7 @@ const Home = () => {
         </p>
       </Section>
 
-      <Section>
-        <Tool />
-      </Section>
+      <Article fresh={true} />
 
       <Section fill="dark">
         <Citation />

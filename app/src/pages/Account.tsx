@@ -39,7 +39,7 @@ const Account = () => {
         console.error(error);
       }
     },
-    []
+    [setLoggedIn]
   );
 
   const onChangePassword: FormEventHandler<HTMLFormElement> = useCallback(
