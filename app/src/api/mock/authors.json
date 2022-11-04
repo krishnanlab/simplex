@@ -1,0 +1,16 @@
+[
+  {
+    "id": "U3BmZTNL4g",
+    "name": "Dummy McGee",
+    "email": "dummy.mcgee@hotmail.com",
+    "institution": "Dummy Institute",
+    "newsletter": true
+  },
+  {
+    "id": "AZpgPuu0a0",
+    "name": "Clark Kent",
+    "email": "clark.kent@krypton.com",
+    "institution": "Superman University",
+    "newsletter": false
+  }
+]

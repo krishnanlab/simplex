@@ -2,10 +2,10 @@ import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Section from "@/components/Section";
 import { logout } from "@/api/account";
-import { GlobalState } from "@/App";
+import { State } from "@/global/state";
 
 const LogOut = () => {
-  const { setLoggedIn } = useContext(GlobalState);
+  const { setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
   useEffect(() => {

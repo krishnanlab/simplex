@@ -6,11 +6,11 @@ import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
-import { GlobalState } from "@/App";
+import { State } from "@/global/state";
 import { changePassword, saveInfo } from "@/api/account";
 
 const Account = () => {
-  const { loggedIn, setLoggedIn } = useContext(GlobalState);
+  const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
   useEffect(() => {

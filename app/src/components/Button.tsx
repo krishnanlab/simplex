@@ -2,7 +2,15 @@ import { ButtonHTMLAttributes } from "react";
 import { Link, LinkProps, To } from "react-router-dom";
 import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
-import { accent, black, deep, fast, pale, rounded, white } from "@/palette";
+import {
+  accent,
+  black,
+  deep,
+  fast,
+  pale,
+  rounded,
+  white,
+} from "@/global/palette";
 import Icon from "@/components/Icon";
 
 interface Props {

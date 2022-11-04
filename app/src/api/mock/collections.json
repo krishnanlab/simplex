@@ -1,0 +1,42 @@
+[
+  {
+    "id": "69Ubi8oK7D",
+    "author": "U3BmZTNL4g",
+    "date": "2022-10-12T11:36:55.072Z",
+    "title": "My first collection",
+    "description": "Lorem ipsum",
+    "articles": ["KjkUe3Y3Pt"]
+  },
+  {
+    "id": "zxjdMnoI72",
+    "author": "U3BmZTNL4g",
+    "date": "2020-04-18T18:47:21.082Z",
+    "title": "Test collection",
+    "description": "dolor sit amet",
+    "articles": ["yxDESg74hU", "KjkUe3Y3Pt", "4OJlqaRXG0"]
+  },
+  {
+    "id": "mKxQOsZDvi",
+    "author": "U3BmZTNL4g",
+    "date": "2022-11-03T17:15:20.483Z",
+    "title": "Dummy collection",
+    "description": "consectetur adipiscing elit",
+    "articles": ["yxDESg74hU"]
+  },
+  {
+    "id": "5fesB2R5Np",
+    "author": "U3BmZTNL4g",
+    "date": "2022-11-03T17:13:27.898Z",
+    "title": "Cool collection",
+    "description": "sed do eiusmod tempor incididunt",
+    "articles": ["yxDESg74hU", "KjkUe3Y3Pt", "5XO4gDUFv2"]
+  },
+  {
+    "id": "ErN30sEj4r",
+    "author": "AZpgPuu0a0",
+    "date": "2022-11-03T16:59:10.716Z",
+    "title": "Collection for dummies",
+    "description": "ut labore et dolore magna aliqua",
+    "articles": ["8yZLhilEl6", "EVG5c3C69n", "WTSMVEY90Q"]
+  }
+]

@@ -1,6 +1,6 @@
 import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
-import { dark, rounded, shadow } from "@/palette";
+import { dark, rounded, shadow } from "@/global/palette";
 
 interface Props {
   label: string;

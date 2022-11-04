@@ -1,103 +1,43 @@
 import { rest } from "msw";
-import { isWord, capitalize } from "@/util/string";
-import { audiences, ReadArticle, ReadCollection } from "@/types";
-import { exampleText } from "@/assets/example.json";
+import { isWord } from "@/util/string";
+import { audiences } from "@/global/types";
+import authors from "./authors.json";
+import articles from "./articles.json";
+import collections from "./collections.json";
 
 const scoreStore: Record<string, number> = {};
-const getWordScore = (word: string) =>
+export const getWordScore = (word: string) =>
   scoreStore[word] || (scoreStore[word] = Math.random() * 100);
-
-const randDate = () =>
-  new Date(
-    new Date().valueOf() - Math.round(Math.random() * 1000 * 60 * 60)
-  ).toISOString();
-
-const articleIds = ["abc", "def", "ghi", "jkl", "mno", "pqr"];
-const collectionIds = ["123", "456", "789"];
-
-const articles: Array<ReadArticle> = articleIds.map((id) => ({
-  id,
-  author: {
-    id: "abc123",
-    name: "Dummy McGee " + id,
-    institution: "Dummy Institute",
-  },
-  date: randDate(),
-  title: "Dummy article " + id,
-  source: "https://sounds-fake.com",
-  originalText: exampleText,
-  simplifiedText: exampleText.replaceAll(/[a-zA-Z]{7,}/g, "cat"),
-  ignoreWords: ["coronavirus", "respiratory"],
-  collections: [],
-}));
-
-const collections: Array<ReadCollection> = collectionIds.map((id) => ({
-  id,
-  author: {
-    id: "abc123",
-    name: "Dummy McGee",
-    institution: "Dummy Institute",
-  },
-  date: randDate(),
-  title: "Dummy collection title",
-  description: "A collection of papers",
-  articles: [],
-}));
-
-collections.forEach((collection) => {
-  collection.articles = articleIds.filter(() => Math.random() > 0.5);
-  collection.articles.forEach((id) =>
-    articles
-      .find((article) => article.id === id)
-      ?.collections.push(collection.id)
-  );
-});
 
 export const handlers = [
   rest.post(/\/signup/i, async (req, res, ctx) => {
     const body = await req.json();
-    return res(
-      ctx.status(200),
-      ctx.json({
-        id: "abc123",
-        name: body.name,
-        email: body.email,
-        institution: body.institution,
-        newsletter: body.newsletter,
-      })
-    );
+    console.info(body);
+    return res(ctx.status(200), ctx.json(authors[0]));
   }),
 
   rest.post(/\/login/i, async (req, res, ctx) => {
     const body = await req.json();
-    return res(
-      ctx.status(200),
-      ctx.json({
-        id: "abc123",
-        name: capitalize(body.email.split("@")[0]),
-        email: body.email,
-        institution: capitalize(body.email.split("@")[0]) + " Institute",
-        newsletter: Math.random() > 0.5,
-      })
-    );
+    console.info(body);
+    return res(ctx.status(200), ctx.json(authors[1]));
   }),
 
   rest.post(/\/logout/i, async (req, res, ctx) =>
     res(ctx.status(200), ctx.json({}))
   ),
 
+  rest.get(/\/author/, (req, res, ctx) => {
+    // return res(ctx.status(404));
+    const id = req.url.pathname.split("/").pop();
+    const match = authors.find((author) => author.id === id);
+    if (match) return res(ctx.status(200), ctx.json(match));
+    else return res(ctx.status(404));
+  }),
+
   rest.post(/\/save-info/i, async (req, res, ctx) => {
     const body = await req.json();
-    return res(
-      ctx.status(200),
-      ctx.json({
-        id: "abc123",
-        name: body.name,
-        email: body.email,
-        institution: body.institution,
-        newsletter: body.newsletter,
-      })
-    );
+    console.info(body);
+    return res(ctx.status(200), ctx.json(authors[0]));
   }),
 
   rest.post(/\/change-password/i, async (req, res, ctx) =>
@@ -133,9 +73,8 @@ export const handlers = [
   ),
 
   rest.get(/\/article/, (req, res, ctx) => {
-    const match = articles.find(
-      (article) => article.id === req.url.pathname.split("/").pop() || {}
-    );
+    const id = req.url.pathname.split("/").pop();
+    const match = articles.find((article) => article.id === id);
     if (match) return res(ctx.status(200), ctx.json(match));
     else return res(ctx.status(404));
   }),
@@ -145,10 +84,13 @@ export const handlers = [
   ),
 
   rest.get(/\/collection/, (req, res, ctx) => {
-    const match = collections.find(
-      (collection) => collection.id === req.url.pathname.split("/").pop() || {}
-    );
+    const id = req.url.pathname.split("/").pop();
+    const match = collections.find((collection) => collection.id === id);
     if (match) return res(ctx.status(200), ctx.json(match));
     else return res(ctx.status(404));
   }),
+
+  rest.delete(/\/collection/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 ];

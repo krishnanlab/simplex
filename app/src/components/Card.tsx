@@ -1,7 +1,7 @@
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { css } from "@emotion/react";
-import { ReadArticle, ReadCollection } from "@/types";
-import { dark, shadow } from "@/palette";
+import { ReadArticle, ReadCollection } from "@/global/types";
+import { dark, gray, rounded, shadow } from "@/global/palette";
 import { shortenURl } from "@/util/string";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
@@ -9,6 +9,7 @@ import Button from "@/components/Button";
 interface Props {
   article?: ReadArticle;
   collection?: ReadCollection;
+  editable?: boolean;
   action?: {
     icon: IconName;
     onClick: () => void;
@@ -21,7 +22,14 @@ const style = css({
   alignItems: "flex-start",
   gap: "10px",
   padding: "15px 20px",
-  boxShadow: shadow,
+  borderRadius: rounded,
+  "&[data-editable='true']": {
+    boxShadow: shadow,
+  },
+  "&[data-editable='false']": {
+    outline: "solid 1px",
+    outlineColor: gray,
+  },
 });
 
 const countStyle = css({
@@ -35,11 +43,12 @@ const actionsStyle = css({
   gap: "5px",
 });
 
-const Card = ({ article, collection, action }: Props) => (
-  <div css={style}>
+const Card = ({ article, collection, editable = false, action }: Props) => (
+  <div css={style} data-editable={editable}>
     <strong>{article?.title || collection?.title}</strong>
     {article && <a href={article.source}>{shortenURl(article.source)}</a>}
     {collection && <div>{collection.description}</div>}
+    <Spacer />
     <div css={countStyle}>
       {article
         ? `In ${article.collections.length} collection(s)`
@@ -54,11 +63,11 @@ const Card = ({ article, collection, action }: Props) => (
           (article?.id || collection?.id)
         }
         fill={false}
-        icon="pen-to-square"
+        icon={editable ? "pen-to-square" : "eye"}
       />
       <Ago date={article?.date || collection?.date || ""} />
-      <div style={{ flexGrow: 1 }}></div>
-      {action && (
+      <Spacer />
+      {editable && action && (
         <Button fill={false} icon={action.icon} onClick={action.onClick} />
       )}
     </div>
@@ -66,3 +75,5 @@ const Card = ({ article, collection, action }: Props) => (
 );
 
 export default Card;
+
+const Spacer = () => <div style={{ flexGrow: 1 }}></div>;

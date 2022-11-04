@@ -1,10 +1,12 @@
-import { createContext, Dispatch, SetStateAction } from "react";
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { useLocalStorage } from "react-use";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Global } from "@emotion/react";
-import globalStyles from "@/global-styles";
+import globalStyles from "@/global/styles";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import Notification from "@/components/Notification";
 import Home from "@/pages/Home";
 import About from "@/pages/About";
 import MyArticles from "@/pages/MyArticles";
@@ -15,26 +17,37 @@ import LogIn from "@/pages/LogIn";
 import SignUp from "@/pages/SignUp";
 import LogOut from "@/pages/LogOut";
 import ForgotPassword from "@/pages/ForgotPassword";
-import { LoggedIn } from "@/types";
+import { LoggedIn } from "@/global/types";
+import { State } from "@/global/state";
 
-interface GlobalStateType {
-  loggedIn: LoggedIn;
-  setLoggedIn: Dispatch<SetStateAction<LoggedIn>>;
-}
-
-export const GlobalState = createContext<GlobalStateType>({
-  loggedIn: null,
-  setLoggedIn: () => null,
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      networkMode: "always",
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: false,
+      retryOnMount: false,
+      notifyOnChangeProps: "all",
+      retry: false,
+    },
+    mutations: {
+      networkMode: "always",
+    },
+  },
 });
 
 const App = () => {
   const [loggedIn, setLoggedIn] = useLocalStorage<LoggedIn>("logged-in", null);
 
   return (
-    <GlobalState.Provider value={{ loggedIn, setLoggedIn }}>
-      <RouterProvider router={router} />
-      <Global styles={globalStyles} />
-    </GlobalState.Provider>
+    <QueryClientProvider client={queryClient}>
+      <State.Provider value={{ loggedIn, setLoggedIn }}>
+        <RouterProvider router={router} />
+        <Global styles={globalStyles} />
+      </State.Provider>
+      <ReactQueryDevtools />
+    </QueryClientProvider>
   );
 };
 
@@ -47,6 +60,7 @@ const Layout = () => (
       <Outlet />
     </main>
     <Footer />
+    <Notification />
   </>
 );
 

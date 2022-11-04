@@ -7,10 +7,10 @@ import Grid from "@/components/Grid";
 import Field from "@/components/Field";
 import Checkbox from "@/components/Checkbox";
 import { signup } from "@/api/account";
-import { GlobalState } from "@/App";
+import { State } from "@/global/state";
 
 const SignUp = () => {
-  const { loggedIn, setLoggedIn } = useContext(GlobalState);
+  const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
   useEffect(() => {

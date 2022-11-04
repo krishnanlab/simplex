@@ -11,7 +11,7 @@ import {
   big,
   title,
   offWhite,
-} from "@/palette";
+} from "@/global/palette";
 
 const globalStyles = css({
   "*": {
@@ -80,10 +80,12 @@ const globalStyles = css({
   },
   p: {
     margin: "20px 0",
+    lineHeight: spacing + 0.4,
     textAlign: "justify",
   },
   ul: {
     margin: "20px 0",
+    lineHeight: spacing + 0.4,
   },
   hr: {
     height: "1px",

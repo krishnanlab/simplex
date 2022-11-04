@@ -1,5 +1,5 @@
 import { request } from ".";
-import { Audience } from "@/types";
+import { Audience } from "@/global/types";
 
 export const analyze = (
   words: Array<string>,

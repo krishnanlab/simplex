@@ -1,21 +1,24 @@
 import { useEffect, useCallback, useRef, useMemo } from "react";
 import useResizeObserver from "@react-hook/resize-observer";
 import { css } from "@emotion/react";
-import { light, shadow, accent, offWhite } from "@/palette";
+import { light, shadow, accent, offWhite, rounded } from "@/global/palette";
 import { splitWords } from "@/util/string";
 
 const wrapperStyle = css({
   position: "relative",
   display: "flex",
   margin: "20px 0",
-  boxShadow: shadow,
+  borderRadius: rounded,
   resize: "none",
   overflow: "hidden",
   zIndex: "0",
   "&:focus-within": {
     outline: accent,
   },
-  "&[data-disabled='true']": {
+  "&[data-editable='true']": {
+    boxShadow: shadow,
+  },
+  "&[data-editable='false']": {
     background: offWhite,
     boxShadow: "none",
   },
@@ -78,7 +81,7 @@ interface Props {
   onChange: (value: string) => void;
   showHighlights: boolean;
   scores: Record<string, number>;
-  disabled?: boolean;
+  editable?: boolean;
 }
 
 const Editor = ({
@@ -86,7 +89,7 @@ const Editor = ({
   onChange,
   showHighlights,
   scores,
-  disabled = false,
+  editable = false,
 }: Props) => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
@@ -104,7 +107,7 @@ const Editor = ({
   useResizeObserver(input, matchScroll);
 
   return (
-    <div css={wrapperStyle} data-disabled={disabled}>
+    <div css={wrapperStyle} data-editable={editable}>
       {showHighlights && (
         <div ref={underlay} css={underlayStyle}>
           {words.map((word, index, array) => {
@@ -137,7 +140,7 @@ const Editor = ({
         placeholder={label}
         aria-label={label}
         required={true}
-        disabled={disabled}
+        disabled={editable}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

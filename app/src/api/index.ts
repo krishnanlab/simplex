@@ -6,7 +6,7 @@ export const request = async <T>(
   url = "",
   options: RequestInit = {}
 ): Promise<T> => {
-  await sleep(1000);
+  await sleep(500);
 
   const response = await fetch(api + url, options);
   if (!response.ok) throw new Error("Response not OK");

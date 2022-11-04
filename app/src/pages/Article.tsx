@@ -17,16 +17,16 @@ import Editor from "@/components/Editor";
 import Stat from "@/components/Stat";
 import Field from "@/components/Field";
 import Grid from "@/components/Grid";
-import Spinner from "@/components/Spinner";
+import Notification from "@/components/Notification";
 import Ago from "@/components/Ago";
 import { exampleText } from "@/assets/example.json";
-import { light } from "@/palette";
-import { audiences, Audience, ReadArticle } from "@/types";
+import { light } from "@/global/palette";
+import { audiences, Audience, ReadArticle } from "@/global/types";
 import { analyze, Analysis } from "@/api/tool";
 import { sleep } from "@/util/debug";
 import { getArticle } from "@/api/article";
 import { splitComma, splitWords } from "@/util/string";
-import { GlobalState } from "@/App";
+import { State } from "@/global/state";
 import { useParams } from "react-router";
 
 export interface Controls {
@@ -109,7 +109,7 @@ export const Context = createContext<
 
 const Article = ({ fresh }: Props) => {
   const [state, dispatch] = useReducer(reducer, defaultState);
-  const { loggedIn } = useContext(GlobalState);
+  const { loggedIn } = useContext(State);
   const { id } = useParams();
 
   // computed
@@ -171,7 +171,7 @@ const Article = ({ fresh }: Props) => {
             onChange={setText}
             scores={state.scores}
             showHighlights={state.showHighlights}
-            disabled={state.version === "original" || !(fresh || editable)}
+            editable={state.version !== "original" && (fresh || editable)}
           />
           <Results />
           <MoreControls />
@@ -179,7 +179,7 @@ const Article = ({ fresh }: Props) => {
           <Actions />
         </Context.Provider>
       )}
-      {(state.loading || state.analyzing) && <Spinner />}
+      {(state.loading || state.analyzing) && <Notification />}
       {createPortal(<form id="article-form"></form>, document.body)}
     </Section>
   );

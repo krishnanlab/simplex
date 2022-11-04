@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
-import { pale, gray, fast, rounded, plus } from "@/palette";
+import { pale, gray, fast, rounded, plus } from "@/global/palette";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
 import Icon from "@/components/Icon";
 import { restartAnimations } from "@/util/dom";
-import { GlobalState } from "@/App";
+import { State } from "@/global/state";
 
 const headerStyle = css({
   display: "flex",
@@ -55,7 +55,7 @@ const buttonStyle = css({
 });
 
 const Header = () => {
-  const { loggedIn } = useContext(GlobalState);
+  const { loggedIn } = useContext(State);
   const [open, setOpen] = useState(false);
 
   const menuBreakpoint = loggedIn ? "920px" : "640px";

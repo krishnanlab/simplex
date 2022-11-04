@@ -24,7 +24,7 @@ const aligns = {
 const gaps = {
   none: "0",
   tiny: "5px",
-  small: "10px",
+  small: "15px",
   medium: "30px",
   big: "60px",
 };

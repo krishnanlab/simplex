@@ -1,6 +1,6 @@
 import { SelectHTMLAttributes } from "react";
 import { css } from "@emotion/react";
-import { dark, deep } from "@/palette";
+import { dark, deep } from "@/global/palette";
 import { capitalize } from "@/util/string";
 
 interface Props<Option> {

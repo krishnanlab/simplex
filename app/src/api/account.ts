@@ -1,5 +1,5 @@
 import { request } from ".";
-import { ReadAuthor, WriteAuthor } from "@/types";
+import { PublicReadAuthor, ReadAuthor, WriteAuthor } from "@/global/types";
 
 // https://thenewstack.io/leveraging-web-workers-to-safely-store-access-tokens/
 // https://elie29.medium.com/frontend-jwt-token-storage-77cbe6dc680b
@@ -31,6 +31,9 @@ export const login = (params: Login) =>
   });
 
 export const logout = () => request("/logout", { method: "POST" });
+
+export const getAuthor = (id: string) =>
+  request<PublicReadAuthor>(`/author/${id}`);
 
 type SaveInfo = WriteAuthor;
 

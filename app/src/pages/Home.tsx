@@ -3,7 +3,7 @@ import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
 import Article from "@/pages/Article";
-import { big } from "@/palette";
+import { big } from "@/global/palette";
 import { useEffect } from "react";
 
 const heroStyle = css({

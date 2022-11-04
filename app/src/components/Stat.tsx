@@ -2,7 +2,7 @@ import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
-import { dark, deep } from "@/palette";
+import { dark, deep } from "@/global/palette";
 
 interface Props {
   tooltip?: string;

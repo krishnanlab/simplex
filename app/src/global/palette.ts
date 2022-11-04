@@ -22,17 +22,17 @@ const fast = "0.1s ease";
 
 // text
 const serif = "'Roboto Slab', serif";
-const spacing = 2;
+const spacing = 1.7;
 const small: CSSObject = { fontSize: "0.9rem", lineHeight: spacing };
 const plus: CSSObject = {
   fontSize: "1.1rem",
   fontWeight: "400",
-  lineHeight: spacing - 0.1,
+  lineHeight: spacing,
 };
 const big: CSSObject = {
   fontSize: "1.3rem",
   fontWeight: "300",
-  lineHeight: spacing - 0.2,
+  lineHeight: spacing,
 };
 const title: CSSObject = {
   fontSize: "1.4rem",
@@ -68,15 +68,18 @@ library.add(
   far.faEnvelope,
   far.faFloppyDisk,
   far.faLightbulb,
+  far.faPenToSquare,
   far.faQuestionCircle,
   far.faTrashAlt,
+  far.faTrashCan,
   fas.faBars,
+  fas.faCircleCheck,
+  fas.faCircleExclamation,
+  fas.faEye,
   fas.faLock,
+  fas.faPlus,
   fas.faRightToBracket,
   fas.faShareNodes,
   fas.faTimes,
-  fas.faUserPlus,
-  far.faPenToSquare,
-  far.faTrashCan,
-  fas.faPlus
+  fas.faUserPlus
 );

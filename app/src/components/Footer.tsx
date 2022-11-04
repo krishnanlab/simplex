@@ -1,5 +1,5 @@
 import { css } from "@emotion/react";
-import { pale } from "@/palette";
+import { pale } from "@/global/palette";
 import Icon from "@/components/Icon";
 import Flex from "@/components/Flex";
 
@@ -12,14 +12,18 @@ const style = css({
   textAlign: "center",
 });
 
+const iconStyle = css({
+  fontSize: "1.2rem",
+});
+
 const Footer = () => (
   <footer css={style}>
-    <Flex gap="medium">
+    <Flex gap="small">
       <a href="https://github.com/krishnanlab">
-        <Icon icon="envelope" />
+        <Icon css={iconStyle} icon="envelope" />
       </a>
       <a href="mailto:arjun.krishnan@cuanschutz.edu">
-        <Icon icon="github" />
+        <Icon css={iconStyle} icon="github" />
       </a>
     </Flex>
     <div>
