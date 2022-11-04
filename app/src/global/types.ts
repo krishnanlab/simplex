@@ -35,7 +35,7 @@ export interface ReadArticle {
   collections: Array<ReadCollection["id"]>;
 }
 
-export type WriteAritcle = Pick<
+export type WriteArticle = Pick<
   ReadArticle,
   "title" | "source" | "ignoreWords"
 > & {

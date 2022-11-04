@@ -1,7 +1,6 @@
 import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Global } from "@emotion/react";
 import globalStyles from "@/global/styles";
 import Header from "@/components/Header";
@@ -46,7 +45,6 @@ const App = () => {
         <RouterProvider router={router} />
         <Global styles={globalStyles} />
       </State.Provider>
-      <ReactQueryDevtools />
     </QueryClientProvider>
   );
 };

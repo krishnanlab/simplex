@@ -10,45 +10,38 @@ export const getWordScore = (word: string) =>
   scoreStore[word] || (scoreStore[word] = Math.random() * 100);
 
 export const handlers = [
-  rest.post(/\/signup/i, async (req, res, ctx) => {
+  rest.post(/\/signup/, async (req, res, ctx) => {
     const body = await req.json();
     console.info(body);
     return res(ctx.status(200), ctx.json(authors[0]));
   }),
 
-  rest.post(/\/login/i, async (req, res, ctx) => {
+  rest.post(/\/login/, async (req, res, ctx) => {
     const body = await req.json();
     console.info(body);
     return res(ctx.status(200), ctx.json(authors[1]));
   }),
 
-  rest.post(/\/logout/i, async (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
+  rest.post(/\/logout/, async (req, res, ctx) => res(ctx.status(200))),
 
   rest.get(/\/author/, (req, res, ctx) => {
-    // return res(ctx.status(404));
     const id = req.url.pathname.split("/").pop();
     const match = authors.find((author) => author.id === id);
     if (match) return res(ctx.status(200), ctx.json(match));
     else return res(ctx.status(404));
   }),
 
-  rest.post(/\/save-info/i, async (req, res, ctx) => {
+  rest.post(/\/save-info/, async (req, res, ctx) => {
     const body = await req.json();
     console.info(body);
     return res(ctx.status(200), ctx.json(authors[0]));
   }),
 
-  rest.post(/\/change-password/i, async (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
+  rest.post(/\/change-password/, async (req, res, ctx) => res(ctx.status(200))),
 
-  rest.post(/\/forgot-password/i, async (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
+  rest.post(/\/forgot-password/, async (req, res, ctx) => res(ctx.status(200))),
 
-  rest.post(/\/analyze/i, async (req, res, ctx) => {
+  rest.post(/\/analyze/, async (req, res, ctx) => {
     const body = await req.json();
 
     const scores: Record<string, number> = {};
@@ -68,6 +61,21 @@ export const handlers = [
     return res(ctx.status(200), ctx.json({ scores, complexity, gradeLevel }));
   }),
 
+  rest.get(/\/simplify/, (req, res, ctx) =>
+    res(
+      ctx.status(200),
+      ctx.json({
+        definition:
+          "Pneumonia is an inflammatory condition of the lung primarily affecting the small air sacs known as alveoli. Symptoms typically include some combination of productive or dry cough, chest pain, fever, and difficulty breathing. The severity of the condition is variable.",
+        image:
+          "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg/1920px-Normal_posteroanterior_%28PA%29_chest_radiograph_%28X-ray%29.jpg",
+        synonyms:
+          "avid insatiable prodigious rapacious ravenous devouring".split(" "),
+        link: "https://google.com",
+      })
+    )
+  ),
+
   rest.get(/\/articles/, (req, res, ctx) =>
     res(ctx.status(200), ctx.json(articles))
   ),
@@ -78,6 +86,16 @@ export const handlers = [
     if (match) return res(ctx.status(200), ctx.json(match));
     else return res(ctx.status(404));
   }),
+
+  rest.delete(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+
+  rest.post(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+
+  rest.put(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+
+  rest.put(/\/share/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({ link: "https://simpl.io/123456789" }))
+  ),
 
   rest.get(/\/collections/, (req, res, ctx) =>
     res(ctx.status(200), ctx.json(collections))
@@ -90,7 +108,9 @@ export const handlers = [
     else return res(ctx.status(404));
   }),
 
-  rest.delete(/\/collection/, (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
-  ),
+  rest.delete(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
+
+  rest.post(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
+
+  rest.put(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
 ];
