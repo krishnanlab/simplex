@@ -9,10 +9,14 @@ export const audiences = [
 
 export type Audience = typeof audiences[number];
 
+type Id = string;
+
+type DateString = string;
+
 export type LoggedIn = ReadAuthor | undefined | null;
 
 export interface ReadAuthor {
-  id: string;
+  id: Id;
   name: string;
   email: string;
   institution: string;
@@ -24,9 +28,9 @@ export type PublicReadAuthor = Pick<ReadAuthor, "id" | "name" | "institution">;
 export type WriteAuthor = Omit<ReadAuthor, "id">;
 
 export interface ReadArticle {
-  id: string;
+  id: Id;
   author: PublicReadAuthor["id"];
-  date: string;
+  date: DateString;
   title: string;
   source: string;
   originalText: string;
@@ -43,9 +47,9 @@ export type WriteArticle = Pick<
 };
 
 export interface ReadCollection {
-  id: string;
+  id: Id;
   author: PublicReadAuthor["id"];
-  date: string;
+  date: DateString;
   title: string;
   description: string;
   articles: Array<ReadArticle["id"]>;

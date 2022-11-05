@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
-import { pale } from "@/global/palette";
-import Icon from "@/components/Icon";
 import Flex from "@/components/Flex";
+import Icon from "@/components/Icon";
+import { pale } from "@/global/palette";
 
 const style = css({
   display: "flex",

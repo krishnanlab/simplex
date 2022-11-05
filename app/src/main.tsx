@@ -1,9 +1,8 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import App from "@/App";
-
 import { setupWorker } from "msw";
 import { handlers } from "@/api/mock";
+import App from "@/App";
 
 (async () => {
   await setupWorker(...handlers).start();

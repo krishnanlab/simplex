@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Section from "@/components/Section";
 import { logout } from "@/api/account";
+import Section from "@/components/Section";
 import { State } from "@/global/state";
 
 const LogOut = () => {

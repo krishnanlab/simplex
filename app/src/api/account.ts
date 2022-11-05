@@ -1,13 +1,5 @@
-import { request } from ".";
+import { request } from "./";
 import { PublicReadAuthor, ReadAuthor, WriteAuthor } from "@/global/types";
-
-// https://thenewstack.io/leveraging-web-workers-to-safely-store-access-tokens/
-// https://elie29.medium.com/frontend-jwt-token-storage-77cbe6dc680b
-// https://security.stackexchange.com/questions/80727/best-place-to-store-authentication-tokens-client-side
-// https://mswjs.io/docs/recipes/cookies
-// https://blog.ropnop.com/storing-tokens-in-browser/
-// https://github.com/authts/react-oidc-context
-// https://github.com/auth0/auth0-react#documentation
 
 type Signup = WriteAuthor & {
   password: string;
@@ -45,7 +37,7 @@ export const saveInfo = (props: SaveInfo) =>
 
 interface ChangePassword {
   current: string;
-  fresh: string;
+  new: string;
 }
 
 export const changePassword = (props: ChangePassword) =>

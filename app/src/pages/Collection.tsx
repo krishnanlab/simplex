@@ -1,20 +1,20 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import Section from "@/components/Section";
-import Grid from "@/components/Grid";
-import Field from "@/components/Field";
-import Card from "@/components/Card";
-import Flex from "@/components/Flex";
-import Button from "@/components/Button";
-import Stat from "@/components/Stat";
-import Ago from "@/components/Ago";
-import { notification } from "@/components/Notification";
-import { ReadCollection } from "@/global/types";
-import { State } from "@/global/state";
-import { deleteCollection, getCollection } from "@/api/collection";
-import { getArticles } from "@/api/article";
 import { getAuthor } from "@/api/account";
+import { getArticles } from "@/api/article";
+import { deleteCollection, getCollection, saveCollection } from "@/api/collection";
+import Ago from "@/components/Ago";
+import Button from "@/components/Button";
+import Card from "@/components/Card";
+import Field from "@/components/Field";
+import Flex from "@/components/Flex";
+import Grid from "@/components/Grid";
+import { notification } from "@/components/Notification";
+import Section from "@/components/Section";
+import Stat from "@/components/Stat";
+import { State } from "@/global/state";
+import { ReadCollection } from "@/global/types";
 
 const blank: ReadCollection = {
   id: "",
@@ -35,10 +35,9 @@ const Collection = ({ fresh }: Props) => {
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
-  const articles = useQuery({
-    queryKey: ["getArticles", loggedIn?.id],
-    queryFn: () => getArticles(),
-  });
+  const [collection, setCollection] = useState(blank);
+
+  const editable = !!loggedIn && (fresh || collection?.author === loggedIn.id);
 
   const loadedCollection = useQuery({
     queryKey: ["getCollection", id],
@@ -46,10 +45,30 @@ const Collection = ({ fresh }: Props) => {
     enabled: !!id,
   });
 
+  const articleList = useQuery({
+    queryKey: ["getArticles", editable, loadedCollection.data?.articles],
+    queryFn: () =>
+      getArticles(editable ? undefined : loadedCollection.data?.articles),
+    enabled: !!loadedCollection.data?.articles,
+  });
+
   const author = useQuery({
     queryKey: ["getAuthor", loadedCollection.data?.author],
     queryFn: () => getAuthor(loadedCollection.data?.author || ""),
+    initialData: fresh ? loggedIn : undefined,
     enabled: !!loadedCollection.data?.id,
+  });
+
+  const save = useMutation({
+    mutationFn: async () => {
+      notification("loading", "Saving collection");
+      await saveCollection(id || "");
+    },
+    onError: () => notification("error", "Error saving collection"),
+    onSuccess: async () => {
+      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      notification("success", `Saved collection ${id}`);
+    },
   });
 
   const trash = useMutation({
@@ -61,13 +80,11 @@ const Collection = ({ fresh }: Props) => {
     },
     onError: () => notification("error", "Error deleting collection"),
     onSuccess: async () => {
-      await queryClient.resetQueries({ queryKey: ["getCollection", id] });
+      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
       notification("success", `Deleted collection ${id}`);
       navigate("/my-articles");
     },
   });
-
-  const [collection, setCollection] = useState(blank);
 
   useEffect(() => {
     if (loadedCollection.data) setCollection(loadedCollection.data);
@@ -97,47 +114,16 @@ const Collection = ({ fresh }: Props) => {
     []
   );
 
-  const error = articles.isError || loadedCollection.isError || author.isError;
-  const loading =
-    articles.isLoading || loadedCollection.isLoading || author.isLoading;
-  useEffect(() => {
-    if (error) notification("error", "Error loading collection data");
-    else if (loading) notification("loading", "Loading collection data");
-    else notification("clear");
-  }, [error, loading]);
-
-  const editable = !!loggedIn && (fresh || collection?.author === loggedIn.id);
-
-  let prefix = "";
-  if (fresh) prefix = "New";
-  else if (editable) prefix = "Edit";
-
-  if (!collection || !articles.data || !author.data)
-    return (
-      <Section>
-        <h2>{prefix} Collection</h2>
-      </Section>
-    );
-
-  const authorString =
-    author.data.name +
-    (editable ? " (You)" : "") +
-    " | " +
-    author.data.institution;
-
-  const selectedArticles = collection.articles
-    .map((id) => articles.data.find((article) => article.id === id))
-    .filter((article) => article);
-
-  const unselectedArticles = articles.data.filter(
-    (article) => !collection.articles.find((id) => article.id === id)
+  const heading = (
+    <h2>
+      {fresh && "New "}
+      {!fresh && editable && "Edit "}Collection
+    </h2>
   );
 
-  return (
-    <Section>
-      <h2>{prefix} Collection</h2>
-
-      {/* metadata */}
+  let metadata = <></>;
+  if (collection)
+    metadata = (
       <Grid cols={2}>
         <Field
           label="Title"
@@ -157,49 +143,95 @@ const Collection = ({ fresh }: Props) => {
           form="collection-form"
         />
       </Grid>
+    );
+  else metadata = <>Loading</>;
 
-      {/* details (read-only metadata) */}
+  let details = <></>;
+  if (collection) {
+    const by = author.data
+      ? author.data.name +
+        (editable ? " (You)" : "") +
+        " | " +
+        author.data.institution
+      : "Loading...";
+    details = (
       <Grid cols={2}>
-        <Stat label="Author" value={authorString} />
+        <Stat label="Author" value={by} />
         <Stat label="Last Saved" value={<Ago date={collection.date} />} />
       </Grid>
+    );
+  }
 
-      {/* articles */}
-      <h3>Selected Articles ({selectedArticles.length})</h3>
-      <Grid>
-        {selectedArticles.map((article, index) => (
-          <Card
-            key={index}
-            article={article}
-            editable={editable}
-            action={{
-              icon: "times",
-              onClick: () => removeArticle(article?.id || ""),
-            }}
-          />
-        ))}
-      </Grid>
+  let articles = <></>;
+  if (articleList.data) {
+    if (editable) {
+      const selected = collection.articles
+        .map((id) => articleList.data?.find((article) => article.id === id))
+        .filter((article) => article);
 
-      {/* unselected articles */}
-      <h3>Add Articles ({unselectedArticles.length})</h3>
-      <Grid>
-        {unselectedArticles.map((article, index) => (
-          <Card
-            key={index}
-            article={article}
-            editable={editable}
-            action={{
-              icon: "plus",
-              onClick: () => addArticle(article.id),
-            }}
-          />
-        ))}
-      </Grid>
+      const unselected = articleList.data?.filter(
+        (article) => !collection.articles.find((id) => article.id === id)
+      );
 
-      {/* actions */}
+      articles = (
+        <>
+          <h3>Selected Articles ({selected.length})</h3>
+          <Grid>
+            {selected.map((article, index) => (
+              <Card
+                key={index}
+                article={article}
+                editable={editable}
+                action={{
+                  icon: "times",
+                  onClick: () => removeArticle(article?.id || ""),
+                }}
+              />
+            ))}
+          </Grid>
+          <h3>Add Articles ({unselected.length})</h3>
+          <Grid>
+            {unselected.map((article, index) => (
+              <Card
+                key={index}
+                article={article}
+                editable={editable}
+                action={{
+                  icon: "plus",
+                  onClick: () => addArticle(article.id),
+                }}
+              />
+            ))}
+          </Grid>
+        </>
+      );
+    } else {
+      articles = (
+        <>
+          <h3>Articles ({articleList.data.length})</h3>
+          <Grid>
+            {articleList.data.map((article, index) => (
+              <Card key={index} article={article} />
+            ))}
+          </Grid>
+        </>
+      );
+    }
+  }
+
+  let actions = <></>;
+  if (collection)
+    actions = (
       <Flex>
         {!fresh && <Button text="Share" icon="share-nodes" />}
-        {editable && <Button text="Save" icon="floppy-disk" form="main-form" />}
+        {editable && (
+          <Button
+            text="Save"
+            icon="floppy-disk"
+            form="main-form"
+            onClick={() => save.mutate()}
+          />
+        )}
         {!fresh && editable && (
           <Button
             text="Delete"
@@ -208,6 +240,15 @@ const Collection = ({ fresh }: Props) => {
           />
         )}
       </Flex>
+    );
+
+  return (
+    <Section>
+      {heading}
+      {metadata}
+      {details}
+      {articles}
+      {actions}
     </Section>
   );
 };

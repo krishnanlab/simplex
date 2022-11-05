@@ -1,5 +1,5 @@
 import { exampleText } from "@/assets/example.json";
-import { ReadAuthor, ReadArticle, ReadCollection } from "@/global/types";
+import { ReadArticle, ReadAuthor, ReadCollection } from "@/global/types";
 
 const order: Record<string, number> = {};
 const rand = <T>(array: Array<T>, key?: string): T =>

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { css } from "@emotion/react";
-import { deep, dark, pale } from "@/global/palette";
+import { dark, deep, pale } from "@/global/palette";
 
 interface Props {
   fill?: "none" | "deep" | "dark";

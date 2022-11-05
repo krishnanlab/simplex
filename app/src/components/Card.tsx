@@ -1,10 +1,10 @@
-import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { css } from "@emotion/react";
-import { ReadArticle, ReadCollection } from "@/global/types";
-import { dark, gray, rounded, shadow } from "@/global/palette";
-import { shortenURl } from "@/util/string";
+import { IconName } from "@fortawesome/fontawesome-svg-core";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
+import { dark, gray, rounded, shadow } from "@/global/palette";
+import { ReadArticle, ReadCollection } from "@/global/types";
+import { shortenURl } from "@/util/string";
 
 interface Props {
   article?: ReadArticle;

@@ -1,10 +1,10 @@
 import { FormEventHandler, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import Section from "@/components/Section";
+import { forgotPassword } from "@/api/account";
+import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import Button from "@/components/Button";
-import { forgotPassword } from "@/api/account";
+import Section from "@/components/Section";
 
 const Account = () => {
   const navigate = useNavigate();

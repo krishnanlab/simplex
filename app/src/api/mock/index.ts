@@ -1,9 +1,9 @@
 import { rest } from "msw";
-import { isWord } from "@/util/string";
-import { audiences } from "@/global/types";
-import authors from "./authors.json";
 import articles from "./articles.json";
+import authors from "./authors.json";
 import collections from "./collections.json";
+import { audiences } from "@/global/types";
+import { isWord } from "@/util/string";
 
 const scoreStore: Record<string, number> = {};
 export const getWordScore = (word: string) =>
@@ -22,7 +22,9 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(authors[1]));
   }),
 
-  rest.post(/\/logout/, async (req, res, ctx) => res(ctx.status(200))),
+  rest.post(/\/logout/, async (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 
   rest.get(/\/author/, (req, res, ctx) => {
     const id = req.url.pathname.split("/").pop();
@@ -37,9 +39,13 @@ export const handlers = [
     return res(ctx.status(200), ctx.json(authors[0]));
   }),
 
-  rest.post(/\/change-password/, async (req, res, ctx) => res(ctx.status(200))),
+  rest.post(/\/change-password/, async (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 
-  rest.post(/\/forgot-password/, async (req, res, ctx) => res(ctx.status(200))),
+  rest.post(/\/forgot-password/, async (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 
   rest.post(/\/analyze/, async (req, res, ctx) => {
     const body = await req.json();
@@ -80,6 +86,15 @@ export const handlers = [
     res(ctx.status(200), ctx.json(articles))
   ),
 
+  rest.post(/\/articles/, async (req, res, ctx) => {
+    const body = await req.json();
+    console.log(body.ids);
+    const filtered = articles.filter((article) =>
+      body.ids.includes(article.id)
+    );
+    return res(ctx.status(200), ctx.json(filtered));
+  }),
+
   rest.get(/\/article/, (req, res, ctx) => {
     const id = req.url.pathname.split("/").pop();
     const match = articles.find((article) => article.id === id);
@@ -87,11 +102,15 @@ export const handlers = [
     else return res(ctx.status(404));
   }),
 
-  rest.delete(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+  rest.post(/\/article/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({ id: articles[0].id }))
+  ),
 
-  rest.post(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+  rest.put(/\/article/, (req, res, ctx) => res(ctx.status(200), ctx.json({}))),
 
-  rest.put(/\/article/, (req, res, ctx) => res(ctx.status(200))),
+  rest.delete(/\/article/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 
   rest.put(/\/share/, (req, res, ctx) =>
     res(ctx.status(200), ctx.json({ link: "https://simpl.io/123456789" }))
@@ -108,9 +127,15 @@ export const handlers = [
     else return res(ctx.status(404));
   }),
 
-  rest.delete(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
+  rest.post(/\/collection/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({ id: collections[0].id }))
+  ),
 
-  rest.post(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
+  rest.put(/\/collection/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 
-  rest.put(/\/collection/, (req, res, ctx) => res(ctx.status(200))),
+  rest.delete(/\/collection/, (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
 ];

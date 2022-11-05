@@ -1,13 +1,13 @@
-import { useCallback, useContext, useEffect, FormEventHandler } from "react";
+import { FormEventHandler, useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import Section from "@/components/Section";
+import { changePassword, saveInfo } from "@/api/account";
+import Button from "@/components/Button";
+import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
-import Button from "@/components/Button";
-import Checkbox from "@/components/Checkbox";
+import Section from "@/components/Section";
 import { State } from "@/global/state";
-import { changePassword, saveInfo } from "@/api/account";
 
 const Account = () => {
   const { loggedIn, setLoggedIn } = useContext(State);

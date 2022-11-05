@@ -1,4 +1,4 @@
-import { request } from ".";
+import { request } from "./";
 import { Audience } from "@/global/types";
 
 export interface Analysis {

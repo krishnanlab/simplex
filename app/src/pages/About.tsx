@@ -1,6 +1,6 @@
+import { Link } from "react-router-dom";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import { Link } from "react-router-dom";
 
 const About = () => (
   <>

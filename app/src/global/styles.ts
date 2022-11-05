@@ -1,16 +1,16 @@
 import { css } from "@emotion/react";
 import {
-  light,
-  black,
-  fast,
-  serif,
-  deep,
-  gray,
-  spacing,
-  plus,
   big,
-  title,
+  black,
+  deep,
+  fast,
+  gray,
+  light,
   offWhite,
+  plus,
+  serif,
+  spacing,
+  title,
 } from "@/global/palette";
 
 const globalStyles = css({

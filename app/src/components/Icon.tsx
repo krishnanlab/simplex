@@ -1,8 +1,8 @@
 import { HTMLAttributes } from "react";
 import {
   findIconDefinition,
-  IconPrefix,
   IconName,
+  IconPrefix,
 } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

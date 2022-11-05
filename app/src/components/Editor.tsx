@@ -1,7 +1,7 @@
-import { useEffect, useCallback, useRef, useMemo } from "react";
-import useResizeObserver from "@react-hook/resize-observer";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { css } from "@emotion/react";
-import { light, shadow, accent, offWhite, rounded } from "@/global/palette";
+import useResizeObserver from "@react-hook/resize-observer";
+import { accent, light, offWhite, rounded, shadow } from "@/global/palette";
 import { splitWords } from "@/util/string";
 
 const wrapperStyle = css({

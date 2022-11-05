@@ -1,11 +1,11 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
-import { pale, gray, fast, rounded, plus } from "@/global/palette";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
 import Icon from "@/components/Icon";
-import { restartAnimations } from "@/util/dom";
+import { fast, gray, pale, plus, rounded } from "@/global/palette";
 import { State } from "@/global/state";
+import { restartAnimations } from "@/util/dom";
 
 const headerStyle = css({
   display: "flex",

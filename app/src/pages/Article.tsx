@@ -1,167 +1,93 @@
-import {
-  useEffect,
-  useReducer,
-  createContext,
-  useContext,
-  Dispatch,
-  useMemo,
-} from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
-import Flex from "@/components/Flex";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { getAuthor } from "@/api/account";
+import { getArticle } from "@/api/article";
+import { Analysis, analyze } from "@/api/tool";
+import { exampleText } from "@/assets/example.json";
+import Ago from "@/components/Ago";
 import Button from "@/components/Button";
-import Section from "@/components/Section";
-import Select from "@/components/Select";
 import Checkbox from "@/components/Checkbox";
 import Editor from "@/components/Editor";
-import Stat from "@/components/Stat";
 import Field from "@/components/Field";
+import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
 import Notification from "@/components/Notification";
-import Ago from "@/components/Ago";
-import { exampleText } from "@/assets/example.json";
+import Section from "@/components/Section";
+import Select from "@/components/Select";
+import Stat from "@/components/Stat";
 import { light } from "@/global/palette";
-import { audiences, Audience, ReadArticle } from "@/global/types";
-import { analyze, Analysis } from "@/api/tool";
-import { sleep } from "@/util/debug";
-import { getArticle } from "@/api/article";
-import { splitComma, splitWords } from "@/util/string";
 import { State } from "@/global/state";
-import { useParams } from "react-router";
+import { Audience, audiences, ReadArticle } from "@/global/types";
+import { sleep } from "@/util/debug";
+import { splitComma, splitWords } from "@/util/string";
 
-export interface Controls {
-  audience: Audience;
-  showHighlights: boolean;
-  version: "original" | "simplified";
-}
-
-type State = {
-  loading: boolean;
-  analyzing: boolean;
-} & Controls &
-  ReadArticle &
-  Analysis;
-
-type Action = ReturnType<typeof setValue | typeof spreadValue>;
-
-const setValue = <T extends keyof State>(key: T, value: State[T]) => ({
-  type: "setValue" as const,
-  key,
-  value,
-});
-
-const spreadValue = (value: Partial<State>) => ({
-  type: "spreadValue" as const,
-  value,
-});
-
-const reducer = (state: State, action: Action): State => {
-  switch (action.type) {
-    case "setValue":
-      return { ...state, [action.key]: action.value };
-    case "spreadValue":
-      return { ...state, ...action.value };
-    default:
-      return state;
-  }
-};
-
-const defaultState: State = {
-  id: "0",
-  audience: "general",
-  showHighlights: true,
-  version: "simplified",
-  originalText: "",
-  simplifiedText: "",
-  ignoreWords: [],
-  collections: [],
-  scores: {},
-  complexity: 0,
-  gradeLevel: 0,
+const blank: ReadArticle = {
+  id: "",
+  author: "",
+  date: new Date().toISOString(),
   title: "",
   source: "",
-  date: new Date().toISOString(),
-  author: { id: "", name: "", institution: "" },
-  loading: false,
-  analyzing: false,
+  collections: [],
 };
-
-interface Computed {
-  text: string;
-  setText: (text: string) => unknown;
-  editable: boolean;
-}
 
 interface Props {
   fresh: boolean;
 }
 
-export const Context = createContext<
-  Props & State & { dispatch: Dispatch<Action> } & Computed
->({
-  fresh: false,
-  ...defaultState,
-  dispatch: () => null,
-  text: "",
-  setText: () => null,
-  editable: false,
-});
-
 const Article = ({ fresh }: Props) => {
-  const [state, dispatch] = useReducer(reducer, defaultState);
-  const { loggedIn } = useContext(State);
   const { id } = useParams();
+  const navigate = useNavigate();
+  const { loggedIn } = useContext(State);
+  const queryClient = useQueryClient();
 
-  // computed
+  const [version, setVersion] = useState<"original" | "simplified">("original");
+  const [highlights, setHighlights] = useState<boolean>(true);
+  const [article, setArticle] = useState(blank);
+
+  const loadedArticle = useQuery({
+    queryKey: ["getCollection", id],
+    queryFn: () => getArticle(id || ""),
+    enabled: !!id,
+  });
+
+  const author = useQuery({
+    queryKey: ["getAuthor", loadedArticle.data?.author],
+    queryFn: () => getAuthor(loadedArticle.data?.author || ""),
+    initialData: fresh ? loggedIn : undefined,
+    enabled: !!loadedArticle.data?.id,
+  });
+
+  useEffect(() => {
+    if (loadedArticle.data) setArticle(loadedArticle.data);
+  }, [loadedArticle.data]);
+
+  const editField = useCallback(
+    <T extends keyof ReadArticle>(key: T, value: ReadArticle[T]) =>
+      setArticle((collection) => ({ ...collection, [key]: value })),
+    []
+  );
+
+  const editable = !!loggedIn && (fresh || article?.author === loggedIn.id);
+
+  const heading = (
+    <h2>
+      {fresh && "New "}
+      {!fresh && editable && "Edit "}Collection
+    </h2>
+  );
+
   const text =
-    state.version === "original" ? state.originalText : state.simplifiedText;
-  const setText = (text: string) =>
-    dispatch(
-      setValue(
-        state.version === "original" ? "originalText" : "simplifiedText",
-        text
-      )
-    );
+    version === "original" ? article.originalText : article.simplifiedText;
+
   const words = useMemo(() => splitWords(text), [text]);
-  const editable = !!loggedIn && state.author.id === loggedIn.id;
-
-  // load article
-  useEffect(() => {
-    (async () => {
-      if (fresh || !id) return;
-      dispatch(setValue("loading", true));
-      const article = await getArticle(id);
-      dispatch(spreadValue(article));
-      dispatch(setValue("loading", false));
-    })();
-  }, [fresh, id]);
-
-  // analyze text
-  useEffect(() => {
-    let latest = true;
-
-    (async () => {
-      // debounce when any input changes
-      await sleep(500);
-      if (!latest) return;
-      dispatch(setValue("analyzing", true));
-      const results = await analyze(words, state.audience, state.ignoreWords);
-      if (!latest) return;
-      dispatch(spreadValue(results));
-      dispatch(setValue("analyzing", false));
-    })();
-
-    return () => {
-      latest = false;
-    };
-  }, [words, state.audience, state.ignoreWords]);
 
   return (
     <Section>
       {!state.loading && (
-        <Context.Provider
-          value={{ fresh, ...state, dispatch, text, setText, editable }}
-        >
+        <>
           {!fresh && <h2>Article</h2>}
           {!fresh && <Metadata />}
           {!fresh && <ReadonlyMetadata />}
@@ -177,7 +103,7 @@ const Article = ({ fresh }: Props) => {
           <MoreControls />
           {fresh && <Metadata />}
           <Actions />
-        </Context.Provider>
+        </>
       )}
       {(state.loading || state.analyzing) && <Notification />}
       {createPortal(<form id="article-form"></form>, document.body)}

@@ -1,12 +1,12 @@
-import { useCallback, FormEventHandler, useContext, useEffect } from "react";
+import { FormEventHandler, useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { signup } from "@/api/account";
 import Button from "@/components/Button";
-import Section from "@/components/Section";
+import Checkbox from "@/components/Checkbox";
+import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Grid from "@/components/Grid";
-import Field from "@/components/Field";
-import Checkbox from "@/components/Checkbox";
-import { signup } from "@/api/account";
+import Section from "@/components/Section";
 import { State } from "@/global/state";
 
 const SignUp = () => {

@@ -1,21 +1,22 @@
-import { request } from ".";
+import { request } from "./";
 import { ReadArticle, WriteArticle } from "@/global/types";
 
 export const getArticle = (id: string) =>
   request<ReadArticle>(`/article/${id}`);
 
 export const getArticles = (ids?: Array<string>) =>
-  request<Array<ReadArticle>>(
-    "/articles" + (ids?.length ? "?ids=" + ids.join(",") : "")
-  );
-
-export const deleteArticle = (id: string) =>
-  request(`/article/${id}`, { method: "DELETE" });
+  request<Array<ReadArticle>>("/articles", {
+    method: ids ? "POST" : "GET",
+    body: ids ? JSON.stringify({ ids }) : undefined,
+  });
 
 export const saveArticle = (id?: string) =>
   request("/article" + (id ? "/" + id : ""), {
     method: id ? "PUT" : "POST",
   });
+
+export const deleteArticle = (id: string) =>
+  request(`/article/${id}`, { method: "DELETE" });
 
 interface ShareOptions {
   audience: string;

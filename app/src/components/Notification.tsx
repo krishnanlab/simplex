@@ -1,10 +1,10 @@
 import { useCallback, useRef, useState } from "react";
-import { useEvent } from "react-use";
 import { createPortal } from "react-dom";
+import { useEvent } from "react-use";
 import { css } from "@emotion/react";
-import { dark, pale, shadow } from "@/global/palette";
 import Icon from "@/components/Icon";
 import Spinner from "@/components/Spinner";
+import { dark, pale, shadow } from "@/global/palette";
 import { sleep } from "@/util/debug";
 
 interface Detail {

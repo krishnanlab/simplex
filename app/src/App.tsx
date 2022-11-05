@@ -1,23 +1,23 @@
-import { createBrowserRouter, RouterProvider, Outlet } from "react-router-dom";
+import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Global } from "@emotion/react";
-import globalStyles from "@/global/styles";
-import Header from "@/components/Header";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 import Notification from "@/components/Notification";
-import Home from "@/pages/Home";
+import { State } from "@/global/state";
+import globalStyles from "@/global/styles";
+import { LoggedIn } from "@/global/types";
 import About from "@/pages/About";
-import MyArticles from "@/pages/MyArticles";
 import Account from "@/pages/Account";
 import Article from "@/pages/Article";
 import Collection from "@/pages/Collection";
-import LogIn from "@/pages/LogIn";
-import SignUp from "@/pages/SignUp";
-import LogOut from "@/pages/LogOut";
 import ForgotPassword from "@/pages/ForgotPassword";
-import { LoggedIn } from "@/global/types";
-import { State } from "@/global/state";
+import Home from "@/pages/Home";
+import LogIn from "@/pages/LogIn";
+import LogOut from "@/pages/LogOut";
+import MyArticles from "@/pages/MyArticles";
+import SignUp from "@/pages/SignUp";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -27,7 +27,6 @@ const queryClient = new QueryClient({
       refetchOnMount: false,
       refetchOnReconnect: false,
       retryOnMount: false,
-      notifyOnChangeProps: "all",
       retry: false,
     },
     mutations: {

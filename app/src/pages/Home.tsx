@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
 import Section from "@/components/Section";
-import Article from "@/pages/Article";
 import { big } from "@/global/palette";
-import { useEffect } from "react";
+import Article from "@/pages/Article";
 
 const heroStyle = css({
   ...big,
