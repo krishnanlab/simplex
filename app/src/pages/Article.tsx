@@ -55,7 +55,7 @@ const Article = ({ fresh }: Props) => {
 
   const [article, setArticle] = useState(blank);
 
-  const editable = !!loggedIn && (fresh || article?.author === loggedIn.id);
+  const editable = fresh || (!!loggedIn && article?.author === loggedIn.id);
   const homepage = location.pathname === "/";
 
   const {
@@ -86,8 +86,9 @@ const Article = ({ fresh }: Props) => {
   } = useMutation({
     mutationFn: () => saveArticle(id || ""),
     onSuccess: async (data) => {
-      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
+      await navigate("/article/" + (id || data.id));
       notification("success", `Saved article ${id || data.id}`);
+      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
 
@@ -102,9 +103,9 @@ const Article = ({ fresh }: Props) => {
       await deleteArticle(id || "");
     },
     onSuccess: async () => {
-      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
-      navigate("/my-articles");
+      await navigate("/my-articles");
       notification("success", `Deleted article ${id}`);
+      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
 
@@ -114,13 +115,13 @@ const Article = ({ fresh }: Props) => {
 
   const editField = useCallback(
     <T extends keyof ReadArticle>(key: T, value: ReadArticle[T]) =>
-      setArticle((collection) => ({ ...collection, [key]: value })),
+      setArticle((article) => ({ ...article, [key]: value })),
     []
   );
 
   const by = author
     ? author.name + (editable ? " (You)" : "") + " | " + author.institution
-    : "Loading...";
+    : "You";
 
   const text =
     version === "original" ? article.originalText : article.simplifiedText;
@@ -248,7 +249,7 @@ const Article = ({ fresh }: Props) => {
         }
         scores={analysis.scores}
         highlights={highlights}
-        editable={version !== "original" && (fresh || editable)}
+        editable={editable && version == "simplified"}
       />
 
       {/* results */}
@@ -300,12 +301,12 @@ const Article = ({ fresh }: Props) => {
 
       {/* actions */}
       <Flex>
-        {fresh && !editable && (
+        {fresh && !loggedIn && (
           <span>
-            <Link to="login">Log In</Link> to save
+            <Link to="/login">Log In</Link> to save
           </span>
         )}
-        {editable && (
+        {!(fresh && !loggedIn) && editable && (
           <Button
             text="Save"
             icon="floppy-disk"
@@ -326,15 +327,11 @@ const Article = ({ fresh }: Props) => {
       </Flex>
 
       {/* action statuses */}
-      {saveLoading && <Notification type="loading" text="Saving collection" />}
-      {saveError && (
-        <Notification type="error" text="Error saving collection" />
-      )}
-      {trashLoading && (
-        <Notification type="loading" text="Deleting collection" />
-      )}
+      {saveLoading && <Notification type="loading" text="Saving article" />}
+      {saveError && <Notification type="error" text="Error saving article" />}
+      {trashLoading && <Notification type="loading" text="Deleting article" />}
       {trashError && (
-        <Notification type="error" text="Error deleting collection" />
+        <Notification type="error" text="Error deleting article" />
       )}
 
       {/* associated form */}

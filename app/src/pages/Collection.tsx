@@ -40,9 +40,13 @@ const Collection = ({ fresh }: Props) => {
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
+  useEffect(() => {
+    if (!loggedIn) navigate("/login");
+  });
+
   const [collection, setCollection] = useState(blank);
 
-  const editable = !!loggedIn && (fresh || collection?.author === loggedIn.id);
+  const editable = fresh || (!!loggedIn && collection?.author === loggedIn.id);
 
   const {
     data: loadedCollection,
@@ -72,7 +76,7 @@ const Collection = ({ fresh }: Props) => {
   } = useQuery({
     queryKey: ["getArticles", "user", loggedIn?.id],
     queryFn: () => getArticles(),
-    enabled: !!loggedIn?.id,
+    enabled: editable && !!loggedIn?.id,
   });
 
   const {
@@ -82,7 +86,7 @@ const Collection = ({ fresh }: Props) => {
   } = useQuery({
     queryKey: ["getArticles", "collection", loadedCollection?.articles],
     queryFn: () => getArticles(loadedCollection?.articles),
-    enabled: !!loadedCollection?.articles,
+    enabled: !editable && !!loadedCollection?.articles,
   });
 
   const {
@@ -92,8 +96,9 @@ const Collection = ({ fresh }: Props) => {
   } = useMutation({
     mutationFn: () => saveCollection(id || ""),
     onSuccess: async (data) => {
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      await navigate("/my-articles");
       notification("success", `Saved collection ${id || data.id}`);
+      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
 
@@ -108,9 +113,9 @@ const Collection = ({ fresh }: Props) => {
       await deleteCollection(id || "");
     },
     onSuccess: async () => {
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
-      navigate("/my-articles");
+      await navigate("/my-articles");
       notification("success", `Deleted collection ${id}`);
+      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
 
@@ -144,24 +149,22 @@ const Collection = ({ fresh }: Props) => {
 
   const by = author
     ? author.name + (editable ? " (You)" : "") + " | " + author.institution
-    : "Loading...";
-
-  const articles = userArticles || collectionArticles;
+    : "You";
 
   const selected = useMemo(
     () =>
       collection.articles
-        .map((id) => articles?.find((article) => article.id === id))
+        .map((id) => userArticles?.find((article) => article.id === id))
         .filter((article) => article) || [],
-    [collection.articles, articles]
+    [collection.articles, userArticles]
   );
 
   const unselected = useMemo(
     () =>
-      articles?.filter(
+      userArticles?.filter(
         (article) => !collection.articles.find((id) => article.id === id)
       ) || [],
-    [collection.articles, articles]
+    [collection.articles, userArticles]
   );
 
   if (
@@ -260,9 +263,9 @@ const Collection = ({ fresh }: Props) => {
       {/* read-only article list */}
       {!editable && (
         <>
-          <h3>Articles ({articles?.length})</h3>
+          <h3>Articles ({collectionArticles?.length})</h3>
           <Grid>
-            {articles?.map((article, index) => (
+            {collectionArticles?.map((article, index) => (
               <Card key={index} article={article} />
             ))}
           </Grid>

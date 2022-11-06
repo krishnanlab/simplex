@@ -88,7 +88,6 @@ export const handlers = [
 
   rest.post(/\/articles/, async (req, res, ctx) => {
     const body = await req.json();
-    console.log(body.ids);
     const filtered = articles.filter((article) =>
       body.ids.includes(article.id)
     );

@@ -1,7 +1,7 @@
 import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "@/api/account";
-import Section from "@/components/Section";
+import Notification from "@/components/Notification";
 import { State } from "@/global/state";
 
 const LogOut = () => {
@@ -16,7 +16,7 @@ const LogOut = () => {
     })();
   });
 
-  return <Section>Logging Out</Section>;
+  return <Notification type="loading" text="Logging out" />;
 };
 
 export default LogOut;

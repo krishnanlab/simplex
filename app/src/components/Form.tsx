@@ -13,7 +13,14 @@ const style = css({
 
 const Form = ({ id, onSubmit }: Props) =>
   createPortal(
-    <form css={style} id={id} onSubmit={onSubmit}></form>,
+    <form
+      css={style}
+      id={id}
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSubmit(event);
+      }}
+    ></form>,
     document.body
   );
 
