@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { css } from "@emotion/react";
 import Citation from "@/components/Citation";
+import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { big } from "@/global/palette";
 import Article from "@/pages/Article";
@@ -25,6 +26,8 @@ const Home = () => {
 
   return (
     <>
+      <Meta title="" />
+
       <Section fill="deep">
         <p css={heroStyle}>
           Scientific and medical writing is often hard for non-experts to

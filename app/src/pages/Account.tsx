@@ -7,6 +7,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -73,6 +74,7 @@ const Account = () => {
 
   return (
     <Section>
+      <Meta title="Account" />
       <h2>Account</h2>
 
       <h3>Personal Info</h3>

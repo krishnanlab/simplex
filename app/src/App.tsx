@@ -66,19 +66,58 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "about", element: <About /> },
-      { path: "my-articles", element: <MyArticles /> },
-      { path: "account", element: <Account /> },
-      { path: "article/:id", element: <Article fresh={false} /> },
-      { path: "article", element: <Article fresh={true} /> },
-      { path: "collection/:id", element: <Collection fresh={false} /> },
-      { path: "collection", element: <Collection fresh={true} /> },
-      { path: "login", element: <LogIn /> },
-      { path: "signup", element: <SignUp /> },
-      { path: "logout", element: <LogOut /> },
-      { path: "forgot-password", element: <ForgotPassword /> },
-      { path: "*", element: <Home /> },
+      {
+        index: true,
+        element: <Home />,
+      },
+      {
+        path: "about",
+        element: <About />,
+      },
+      {
+        path: "my-articles",
+        element: <MyArticles />,
+      },
+      {
+        path: "account",
+        element: <Account />,
+      },
+      {
+        path: "article/:id",
+        element: <Article fresh={false} />,
+      },
+      {
+        path: "article",
+        element: <Article fresh={true} />,
+      },
+      {
+        path: "collection/:id",
+        element: <Collection fresh={false} />,
+      },
+      {
+        path: "collection",
+        element: <Collection fresh={true} />,
+      },
+      {
+        path: "login",
+        element: <LogIn />,
+      },
+      {
+        path: "signup",
+        element: <SignUp />,
+      },
+      {
+        path: "logout",
+        element: <LogOut />,
+      },
+      {
+        path: "forgot-password",
+        element: <ForgotPassword />,
+      },
+      {
+        path: "*",
+        element: <Home />,
+      },
     ],
   },
 ]);

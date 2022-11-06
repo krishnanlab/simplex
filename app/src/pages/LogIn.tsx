@@ -6,6 +6,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -39,7 +40,9 @@ const LogIn = () => {
 
   return (
     <Section>
+      <Meta title="Log In" />
       <h2>Log In</h2>
+
       <Grid cols={2}>
         <Field
           label="Email"

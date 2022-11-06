@@ -14,6 +14,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
@@ -87,7 +88,7 @@ const Article = ({ fresh }: Props) => {
     mutationFn: () => saveArticle(id || ""),
     onSuccess: async (data) => {
       await navigate("/article/" + (id || data.id));
-      notification("success", `Saved article ${id || data.id}`);
+      notification("success", `Saved article "${article.title}"`);
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
@@ -104,7 +105,7 @@ const Article = ({ fresh }: Props) => {
     },
     onSuccess: async () => {
       await navigate("/my-articles");
-      notification("success", `Deleted article ${id}`);
+      notification("success", `Deleted article "${article.title}"`);
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
@@ -186,15 +187,18 @@ const Article = ({ fresh }: Props) => {
     </Grid>
   );
 
+  let heading = "";
+  if (!homepage) {
+    if (fresh) heading = "New Article";
+    else if (editable) heading = "Edit Article";
+    else heading = "Article";
+  }
+
   return (
     <Section>
       {/* heading */}
-      {!homepage && (
-        <h2>
-          {fresh && "New "}
-          {!fresh && editable && "Edit "}Article
-        </h2>
-      )}
+      <Meta title={[heading, article.title]} />
+      <h2>{heading}</h2>
 
       {!homepage && metadata}
 

@@ -15,6 +15,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Stat from "@/components/Stat";
@@ -96,8 +97,8 @@ const Collection = ({ fresh }: Props) => {
   } = useMutation({
     mutationFn: () => saveCollection(id || ""),
     onSuccess: async (data) => {
-      await navigate("/my-articles");
-      notification("success", `Saved collection ${id || data.id}`);
+      await navigate("/collection/" + (id || data.id));
+      notification("success", `Saved collection "${collection.title}"`);
       await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
@@ -114,7 +115,7 @@ const Collection = ({ fresh }: Props) => {
     },
     onSuccess: async () => {
       await navigate("/my-articles");
-      notification("success", `Deleted collection ${id}`);
+      notification("success", `Deleted collection "${collection.title}"`);
       await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
@@ -191,13 +192,16 @@ const Collection = ({ fresh }: Props) => {
       </Section>
     );
 
+  let heading = "";
+  if (fresh) heading = "New Article";
+  else if (editable) heading = "Edit Article";
+  else heading = "Article";
+
   return (
     <Section>
       {/* heading */}
-      <h2>
-        {fresh && "New "}
-        {!fresh && editable && "Edit "}Collection
-      </h2>
+      <Meta title={[heading, collection.title]} />
+      <h2>{heading}</h2>
 
       {/* metadata */}
       <Grid cols={2}>

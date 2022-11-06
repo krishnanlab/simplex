@@ -7,6 +7,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -52,7 +53,9 @@ const SignUp = () => {
 
   return (
     <Section>
+      <Meta title="Sign Up" />
       <h2>Sign Up</h2>
+
       <p>
         <strong>Why sign up?</strong>
       </p>

@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
+import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 
 const Account = () => {
@@ -32,6 +33,7 @@ const Account = () => {
 
   return (
     <Section>
+      <Meta title="Forgot Password" />
       <h2>Forgot Password</h2>
 
       <Field
