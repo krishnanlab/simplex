@@ -4,7 +4,7 @@ import { Audience } from "@/global/types";
 export interface Analysis {
   scores: Record<string, number>;
   complexity: number;
-  gradeLevel: number;
+  grade: number;
 }
 
 export const analyze = (

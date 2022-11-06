@@ -9,9 +9,9 @@ export const audiences = [
 
 export type Audience = typeof audiences[number];
 
-type Id = string;
+export type Id = string;
 
-type DateString = string;
+export type DateString = string;
 
 export type LoggedIn = ReadAuthor | undefined | null;
 

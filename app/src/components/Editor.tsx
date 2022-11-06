@@ -1,7 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef } from "react";
 import { css } from "@emotion/react";
 import useResizeObserver from "@react-hook/resize-observer";
-import { accent, light, offWhite, rounded, shadow } from "@/global/palette";
+import {
+  accent,
+  light,
+  offWhite,
+  rounded,
+  shadow,
+  spacing,
+} from "@/global/palette";
 import { splitWords } from "@/util/string";
 
 const wrapperStyle = css({
@@ -35,6 +42,7 @@ const underlayStyle = css({
   margin: "0",
   padding: "15px 20px",
   paddingRight: scrollbar + 20 + "px !important",
+  lineHeight: spacing + 0.2,
   whiteSpace: "pre-wrap",
   overflowWrap: "break-word",
   overflowX: "hidden",
@@ -57,7 +65,7 @@ const inputStyle = css({
   padding: "15px 20px",
   background: "none",
   fontFamily: "inherit",
-  lineHeight: "inherit",
+  lineHeight: spacing + 0.2,
   fontSize: "inherit",
   fontWeight: "inherit",
   border: "none",
@@ -79,7 +87,7 @@ const label = "Type or paste text";
 interface Props {
   value: string;
   onChange: (value: string) => void;
-  showHighlights: boolean;
+  highlights: boolean;
   scores: Record<string, number>;
   editable?: boolean;
 }
@@ -87,7 +95,7 @@ interface Props {
 const Editor = ({
   value,
   onChange,
-  showHighlights,
+  highlights,
   scores,
   editable = false,
 }: Props) => {
@@ -103,12 +111,12 @@ const Editor = ({
 
   useEffect(() => {
     matchScroll();
-  }, [words, showHighlights, matchScroll]);
+  }, [words, highlights, matchScroll]);
   useResizeObserver(input, matchScroll);
 
   return (
     <div css={wrapperStyle} data-editable={editable}>
-      {showHighlights && (
+      {highlights && (
         <div ref={underlay} css={underlayStyle}>
           {words.map((word, index, array) => {
             if (scores[word])
@@ -140,7 +148,7 @@ const Editor = ({
         placeholder={label}
         aria-label={label}
         required={true}
-        disabled={editable}
+        disabled={!editable}
         value={value}
         onChange={(event) => onChange(event.target.value)}
       />

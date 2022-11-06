@@ -1,5 +1,5 @@
 import { request } from "./";
-import { ReadArticle, WriteArticle } from "@/global/types";
+import { Id, ReadArticle, WriteArticle } from "@/global/types";
 
 export const getArticle = (id: string) =>
   request<ReadArticle>(`/article/${id}`);
@@ -11,7 +11,7 @@ export const getArticles = (ids?: Array<string>) =>
   });
 
 export const saveArticle = (id?: string) =>
-  request("/article" + (id ? "/" + id : ""), {
+  request<{ id: Id }>("/article" + (id ? "/" + id : ""), {
     method: id ? "PUT" : "POST",
   });
 

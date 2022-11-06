@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
+import Form from "@/components/Form";
 import Grid from "@/components/Grid";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
@@ -77,7 +78,7 @@ const Account = () => {
       <h3>Personal Info</h3>
       <Grid>
         <Field
-          label="Display Name"
+          label="Name"
           name="name"
           placeholder="Jane Smith"
           defaultValue={loggedIn?.name || ""}
@@ -108,7 +109,8 @@ const Account = () => {
         />
         <Button text="Save Info" icon="floppy-disk" form="save-info" />
       </Flex>
-      <form id="save-info" onSubmit={onSaveInfo}></form>
+
+      <Form id="save-info" onSubmit={onSaveInfo} />
 
       <h3>Change Password</h3>
       <Grid>
@@ -137,7 +139,8 @@ const Account = () => {
       <Flex>
         <Button text="Change Password" icon="lock" form="change-password" />
       </Flex>
-      <form id="change-password" onSubmit={onChangePassword}></form>
+
+      <Form id="change-password" onSubmit={onChangePassword} />
     </Section>
   );
 };

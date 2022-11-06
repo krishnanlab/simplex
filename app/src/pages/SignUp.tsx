@@ -5,6 +5,7 @@ import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
+import Form from "@/components/Form";
 import Grid from "@/components/Grid";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
@@ -63,7 +64,7 @@ const SignUp = () => {
 
       <Grid>
         <Field
-          label="Display Name"
+          label="Name"
           name="name"
           placeholder="Jane Smith"
           form="signup"
@@ -105,7 +106,8 @@ const SignUp = () => {
         />
         <Button text="Sign Up" icon="user-plus" form="signup" />
       </Flex>
-      <form id="signup" onSubmit={onSignup}></form>
+
+      <Form id="signup" onSubmit={onSignup} />
     </Section>
   );
 };

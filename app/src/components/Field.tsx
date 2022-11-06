@@ -5,6 +5,7 @@ import { dark, rounded, shadow } from "@/global/palette";
 interface Props {
   label: string;
   optional?: boolean;
+  onChange?: (value: string) => unknown;
 }
 
 const wrapperStyle = css({
@@ -40,13 +41,19 @@ const inputStyle = css({
 const Field = ({
   label,
   optional = false,
+  onChange,
   ...props
-}: Props & InputHTMLAttributes<HTMLInputElement>) => (
+}: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
   <label css={wrapperStyle}>
     <div css={labelStyle}>
       {label}: {optional ? "" : "*"}
     </div>
-    <input required={!optional} css={inputStyle} {...props} type={props.type} />
+    <input
+      required={!optional}
+      css={inputStyle}
+      {...props}
+      onChange={(event) => onChange?.(event.target.value as string)}
+    />
   </label>
 );
 

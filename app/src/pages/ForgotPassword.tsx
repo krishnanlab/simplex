@@ -4,6 +4,7 @@ import { forgotPassword } from "@/api/account";
 import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
+import Form from "@/components/Form";
 import Section from "@/components/Section";
 
 const Account = () => {
@@ -43,7 +44,8 @@ const Account = () => {
       <Flex>
         <Button text="Request Reset" icon="lock" form="forgot" />
       </Flex>
-      <form id="forgot" onSubmit={onReset}></form>
+
+      <Form id="forgot" onSubmit={onReset} />
     </Section>
   );
 };

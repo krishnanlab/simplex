@@ -96,9 +96,6 @@ const globalStyles = css({
   strong: {
     fontWeight: "400",
   },
-  form: {
-    display: "contents",
-  },
   ".spacer": {
     content: "''",
     flexGrow: "1",

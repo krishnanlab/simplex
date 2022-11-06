@@ -1,5 +1,5 @@
 import { request } from "./";
-import { ReadCollection } from "@/global/types";
+import { Id, ReadCollection } from "@/global/types";
 
 export const getCollection = (id: string) =>
   request<ReadCollection>(`/collection/${id}`);
@@ -8,7 +8,7 @@ export const getCollections = () =>
   request<Array<ReadCollection>>("/collections");
 
 export const saveCollection = (id?: string) =>
-  request("/collection" + (id ? "/" + id : ""), {
+  request<{ id: Id }>("/collection" + (id ? "/" + id : ""), {
     method: id ? "PUT" : "POST",
   });
 

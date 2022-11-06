@@ -62,9 +62,9 @@ export const handlers = [
         Object.values(scores).length || 0;
 
     const complexity = calc;
-    const gradeLevel = calc;
+    const grade = calc;
 
-    return res(ctx.status(200), ctx.json({ scores, complexity, gradeLevel }));
+    return res(ctx.status(200), ctx.json({ scores, complexity, grade }));
   }),
 
   rest.get(/\/simplify/, (req, res, ctx) =>

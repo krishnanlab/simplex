@@ -37,7 +37,7 @@ export const saveInfo = (props: SaveInfo) =>
 
 interface ChangePassword {
   current: string;
-  new: string;
+  fresh: string;
 }
 
 export const changePassword = (props: ChangePassword) =>

@@ -4,6 +4,7 @@ import { deep } from "@/global/palette";
 
 interface Props {
   label: string;
+  onChange?: (value: boolean) => unknown;
 }
 
 const wrapperStyle = css({
@@ -28,10 +29,16 @@ const inputStyle = css({
 
 const Field = ({
   label,
+  onChange,
   ...props
-}: Props & InputHTMLAttributes<HTMLInputElement>) => (
+}: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
   <label css={wrapperStyle}>
-    <input type="checkbox" css={inputStyle} {...props}></input>
+    <input
+      type="checkbox"
+      css={inputStyle}
+      onChange={(event) => onChange?.(event.target.checked)}
+      {...props}
+    ></input>
     <span css={labelStyle}>{label}</span>
   </label>
 );

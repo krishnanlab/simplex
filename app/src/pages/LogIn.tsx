@@ -4,6 +4,7 @@ import { login } from "@/api/account";
 import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
+import Form from "@/components/Form";
 import Grid from "@/components/Grid";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
@@ -58,7 +59,8 @@ const LogIn = () => {
         <Link to="/forgot-password">Forgot password</Link>
         <Button text="Log In" icon="right-to-bracket" form="login" />
       </Flex>
-      <form id="login" onSubmit={onLogin}></form>
+
+      <Form id="login" onSubmit={onLogin} />
     </Section>
   );
 };
