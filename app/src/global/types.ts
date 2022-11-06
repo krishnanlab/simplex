@@ -1,3 +1,7 @@
+export const versions = ["original", "simplified"] as const;
+
+export type Version = typeof versions[number];
+
 export const audiences = [
   "general",
   "biology",

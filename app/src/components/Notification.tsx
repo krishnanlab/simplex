@@ -54,6 +54,7 @@ export const notification = async (
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
+  window.scrollTo(0, 0);
 };
 
 export const TopNotification = () => {

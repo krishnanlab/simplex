@@ -1,5 +1,7 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { useLocalStorage } from "react-use";
+import { QueryParamProvider } from "use-query-params";
+import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
@@ -54,8 +56,10 @@ const Layout = () => (
   <>
     <Header />
     <main>
-      <TopNotification />
-      <Outlet />
+      <QueryParamProvider adapter={ReactRouter6Adapter}>
+        <TopNotification />
+        <Outlet />
+      </QueryParamProvider>
     </main>
     <Footer />
   </>

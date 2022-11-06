@@ -1,6 +1,8 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { QueryParamConfig, useQueryParam } from "use-query-params";
+import { css } from "@emotion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
 import { deleteArticle, getArticle, saveArticle } from "@/api/article";
@@ -18,12 +20,27 @@ import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
+import Spinner from "@/components/Spinner";
 import Stat from "@/components/Stat";
-import { light } from "@/global/palette";
+import { dark, light } from "@/global/palette";
 import { State } from "@/global/state";
-import { Audience, audiences, ReadArticle } from "@/global/types";
+import {
+  Audience,
+  audiences,
+  ReadArticle,
+  Version,
+  versions,
+} from "@/global/types";
 import { sleep } from "@/util/debug";
 import { splitComma, splitWords } from "@/util/string";
+
+const spinnerStyle = css({
+  position: "fixed",
+  right: "10px",
+  bottom: "10px",
+  color: dark,
+  height: "30px",
+});
 
 const blank: ReadArticle = {
   id: "",
@@ -41,6 +58,27 @@ interface Props {
   fresh: boolean;
 }
 
+const VersionParam: QueryParamConfig<Version> = {
+  encode: (value: Version) => value,
+  decode: (value): Version => {
+    const decoded = value as Version;
+    return versions.includes(decoded) ? decoded : "simplified";
+  },
+};
+
+const AudienceParam: QueryParamConfig<Audience> = {
+  encode: (value: Audience) => value,
+  decode: (value): Audience => {
+    const decoded = value as Audience;
+    return audiences.includes(decoded) ? decoded : "general";
+  },
+};
+
+const HighlightsParam: QueryParamConfig<boolean> = {
+  encode: (value: boolean) => String(value),
+  decode: (value): boolean => (value === "false" ? false : true),
+};
+
 const Article = ({ fresh }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -48,11 +86,17 @@ const Article = ({ fresh }: Props) => {
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
-  const [version, setVersion] = useState<"original" | "simplified">(
-    "simplified"
+  const [version, setVersion] = useQueryParam<Version>("version", VersionParam);
+  const [audience, setAudience] = useQueryParam<Audience>(
+    "audience",
+    AudienceParam
   );
-  const [audience, setAudience] = useState<Audience>("general");
-  const [highlights, setHighlights] = useState<boolean>(true);
+  const [highlights, setHighlights] = useQueryParam<boolean>(
+    "highlights",
+    HighlightsParam
+  );
+
+  const [analyzing, setAnalyzing] = useState(false);
 
   const [article, setArticle] = useState(blank);
 
@@ -139,11 +183,14 @@ const Article = ({ fresh }: Props) => {
     let latest = true;
 
     (async () => {
+      if (!words.length) return;
       await sleep(500); // debounce
       if (!latest) return;
+      setAnalyzing(true);
       const analysis = await analyze(words, audience, article.ignoreWords);
       if (!latest) return;
       setAnalysis(analysis);
+      setAnalyzing(false);
     })();
 
     return () => {
@@ -255,6 +302,7 @@ const Article = ({ fresh }: Props) => {
         highlights={highlights}
         editable={editable && version == "simplified"}
       />
+      {analyzing && <Spinner css={spinnerStyle} />}
 
       {/* results */}
       <Flex>
