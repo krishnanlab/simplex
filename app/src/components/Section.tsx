@@ -5,6 +5,7 @@ import { dark, deep, pale } from "@/global/palette";
 interface Props {
   fill?: "none" | "deep" | "dark";
   children: ReactNode;
+  className?: string;
 }
 
 const pageWidth = "1000px";
@@ -25,7 +26,7 @@ const fills = {
   dark: dark,
 };
 
-const Section = ({ fill = "none", children }: Props) => (
+const Section = ({ fill = "none", children, className }: Props) => (
   <section
     css={[
       sectionStyle,
@@ -34,6 +35,7 @@ const Section = ({ fill = "none", children }: Props) => (
         color: fills[fill] ? pale : "",
       },
     ]}
+    className={className}
   >
     {children}
   </section>

@@ -4,7 +4,7 @@ import { Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import Notification from "@/components/Notification";
+import { TopNotification } from "@/components/Notification";
 import { State } from "@/global/state";
 import globalStyles from "@/global/styles";
 import { LoggedIn } from "@/global/types";
@@ -54,10 +54,10 @@ const Layout = () => (
   <>
     <Header />
     <main>
+      <TopNotification />
       <Outlet />
     </main>
     <Footer />
-    <Notification />
   </>
 );
 

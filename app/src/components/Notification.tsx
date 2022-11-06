@@ -1,91 +1,90 @@
-import { useCallback, useRef, useState } from "react";
-import { createPortal } from "react-dom";
+import { ReactNode, useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router";
 import { useEvent } from "react-use";
 import { css } from "@emotion/react";
+import Button from "@/components/Button";
 import Icon from "@/components/Icon";
+import Section from "@/components/Section";
 import Spinner from "@/components/Spinner";
-import { dark, pale, shadow } from "@/global/palette";
+import { accent, dark, deep } from "@/global/palette";
 import { sleep } from "@/util/debug";
 
-interface Detail {
-  type: "clear" | "loading" | "error" | "success";
-  message: string | undefined;
+export interface Props {
+  type: "loading" | "error" | "success";
+  text: string;
+  children?: ReactNode;
 }
 
-const delays: Record<Detail["type"], number> = {
-  clear: 0,
-  loading: 120,
-  error: 20,
-  success: 4,
-};
-
-export const notification = async (
-  type: Detail["type"],
-  message?: Detail["message"]
-) => {
-  await sleep();
-  window.dispatchEvent(
-    new CustomEvent("notification", { detail: { type, message } })
-  );
-};
-
 const style = css({
-  position: "fixed",
-  bottom: "15px",
-  right: "15px",
   display: "flex",
+  justifyContent: "center",
   alignItems: "center",
-  gap: "10px",
-  padding: "10px",
-  background: dark,
-  borderRadius: "999px",
-  boxShadow: shadow,
-  color: pale,
-  span: {
-    lineHeight: "1",
-    marginLeft: "5px",
-  },
+  gap: "20px",
+  margin: "60px 0",
+  fontWeight: "400",
+  color: dark,
   svg: {
     height: "25px",
   },
+  "&[data-type='error'] svg": {
+    color: accent,
+  },
+  "&[data-type='success'] svg": {
+    color: deep,
+  },
 });
 
-const Notification = () => {
-  const [type, setType] = useState<Detail["type"]>();
-  const [message, setMessage] = useState<Detail["message"]>();
-  const timer = useRef<number>();
+const Notification = ({ type, text, children }: Props) => (
+  <div css={style} data-type={type}>
+    {type === "loading" && <Spinner />}
+    {type === "error" && <Icon icon="circle-exclamation" />}
+    {type === "success" && <Icon icon="circle-check" />}
+    {text && <span>{text}</span>}
+    {children}
+  </div>
+);
+
+export default Notification;
+
+export const notification = async (
+  type: Props["type"],
+  text: Props["text"]
+) => {
+  await sleep();
+  window.dispatchEvent(
+    new CustomEvent("notification", { detail: { type, text } })
+  );
+};
+
+export const TopNotification = () => {
+  const [type, setType] = useState<Props["type"]>();
+  const [text, setMessage] = useState<Props["text"]>();
+  const route = useLocation();
 
   const reset = useCallback(() => {
-    window.clearTimeout(timer.current);
     setType(undefined);
     setMessage(undefined);
   }, []);
 
-  const onNotification = useCallback(
-    (event: CustomEvent) => {
-      const { type, message } = event.detail as Detail;
-      setType(type);
-      setMessage(message);
-      window.clearTimeout(timer.current);
-      timer.current = window.setTimeout(reset, delays[type] * 1000);
-    },
-    [reset]
-  );
+  useEffect(() => {
+    reset();
+  }, [reset, route]);
+
+  const onNotification = useCallback((event: CustomEvent) => {
+    const { type, text } = event.detail as Props;
+    setType(type);
+    setMessage(text);
+  }, []);
 
   useEvent("notification", onNotification);
 
-  if (!type && !message) return <></>;
+  if (!type || !text) return <></>;
 
-  return createPortal(
-    // eslint-disable-next-line
-    <div css={style} role="alert" aria-live="polite" onClick={reset}>
-      {message && <span>{message}</span>}
-      {type === "loading" && <Spinner />}
-      {type === "error" && <Icon icon="circle-exclamation" />}
-      {type === "success" && <Icon icon="circle-check" />}
-    </div>,
-    document.body
+  return (
+    <Section css={css({ marginBottom: "-30px" })}>
+      <Notification type={type} text={text}>
+        <Button icon="times" fill={false} onClick={reset} />
+      </Notification>
+    </Section>
   );
 };
-
-export default Notification;

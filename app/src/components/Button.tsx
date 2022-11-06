@@ -62,6 +62,7 @@ const squareStyle = css({
   minHeight: "unset",
   "&:hover": {
     background: pale,
+    color: black,
   },
 });
 
