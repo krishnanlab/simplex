@@ -65,6 +65,7 @@ export {
 // font awesome icons
 library.add(
   fab.faGithub,
+  far.faCopy,
   far.faEnvelope,
   far.faFloppyDisk,
   far.faLightbulb,

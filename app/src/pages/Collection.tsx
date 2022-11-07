@@ -18,6 +18,7 @@ import Grid from "@/components/Grid";
 import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
+import Share from "@/components/Share";
 import Stat from "@/components/Stat";
 import { State } from "@/global/state";
 import { ReadCollection } from "@/global/types";
@@ -287,7 +288,9 @@ const Collection = ({ fresh }: Props) => {
             form="collection-form"
           />
         )}
-        {!fresh && <Button text="Share" icon="share-nodes" />}
+        {!fresh && (
+          <Share heading="Share Collection" field="URL to this collection" />
+        )}
         {!fresh && editable && (
           <Button
             text="Delete"

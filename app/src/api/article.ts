@@ -18,13 +18,13 @@ export const saveArticle = (id?: string) =>
 export const deleteArticle = (id: string) =>
   request(`/article/${id}`, { method: "DELETE" });
 
-interface ShareOptions {
+export interface ShareOptions {
   audience: string;
-  showHighlights: boolean;
+  highlights: boolean;
 }
 
 export const shareArticle = (article: WriteArticle, options: ShareOptions) =>
-  request<string>("/share", {
+  request<{ link: string }>("/share", {
     method: "POST",
     body: JSON.stringify({ article, options }),
   });

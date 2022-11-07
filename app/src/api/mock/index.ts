@@ -111,7 +111,7 @@ export const handlers = [
     res(ctx.status(200), ctx.json({}))
   ),
 
-  rest.put(/\/share/, (req, res, ctx) =>
+  rest.post(/\/share/, (req, res, ctx) =>
     res(ctx.status(200), ctx.json({ link: "https://simpl.io/123456789" }))
   ),
 

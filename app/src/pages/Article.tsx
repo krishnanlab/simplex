@@ -20,6 +20,7 @@ import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
+import Share from "@/components/Share";
 import Spinner from "@/components/Spinner";
 import Stat from "@/components/Stat";
 import { dark, light } from "@/global/palette";
@@ -367,7 +368,16 @@ const Article = ({ fresh }: Props) => {
             form="article-form"
           />
         )}
-        <Button text="Share" icon="share-nodes" />
+
+        {!(loggedIn && fresh) && (
+          <Share
+            heading="Share Article"
+            field="URL to this article (with currently selected options)"
+            generate={
+              fresh ? { article, options: { audience, highlights } } : undefined
+            }
+          />
+        )}
         {!fresh && editable && (
           <Button
             text="Delete"

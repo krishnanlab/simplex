@@ -1,6 +1,6 @@
 import { sleep } from "@/util/debug";
 
-const api = "https://api.simplex.io";
+const api = import.meta.env.VITE_API;
 
 export const request = async <T>(
   url = "",

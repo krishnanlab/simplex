@@ -45,10 +45,8 @@ export interface ReadArticle {
 
 export type WriteArticle = Pick<
   ReadArticle,
-  "title" | "source" | "ignoreWords"
-> & {
-  text: string;
-};
+  "title" | "source" | "ignoreWords" | "originalText" | "simplifiedText"
+>;
 
 export interface ReadCollection {
   id: Id;
