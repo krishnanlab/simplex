@@ -12,7 +12,7 @@ import {
   useRole,
 } from "@floating-ui/react-dom-interactions";
 import Button from "@/components/Button";
-import { dark, shadow, white } from "@/global/palette";
+import { dark, rounded, shadow, white } from "@/global/palette";
 
 const overlayStyle = css({
   display: "grid",
@@ -24,9 +24,9 @@ const dialogStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  maxWidth: "100%",
-  minWidth: "min(100%, 300px)",
+  width: "min(calc(100vw - 40px), 350px)",
   padding: "30px",
+  borderRadius: rounded,
   background: white,
   boxShadow: shadow,
   "& > *": {

@@ -1,11 +1,11 @@
 import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
+import Help from "@/components/Help";
 import { dark, deep } from "@/global/palette";
 
 interface Props {
-  tooltip?: string;
+  help?: string;
   label?: string;
   value?: string | number | ReactNode;
 }
@@ -13,9 +13,9 @@ interface Props {
 const labelStyle = css({ color: dark, lineHeight: 1 });
 const valueStyle = css({ color: deep, lineHeight: 1 });
 
-const Stat = ({ tooltip, label, value }: Props) => (
+const Stat = ({ help, label, value }: Props) => (
   <Flex display="inline" gap="tiny" hAlign="left">
-    {tooltip && <Icon icon="question-circle" title={tooltip} />}
+    {help && <Help tooltip={help} />}
     {label && (
       <span css={labelStyle}>
         {label}

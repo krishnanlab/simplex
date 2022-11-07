@@ -310,7 +310,7 @@ const Article = ({ fresh }: Props) => {
         <Flex display="inline" gap="small">
           <Stat
             label="Complex"
-            tooltip="Click, select, or hover over a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+            help="Click, select, or hover over a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
           />
           <svg viewBox="0 0 30 10" width="60px">
             <g fill={light}>
@@ -331,12 +331,12 @@ const Article = ({ fresh }: Props) => {
         <Stat
           label="Overall Complexity"
           value={analysis.complexity.toFixed(0)}
-          tooltip="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
+          help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
         />
         <Stat
           label="Grade Level"
           value={analysis.grade.toFixed(0)}
-          tooltip="Flesch-kincaid grade level score, calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones."
+          help="Flesch-kincaid grade level score, calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones."
         />
       </Flex>
 
@@ -372,7 +372,8 @@ const Article = ({ fresh }: Props) => {
         {!(loggedIn && fresh) && (
           <Share
             heading="Share Article"
-            field="URL to this article (with currently selected options)"
+            field="URL to this article"
+            help="With currently selected options (version, audience, highlights)"
             generate={
               fresh ? { article, options: { audience, highlights } } : undefined
             }

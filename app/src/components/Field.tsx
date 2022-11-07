@@ -1,9 +1,12 @@
 import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
+import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
+import Flex from "./Flex";
 
 interface Props {
   label: string;
+  help?: string;
   optional?: boolean;
   onChange?: (value: string) => unknown;
 }
@@ -14,7 +17,9 @@ const wrapperStyle = css({
 });
 
 const labelStyle = css({
-  width: "100%",
+  display: "flex",
+  alignItems: "center",
+  gap: "10px",
   color: dark,
   marginBottom: "15px",
 });
@@ -40,13 +45,17 @@ const inputStyle = css({
 
 const Field = ({
   label,
+  help,
   optional = false,
   onChange,
   ...props
 }: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
   <label css={wrapperStyle}>
     <div css={labelStyle}>
-      {label}: {optional ? "" : "*"}
+      {help && <Help tooltip={help} />}
+      <span>
+        {label}: {optional ? "" : "*"}
+      </span>
     </div>
     <input
       required={!optional}
