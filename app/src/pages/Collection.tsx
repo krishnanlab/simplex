@@ -98,7 +98,7 @@ const Collection = ({ fresh }: Props) => {
   } = useMutation({
     mutationFn: () => saveCollection(id || ""),
     onSuccess: async (data) => {
-      await navigate("/collection/" + (id || data.id));
+      if (data.id) await navigate("/collection/" + data.id);
       notification("success", `Saved collection "${collection.title}"`);
       await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
@@ -194,9 +194,9 @@ const Collection = ({ fresh }: Props) => {
     );
 
   let heading = "";
-  if (fresh) heading = "New Article";
-  else if (editable) heading = "Edit Article";
-  else heading = "Article";
+  if (fresh) heading = "New Collection";
+  else if (editable) heading = "Edit Collection";
+  else heading = "Collection";
 
   return (
     <Section>

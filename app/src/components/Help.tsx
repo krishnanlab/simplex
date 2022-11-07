@@ -1,6 +1,6 @@
+import { css } from "@emotion/react";
 import Icon from "@/components/Icon";
 import Tooltip from "@/components/Tooltip";
-import { css } from "@emotion/react";
 
 interface Props {
   tooltip: string;

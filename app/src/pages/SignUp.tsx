@@ -1,13 +1,15 @@
-import { FormEventHandler, useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/api/account";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import Form from "@/components/Form";
+import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Meta from "@/components/Meta";
+import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -19,36 +21,34 @@ const SignUp = () => {
     if (loggedIn) navigate("/account");
   });
 
-  const onSignup: FormEventHandler<HTMLFormElement> = useCallback(
-    async (event) => {
-      event.preventDefault();
+  const {
+    mutate: signupMutate,
+    isLoading: signupLoading,
+    isError: signupError,
+  } = useMutation({
+    mutationFn: signup,
+    onSuccess: async (data) => {
+      setLoggedIn(data);
+      navigate("/");
+    },
+  });
 
-      const { name, email, institution, password, confirm, newsletter } =
-        Object.fromEntries(
-          new FormData(event.target as HTMLFormElement)
-        ) as Record<string, string>;
-
+  const onSignup = useCallback(
+    async (data: FormValues) => {
+      const { name, email, institution, password, confirm, newsletter } = data;
       if (confirm !== password) {
         window.alert("Passwords do not match.");
         return;
       }
-
-      try {
-        const loggedIn = await signup({
-          name,
-          email,
-          institution,
-          newsletter: !!newsletter,
-          password,
-        });
-        setLoggedIn(loggedIn);
-        navigate("/");
-      } catch (error) {
-        window.alert("There was a problem signing up.");
-        console.error(error);
-      }
+      signupMutate({
+        name,
+        email,
+        institution,
+        newsletter: !!newsletter,
+        password,
+      });
     },
-    [navigate, setLoggedIn]
+    [signupMutate]
   );
 
   return (
@@ -109,6 +109,9 @@ const SignUp = () => {
         />
         <Button text="Sign Up" icon="user-plus" form="signup" />
       </Flex>
+
+      {signupLoading && <Notification type="loading" text="Signing up" />}
+      {signupError && <Notification type="error" text="Error signing up" />}
 
       <Form id="signup" onSubmit={onSignup} />
     </Section>

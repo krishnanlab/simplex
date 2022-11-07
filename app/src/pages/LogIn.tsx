@@ -1,12 +1,14 @@
-import { FormEventHandler, useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/account";
 import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import Form from "@/components/Form";
+import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Meta from "@/components/Meta";
+import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -18,24 +20,24 @@ const LogIn = () => {
     if (loggedIn) navigate("/account");
   });
 
-  const onLogin: FormEventHandler<HTMLFormElement> = useCallback(
-    async (event) => {
-      event.preventDefault();
-
-      const { email, password } = Object.fromEntries(
-        new FormData(event.target as HTMLFormElement)
-      ) as Record<string, string>;
-
-      try {
-        const loggedIn = await login({ email, password });
-        setLoggedIn(loggedIn);
-        navigate("/");
-      } catch (error) {
-        window.alert("There was a problem logging in.");
-        console.error(error);
-      }
+  const {
+    mutate: loginMutate,
+    isLoading: loginLoading,
+    isError: loginError,
+  } = useMutation({
+    mutationFn: login,
+    onSuccess: async (data) => {
+      setLoggedIn(data);
+      navigate("/");
     },
-    [navigate, setLoggedIn]
+  });
+
+  const onLogin = useCallback(
+    async (data: FormValues) => {
+      const { email, password } = data;
+      loginMutate({ email, password });
+    },
+    [loginMutate]
   );
 
   return (
@@ -62,6 +64,9 @@ const LogIn = () => {
         <Link to="/forgot-password">Forgot password</Link>
         <Button text="Log In" icon="right-to-bracket" form="login" />
       </Flex>
+
+      {loginLoading && <Notification type="loading" text="Logging in" />}
+      {loginError && <Notification type="error" text="Error logging in" />}
 
       <Form id="login" onSubmit={onLogin} />
     </Section>

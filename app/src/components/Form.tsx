@@ -1,10 +1,11 @@
-import { FormEventHandler } from "react";
 import { createPortal } from "react-dom";
 import { css } from "@emotion/react";
 
+export type FormValues = Record<string, string>;
+
 interface Props {
   id: string;
-  onSubmit: FormEventHandler<HTMLFormElement>;
+  onSubmit: (data: FormValues) => unknown;
 }
 
 const style = css({
@@ -18,7 +19,8 @@ const Form = ({ id, onSubmit }: Props) =>
       id={id}
       onSubmit={(event) => {
         event.preventDefault();
-        onSubmit(event);
+        const form = event.target as HTMLFormElement;
+        onSubmit(Object.fromEntries(new FormData(form)) as FormValues);
       }}
     ></form>,
     document.body

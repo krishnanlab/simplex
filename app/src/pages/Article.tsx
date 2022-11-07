@@ -132,7 +132,7 @@ const Article = ({ fresh }: Props) => {
   } = useMutation({
     mutationFn: () => saveArticle(id || ""),
     onSuccess: async (data) => {
-      await navigate("/article/" + (id || data.id));
+      if (data.id) await navigate("/article/" + data.id);
       notification("success", `Saved article "${article.title}"`);
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },

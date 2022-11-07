@@ -2,7 +2,6 @@ import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
-import Flex from "./Flex";
 
 interface Props {
   label: string;

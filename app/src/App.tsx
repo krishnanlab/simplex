@@ -56,7 +56,10 @@ const Layout = () => (
   <>
     <Header />
     <main>
-      <QueryParamProvider adapter={ReactRouter6Adapter}>
+      <QueryParamProvider
+        adapter={ReactRouter6Adapter}
+        options={{ updateType: "replaceIn" }}
+      >
         <TopNotification />
         <Outlet />
       </QueryParamProvider>

@@ -1,13 +1,15 @@
-import { FormEventHandler, useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import Form from "@/components/Form";
+import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Meta from "@/components/Meta";
+import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -19,57 +21,47 @@ const Account = () => {
     if (!loggedIn) navigate("/login");
   });
 
-  const onSaveInfo: FormEventHandler<HTMLFormElement> = useCallback(
-    async (event) => {
-      event.preventDefault();
-
-      const { name, email, institution, newsletter } = Object.fromEntries(
-        new FormData(event.target as HTMLFormElement)
-      ) as Record<string, string>;
-
-      try {
-        const loggedIn = await saveInfo({
-          name,
-          email,
-          institution,
-          newsletter: !!newsletter,
-        });
-        setLoggedIn(loggedIn);
-        window.alert("Successfully saved your info.");
-      } catch (error) {
-        window.alert("There was a problem saving your info.");
-        console.error(error);
-      }
+  const {
+    mutate: saveInfoMutate,
+    isLoading: saveInfoLoading,
+    isError: saveInfoError,
+  } = useMutation({
+    mutationFn: saveInfo,
+    onSuccess: async (data) => {
+      setLoggedIn(data);
+      notification("success", "Saved info");
     },
-    [setLoggedIn]
+  });
+
+  const onSaveInfo = useCallback(
+    async (data: FormValues) => {
+      const { name, email, institution, newsletter } = data;
+      saveInfoMutate({ name, email, institution, newsletter: !!newsletter });
+    },
+    [saveInfoMutate]
   );
 
-  const onChangePassword: FormEventHandler<HTMLFormElement> = useCallback(
-    async (event) => {
-      event.preventDefault();
+  const {
+    mutate: changePasswordMutate,
+    isLoading: changePasswordLoading,
+    isError: changePasswordError,
+  } = useMutation({
+    mutationFn: changePassword,
+    onSuccess: async () => {
+      notification("success", "Changed password");
+    },
+  });
 
-      const {
-        current,
-        new: fresh,
-        confirm,
-      } = Object.fromEntries(
-        new FormData(event.target as HTMLFormElement)
-      ) as Record<string, string>;
-
+  const onChangePassword = useCallback(
+    async (data: FormValues) => {
+      const { current, fresh, confirm } = data;
       if (confirm !== fresh) {
         window.alert("Passwords do not match.");
         return;
       }
-
-      try {
-        await changePassword({ current, fresh });
-        window.alert("Successfully changed your password.");
-      } catch (error) {
-        window.alert("There was a problem changing your password.");
-        console.error(error);
-      }
+      changePasswordMutate({ current, fresh });
     },
-    []
+    [changePasswordMutate]
   );
 
   return (
@@ -109,8 +101,16 @@ const Account = () => {
           defaultChecked={loggedIn?.newsletter}
           form="save-info"
         />
-        <Button text="Save Info" icon="floppy-disk" form="save-info" />
+        <Button
+          text="Save Info"
+          icon="floppy-disk"
+          disabled={saveInfoLoading}
+          form="save-info"
+        />
       </Flex>
+
+      {saveInfoLoading && <Notification type="loading" text="Saving info" />}
+      {saveInfoError && <Notification type="error" text="Error saving info" />}
 
       <Form id="save-info" onSubmit={onSaveInfo} />
 
@@ -125,7 +125,7 @@ const Account = () => {
         />
         <Field
           label="New Password"
-          name="new"
+          name="fresh"
           type="password"
           placeholder="**********"
           form="change-password"
@@ -139,8 +139,21 @@ const Account = () => {
         />
       </Grid>
       <Flex>
-        <Button text="Change Password" icon="lock" form="change-password" />
+        <Button
+          text="Change Password"
+          icon="lock"
+          form="change-password"
+          disabled={changePasswordLoading}
+        />
       </Flex>
+
+      {/* statuses */}
+      {changePasswordLoading && (
+        <Notification type="loading" text="Changing password" />
+      )}
+      {changePasswordError && (
+        <Notification type="error" text="Error changing password" />
+      )}
 
       <Form id="change-password" onSubmit={onChangePassword} />
     </Section>
