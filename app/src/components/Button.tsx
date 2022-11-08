@@ -1,4 +1,4 @@
-import { ButtonHTMLAttributes } from "react";
+import { ButtonHTMLAttributes, forwardRef, Ref } from "react";
 import { Link, LinkProps, To } from "react-router-dom";
 import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
@@ -13,12 +13,13 @@ import {
   white,
 } from "@/global/palette";
 
-interface Props {
+type Props = {
   to?: To;
   text?: string;
   icon?: IconName;
   fill?: boolean;
-}
+} & Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
+  Partial<LinkProps>;
 
 const buttonStyle = css({
   display: "inline-flex",
@@ -66,31 +67,40 @@ const squareStyle = css({
   },
 });
 
-const Button = ({
-  to,
-  text,
-  icon,
-  fill = true,
-  ...props
-}: Props &
-  Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
-  Partial<LinkProps>) => {
-  const Component = to ? Link : "button";
+const Button = forwardRef(
+  ({ to, text, icon, fill = true, ...props }: Props, ref) => {
+    const content = (
+      <>
+        {" "}
+        {text && <span>{text}</span>}
+        {icon && <Icon icon={icon} />}
+      </>
+    );
+    const css = [
+      buttonStyle,
+      fill ? fillStyle : null,
+      icon && !text ? squareStyle : null,
+    ];
 
-  return (
-    <Component
-      to={to || ""}
-      css={[
-        buttonStyle,
-        fill ? fillStyle : null,
-        icon && !text ? squareStyle : null,
-      ]}
-      {...props}
-    >
-      {text && <span>{text}</span>}
-      {icon && <Icon icon={icon} />}
-    </Component>
-  );
-};
+    if (to)
+      return (
+        <Link
+          ref={ref as Ref<HTMLAnchorElement>}
+          to={to || ""}
+          css={css}
+          {...props}
+        >
+          {content}
+        </Link>
+      );
+    else
+      return (
+        <button ref={ref as Ref<HTMLButtonElement>} css={css} {...props}>
+          {content}
+        </button>
+      );
+  }
+);
+Button.displayName = "Button";
 
 export default Button;

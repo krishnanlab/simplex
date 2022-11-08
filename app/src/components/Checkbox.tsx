@@ -2,10 +2,10 @@ import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
 import { deep } from "@/global/palette";
 
-interface Props {
+type Props = {
   label: string;
   onChange?: (value: boolean) => unknown;
-}
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
 const wrapperStyle = css({
   display: "flex",
@@ -27,11 +27,7 @@ const inputStyle = css({
   cursor: "pointer",
 });
 
-const Field = ({
-  label,
-  onChange,
-  ...props
-}: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
+const Checkbox = ({ label, onChange, ...props }: Props) => (
   <label css={wrapperStyle}>
     <input
       type="checkbox"
@@ -43,4 +39,4 @@ const Field = ({
   </label>
 );
 
-export default Field;
+export default Checkbox;

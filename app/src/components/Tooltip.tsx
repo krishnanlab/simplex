@@ -1,10 +1,11 @@
-import { cloneElement, ReactNode, useRef, useState } from "react";
+import { cloneElement, ReactElement, useEffect, useRef, useState } from "react";
 import { css } from "@emotion/react";
 import {
   arrow,
   autoUpdate,
   flip,
   FloatingFocusManager,
+  FloatingPortal,
   offset,
   safePolygon,
   shift,
@@ -21,10 +22,10 @@ const tooltipStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  width: "min(calc(100vw - 40px), 400px)",
+  width: "min(calc(100vw - 40px), 500px)",
   maxWidth: "max-content",
   padding: "15px 20px",
-  borderRaius: rounded,
+  borderRadius: rounded,
   background: white,
   boxShadow: shadow,
   outline: "none",
@@ -57,13 +58,19 @@ const arrowStyle = css({
 });
 
 interface Props {
-  reference: JSX.Element;
-  content: string | ReactNode;
-  onOpen?: () => unknown;
+  reference: ReactElement;
+  content: string | ReactElement;
+  open?: boolean;
+  onClose?: () => unknown;
 }
 
-const Tooltip = ({ reference, content, onOpen }: Props) => {
-  const [open, setOpen] = useState(false);
+const Tooltip = ({
+  reference,
+  content,
+  open: passedOpen = false,
+  onClose,
+}: Props) => {
+  const [open, setOpen] = useState(passedOpen);
   const arrowRef = useRef(null);
 
   const {
@@ -79,7 +86,7 @@ const Tooltip = ({ reference, content, onOpen }: Props) => {
     open,
     onOpenChange: (open) => {
       setOpen(open);
-      if (open) onOpen?.();
+      if (!open) onClose?.();
     },
     middleware: [
       offset(arrowSize / 2),
@@ -95,13 +102,13 @@ const Tooltip = ({ reference, content, onOpen }: Props) => {
 
   const { getReferenceProps, getFloatingProps } = useInteractions([
     useHover(context, {
+      enabled: !passedOpen,
       handleClose: safePolygon(),
       delay: {
         open: 200,
         close: 100,
       },
     }),
-    useClick(context),
     useRole(context),
     useDismiss(context),
   ]);
@@ -109,38 +116,40 @@ const Tooltip = ({ reference, content, onOpen }: Props) => {
   return (
     <>
       {cloneElement(reference, getReferenceProps({ ref, ...reference.props }))}
-      {open && (
-        <>
-          <FloatingFocusManager
-            context={context}
-            modal={false}
-            returnFocus={false}
-          >
-            <div
-              ref={floating}
-              css={tooltipStyle}
-              style={{
-                position,
-                top: top ?? "",
-                left: left ?? "",
-              }}
-              {...getFloatingProps()}
+      <FloatingPortal>
+        {open && (
+          <>
+            <FloatingFocusManager
+              context={context}
+              modal={false}
+              order={["reference", "content"]}
             >
-              {content}
               <div
-                ref={arrowRef}
-                data-placement={placement}
+                ref={floating}
+                css={tooltipStyle}
                 style={{
-                  left: arrowX,
-                  top: placement === "top" ? "100%" : "",
-                  bottom: placement === "bottom" ? "100%" : "",
+                  position,
+                  top: top ?? "",
+                  left: left ?? "",
                 }}
-                css={arrowStyle}
-              ></div>
-            </div>
-          </FloatingFocusManager>
-        </>
-      )}
+                {...getFloatingProps()}
+              >
+                {content}
+                <div
+                  ref={arrowRef}
+                  data-placement={placement}
+                  style={{
+                    left: arrowX,
+                    top: placement === "top" ? "100%" : "",
+                    bottom: placement === "bottom" ? "100%" : "",
+                  }}
+                  css={arrowStyle}
+                />
+              </div>
+            </FloatingFocusManager>
+          </>
+        )}
+      </FloatingPortal>
     </>
   );
 };

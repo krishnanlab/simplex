@@ -1,6 +1,15 @@
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import {
+  ReactElement,
+  ReactEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { css } from "@emotion/react";
 import useResizeObserver from "@react-hook/resize-observer";
+import Tooltip from "@/components/Tooltip";
 import {
   accent,
   light,
@@ -87,10 +96,10 @@ const label = "Type or paste text";
 interface Props {
   value: string;
   onChange: (value: string) => void;
-  onSelect?: (value: string) => void;
   highlights: boolean;
   scores: Record<string, number>;
   editable?: boolean;
+  tooltip?: (word: string) => ReactElement;
 }
 
 const colors = new Map<number, string>();
@@ -109,13 +118,15 @@ const getColor = (score: number) =>
 const Editor = ({
   value,
   onChange,
-  onSelect,
   highlights,
   scores,
   editable = false,
+  tooltip,
 }: Props) => {
   const underlay = useRef<HTMLDivElement>(null);
   const input = useRef<HTMLTextAreaElement>(null);
+
+  const [selected, setSelected] = useState(-1);
 
   const words = useMemo(() => splitWords(value), [value]);
 
@@ -129,20 +140,43 @@ const Editor = ({
   }, [words, highlights, matchScroll]);
   useResizeObserver(input, matchScroll);
 
+  const onClick: ReactEventHandler<HTMLTextAreaElement> = (event) => {
+    const target = event.target as HTMLTextAreaElement;
+    const start = target.selectionStart;
+    let total = 0;
+    setSelected(-1);
+    for (const [index, word] of Object.entries(words)) {
+      if (start >= total && start < total + word.length) {
+        setSelected(Number(index));
+        break;
+      }
+      total += word.length;
+    }
+  };
+
   return (
     <div css={wrapperStyle} data-editable={editable}>
       {highlights && (
         <div ref={underlay} css={underlayStyle}>
           {words.map((word, index, array) => {
-            if (scores[word]) {
-              return (
-                <mark
-                  key={index}
-                  style={{ background: getColor(scores[word]) }}
-                >
-                  {word}
-                </mark>
-              );
+            if (scores[word] !== undefined) {
+              const background = getColor(scores[word]);
+              if (index === selected && tooltip)
+                return (
+                  <Tooltip
+                    key={index}
+                    reference={<mark style={{ background }}>{word}</mark>}
+                    content={tooltip(word)}
+                    open={true}
+                    onClose={() => setSelected(-1)}
+                  />
+                );
+              else
+                return (
+                  <mark key={index} style={{ background }}>
+                    {word}
+                  </mark>
+                );
             } else if (index === array.length - 1)
               return word.replace(/\n$/, "\n ");
             else return word;
@@ -158,12 +192,7 @@ const Editor = ({
         required={true}
         disabled={!editable}
         value={value}
-        onSelect={(event) => {
-          const target = event.target as HTMLTextAreaElement;
-          onSelect?.(
-            target.value.substring(target.selectionStart, target.selectionEnd)
-          );
-        }}
+        onClick={onClick}
         onChange={(event) => onChange(event.target.value)}
       />
     </div>

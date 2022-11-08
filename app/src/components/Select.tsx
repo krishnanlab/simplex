@@ -29,7 +29,7 @@ const selectStyle = css({
   cursor: "pointer",
 });
 
-const Field = <Option extends string>({
+const Select = <Option extends string>({
   label,
   options,
   onChange,
@@ -54,4 +54,4 @@ const Field = <Option extends string>({
   </label>
 );
 
-export default Field;
+export default Select;

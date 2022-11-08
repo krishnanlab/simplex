@@ -4,12 +4,12 @@ import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
 
-interface Props {
+export type Props = {
   label: string;
   help?: string;
   optional?: boolean;
   onChange?: (value: string) => unknown;
-}
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
 const wrapperStyle = css({
   display: "block",
@@ -46,7 +46,7 @@ const Field = ({
   optional = false,
   onChange,
   ...props
-}: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
+}: Props) => (
   <label css={wrapperStyle}>
     <Flex hAlign="left" gap="tiny" css={labelStyle}>
       {help && <Help tooltip={help} />}

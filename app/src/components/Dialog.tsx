@@ -1,4 +1,4 @@
-import { cloneElement, ReactNode, useState } from "react";
+import { cloneElement, ReactElement, useState } from "react";
 import { css } from "@emotion/react";
 import {
   FloatingFocusManager,
@@ -44,13 +44,12 @@ const headingStyle = css({
 });
 
 interface Props {
-  reference: JSX.Element;
-  content: ReactNode;
+  reference: ReactElement;
+  content: ReactElement;
   heading: string;
-  onOpen?: () => unknown;
 }
 
-export const Dialog = ({ reference, content, heading, onOpen }: Props) => {
+export const Dialog = ({ reference, content, heading }: Props) => {
   const [open, setOpen] = useState(false);
 
   const {
@@ -59,10 +58,7 @@ export const Dialog = ({ reference, content, heading, onOpen }: Props) => {
     context,
   } = useFloating({
     open,
-    onOpenChange: (open) => {
-      setOpen(open);
-      if (open) onOpen?.();
-    },
+    onOpenChange: setOpen,
   });
 
   const id = useId();
@@ -90,9 +86,9 @@ export const Dialog = ({ reference, content, heading, onOpen }: Props) => {
                 <div css={headingStyle}>
                   <h3 id={`${id}-heading`}>{heading}</h3>
                   <Button
-                    onClick={() => setOpen(false)}
                     icon="times"
                     fill={false}
+                    onClick={() => setOpen(false)}
                   />
                 </div>
                 {content}

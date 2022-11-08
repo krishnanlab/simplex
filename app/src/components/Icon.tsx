@@ -6,9 +6,9 @@ import {
 } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
-interface Props {
+type Props = {
   icon: IconName;
-}
+} & HTMLAttributes<SVGElement>;
 
 const findIcon = (icon: IconName) => {
   const prefixes: Array<IconPrefix> = ["far", "fas", "fab"];
@@ -20,7 +20,7 @@ const findIcon = (icon: IconName) => {
   return null;
 };
 
-const Icon = ({ icon, ...props }: Props & HTMLAttributes<SVGElement>) => {
+const Icon = ({ icon, ...props }: Props) => {
   const match = findIcon(icon);
   if (match) return <FontAwesomeIcon icon={match} {...props} />;
   else return <></>;

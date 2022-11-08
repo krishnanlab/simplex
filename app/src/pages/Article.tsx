@@ -6,9 +6,10 @@ import { css } from "@emotion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
 import { deleteArticle, getArticle, saveArticle } from "@/api/article";
-import { Analysis, analyze, simplify, Simplify } from "@/api/tool";
+import { Analysis, analyze } from "@/api/tool";
 import { exampleText } from "@/assets/example.json";
 import Ago from "@/components/Ago";
+import ArrayField from "@/components/ArrayField";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
 import Editor from "@/components/Editor";
@@ -21,9 +22,9 @@ import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
 import Share from "@/components/Share";
+import Simplify from "@/components/Simplify";
 import Spinner from "@/components/Spinner";
 import Stat from "@/components/Stat";
-import Suggestion from "@/components/Suggestion";
 import { dark, light } from "@/global/palette";
 import { State } from "@/global/state";
 import {
@@ -34,7 +35,7 @@ import {
   versions,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
-import { splitComma, splitWords } from "@/util/string";
+import { splitWords } from "@/util/string";
 
 const spinnerStyle = css({
   position: "fixed",
@@ -99,7 +100,6 @@ const Article = ({ fresh }: Props) => {
   );
 
   const [analyzing, setAnalyzing] = useState(false);
-  const [selected, setSelected] = useState("");
   const [article, setArticle] = useState(blank);
 
   const editable = fresh || (!!loggedIn && article?.author === loggedIn.id);
@@ -163,6 +163,24 @@ const Article = ({ fresh }: Props) => {
   const editField = useCallback(
     <T extends keyof ReadArticle>(key: T, value: ReadArticle[T]) =>
       setArticle((article) => ({ ...article, [key]: value })),
+    []
+  );
+
+  const addIgnore = useCallback(
+    (text: ReadArticle["ignoreWords"][0]) =>
+      setArticle((article) => ({
+        ...article,
+        ignoreWords: [...article.ignoreWords, text],
+      })),
+    []
+  );
+
+  const removeIgnore = useCallback(
+    (text: ReadArticle["ignoreWords"][0]) =>
+      setArticle((article) => ({
+        ...article,
+        ignoreWords: article.ignoreWords.filter((word) => word !== text),
+      })),
     []
   );
 
@@ -303,7 +321,17 @@ const Article = ({ fresh }: Props) => {
         scores={analysis.scores}
         highlights={highlights}
         editable={editable && version == "simplified"}
-        onSelect={setSelected}
+        tooltip={(word) => (
+          <Simplify
+            word={word}
+            ignored={article.ignoreWords.includes(word)}
+            setIgnored={() =>
+              article.ignoreWords.includes(word)
+                ? removeIgnore(word)
+                : addIgnore(word)
+            }
+          />
+        )}
       />
       {analyzing && <Spinner css={spinnerStyle} />}
 
@@ -312,7 +340,7 @@ const Article = ({ fresh }: Props) => {
         <Flex display="inline" gap="small">
           <Stat
             label="Complex"
-            help="Select a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+            help="Click a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
           />
           <svg viewBox="0 0 30 10" width="60px">
             <g fill={light}>
@@ -342,17 +370,14 @@ const Article = ({ fresh }: Props) => {
         />
       </Flex>
 
-      {/* suggestion */}
-      <Suggestion word={selected} />
-
       {/* more controls */}
-      <Field
+      <ArrayField
         label="Ignore these words (exclude from complexity penalty)"
         optional={true}
-        defaultValue={article.ignoreWords.join(", ")}
+        value={article.ignoreWords}
         placeholder="word, some phrase, compound-word"
         form="article-form"
-        onChange={(value) => editField("ignoreWords", splitComma(value))}
+        onChange={(value) => editField("ignoreWords", value)}
       />
 
       {homepage && metadata}
