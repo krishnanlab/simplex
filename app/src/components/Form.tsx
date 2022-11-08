@@ -8,14 +8,14 @@ interface Props {
   onSubmit: (data: FormValues) => unknown;
 }
 
-const style = css({
+const formStyle = css({
   display: "contents",
 });
 
 const Form = ({ id, onSubmit }: Props) =>
   createPortal(
     <form
-      css={style}
+      css={formStyle}
       id={id}
       onSubmit={(event) => {
         event.preventDefault();

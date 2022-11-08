@@ -18,7 +18,7 @@ const spin = keyframes({
   },
 });
 
-const style = css({
+const spinnerStyle = css({
   "& > path": {
     strokeDasharray: circumference * 0.75 + " " + circumference * 0.25,
     animation: spin + " 0.65s linear infinite",
@@ -30,7 +30,7 @@ interface Props {
 }
 
 const Spinner = ({ className = "" }: Props) => (
-  <svg css={style} className={className} viewBox={viewBox}>
+  <svg css={spinnerStyle} className={className} viewBox={viewBox}>
     <path fill="none" stroke="currentColor" strokeWidth={thickness} d={d} />
   </svg>
 );

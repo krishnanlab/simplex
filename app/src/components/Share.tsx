@@ -3,6 +3,7 @@ import { shareArticle, ShareOptions } from "@/api/article";
 import Button from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
 import Field from "@/components/Field";
+import Flex from "@/components/Flex";
 import { WriteArticle } from "@/global/types";
 
 interface Props {
@@ -42,7 +43,7 @@ const Share = ({ heading, field, help, generate }: Props) => {
     <Dialog
       reference={<Button text="Share" icon="share-nodes" />}
       content={
-        <>
+        <Flex dir="col" hAlign="stretch">
           <Field
             label={field}
             help={help}
@@ -55,7 +56,7 @@ const Share = ({ heading, field, help, generate }: Props) => {
             icon={copied ? "circle-check" : "copy"}
             onClick={copy}
           />
-        </>
+        </Flex>
       }
       heading={heading}
       onOpen={onOpen}

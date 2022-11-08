@@ -3,7 +3,7 @@ import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
 import { pale } from "@/global/palette";
 
-const style = css({
+const footerStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "10px",
@@ -17,7 +17,7 @@ const iconStyle = css({
 });
 
 const Footer = () => (
-  <footer css={style}>
+  <footer css={footerStyle}>
     <Flex gap="small">
       <a href="https://github.com/krishnanlab">
         <Icon css={iconStyle} icon="envelope" />

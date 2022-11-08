@@ -1,5 +1,6 @@
 import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
+import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
 
@@ -16,9 +17,6 @@ const wrapperStyle = css({
 });
 
 const labelStyle = css({
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
   color: dark,
   marginBottom: "15px",
 });
@@ -50,12 +48,12 @@ const Field = ({
   ...props
 }: Props & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">) => (
   <label css={wrapperStyle}>
-    <div css={labelStyle}>
+    <Flex hAlign="left" gap="tiny" css={labelStyle}>
       {help && <Help tooltip={help} />}
       <span>
         {label}: {optional ? "" : "*"}
       </span>
-    </div>
+    </Flex>
     <input
       required={!optional}
       css={inputStyle}

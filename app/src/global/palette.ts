@@ -73,6 +73,7 @@ library.add(
   far.faQuestionCircle,
   far.faTrashAlt,
   far.faTrashCan,
+  fas.faArrowUpRightFromSquare,
   fas.faBars,
   fas.faCircleCheck,
   fas.faCircleExclamation,

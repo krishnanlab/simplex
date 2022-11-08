@@ -2,6 +2,7 @@ import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
+import Flex from "@/components/Flex";
 import { dark, gray, rounded, shadow } from "@/global/palette";
 import { ReadArticle, ReadCollection } from "@/global/types";
 import { shortenURl } from "@/util/string";
@@ -16,11 +17,7 @@ interface Props {
   };
 }
 
-const style = css({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "flex-start",
-  gap: "10px",
+const cardStyle = css({
   padding: "15px 20px",
   borderRadius: rounded,
   "&[data-editable='true']": {
@@ -36,15 +33,14 @@ const countStyle = css({
   color: dark,
 });
 
-const actionsStyle = css({
-  display: "flex",
-  width: "100%",
-  alignItems: "center",
-  gap: "5px",
-});
-
 const Card = ({ article, collection, editable = false, action }: Props) => (
-  <div css={style} data-editable={editable}>
+  <Flex
+    dir="col"
+    gap="small"
+    hAlign="left"
+    css={cardStyle}
+    data-editable={editable}
+  >
     <strong>{article?.title || collection?.title}</strong>
     {article && <a href={article.source}>{shortenURl(article.source)}</a>}
     {collection && <div>{collection.description}</div>}
@@ -54,7 +50,7 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
         ? `In ${article.collections.length} collection(s)`
         : `Has ${collection?.articles.length} article(s)`}
     </div>
-    <div css={actionsStyle}>
+    <Flex gap="tiny">
       <Button
         to={
           "/" +
@@ -70,8 +66,8 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
       {editable && action && (
         <Button fill={false} icon={action.icon} onClick={action.onClick} />
       )}
-    </div>
-  </div>
+    </Flex>
+  </Flex>
 );
 
 export default Card;

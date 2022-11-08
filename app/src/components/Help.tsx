@@ -6,7 +6,7 @@ interface Props {
   tooltip: string;
 }
 
-const style = css({
+const helpStyle = css({
   padding: "0",
   background: "none",
   border: "none",
@@ -15,7 +15,7 @@ const style = css({
 const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={
-      <button css={style} aria-label="Help">
+      <button css={helpStyle} aria-label="Help">
         <Icon icon="question-circle" />
       </button>
     }

@@ -3,6 +3,7 @@ import { useLocation } from "react-router";
 import { useEvent } from "react-use";
 import { css } from "@emotion/react";
 import Button from "@/components/Button";
+import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
 import Section from "@/components/Section";
 import Spinner from "@/components/Spinner";
@@ -15,11 +16,7 @@ export interface Props {
   children?: ReactNode;
 }
 
-const style = css({
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  gap: "20px",
+const notificationStyle = css({
   margin: "60px 0",
   fontWeight: "400",
   color: dark,
@@ -35,13 +32,13 @@ const style = css({
 });
 
 const Notification = ({ type, text, children }: Props) => (
-  <div css={style} data-type={type}>
+  <Flex css={notificationStyle} gap="small" wrap={false} data-type={type}>
     {type === "loading" && <Spinner />}
     {type === "error" && <Icon icon="circle-exclamation" />}
     {type === "success" && <Icon icon="circle-check" />}
     {text && <span>{text}</span>}
     {children}
-  </div>
+  </Flex>
 );
 
 export default Notification;

@@ -6,7 +6,7 @@ import { css } from "@emotion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
 import { deleteArticle, getArticle, saveArticle } from "@/api/article";
-import { Analysis, analyze } from "@/api/tool";
+import { Analysis, analyze, simplify, Simplify } from "@/api/tool";
 import { exampleText } from "@/assets/example.json";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
@@ -23,6 +23,7 @@ import Select from "@/components/Select";
 import Share from "@/components/Share";
 import Spinner from "@/components/Spinner";
 import Stat from "@/components/Stat";
+import Suggestion from "@/components/Suggestion";
 import { dark, light } from "@/global/palette";
 import { State } from "@/global/state";
 import {
@@ -98,7 +99,7 @@ const Article = ({ fresh }: Props) => {
   );
 
   const [analyzing, setAnalyzing] = useState(false);
-
+  const [selected, setSelected] = useState("");
   const [article, setArticle] = useState(blank);
 
   const editable = fresh || (!!loggedIn && article?.author === loggedIn.id);
@@ -302,6 +303,7 @@ const Article = ({ fresh }: Props) => {
         scores={analysis.scores}
         highlights={highlights}
         editable={editable && version == "simplified"}
+        onSelect={setSelected}
       />
       {analyzing && <Spinner css={spinnerStyle} />}
 
@@ -310,7 +312,7 @@ const Article = ({ fresh }: Props) => {
         <Flex display="inline" gap="small">
           <Stat
             label="Complex"
-            help="Click, select, or hover over a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+            help="Select a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
           />
           <svg viewBox="0 0 30 10" width="60px">
             <g fill={light}>
@@ -339,6 +341,9 @@ const Article = ({ fresh }: Props) => {
           help="Flesch-kincaid grade level score, calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones."
         />
       </Flex>
+
+      {/* suggestion */}
+      <Suggestion word={selected} />
 
       {/* more controls */}
       <Field

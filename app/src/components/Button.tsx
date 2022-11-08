@@ -20,7 +20,7 @@ interface Props {
   fill?: boolean;
 }
 
-const style = css({
+const buttonStyle = css({
   display: "inline-flex",
   justifyContent: "center",
   alignItems: "center",
@@ -80,7 +80,11 @@ const Button = ({
   return (
     <Component
       to={to || ""}
-      css={[style, fill ? fillStyle : null, icon && !text ? squareStyle : null]}
+      css={[
+        buttonStyle,
+        fill ? fillStyle : null,
+        icon && !text ? squareStyle : null,
+      ]}
       {...props}
     >
       {text && <span>{text}</span>}

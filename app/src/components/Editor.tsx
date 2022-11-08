@@ -87,14 +87,29 @@ const label = "Type or paste text";
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  onSelect?: (value: string) => void;
   highlights: boolean;
   scores: Record<string, number>;
   editable?: boolean;
 }
 
+const colors = new Map<number, string>();
+const getColor = (score: number) =>
+  colors.get(score) ||
+  colors
+    .set(
+      score,
+      light +
+        Math.floor((255 * (score || 0)) / 100)
+          .toString(16)
+          .padStart(2, "0")
+    )
+    .get(score);
+
 const Editor = ({
   value,
   onChange,
+  onSelect,
   highlights,
   scores,
   editable = false,
@@ -119,25 +134,18 @@ const Editor = ({
       {highlights && (
         <div ref={underlay} css={underlayStyle}>
           {words.map((word, index, array) => {
-            if (scores[word])
+            if (scores[word]) {
               return (
                 <mark
                   key={index}
-                  style={{
-                    background:
-                      light +
-                      Math.floor((255 * (scores[word] || 0)) / 100)
-                        .toString(16)
-                        .padStart(2, "0"),
-                  }}
+                  style={{ background: getColor(scores[word]) }}
                 >
                   {word}
                 </mark>
               );
-            else
-              return index === array.length - 1
-                ? word.replace(/\n$/, "\n ")
-                : word;
+            } else if (index === array.length - 1)
+              return word.replace(/\n$/, "\n ");
+            else return word;
           })}
         </div>
       )}
@@ -150,6 +158,12 @@ const Editor = ({
         required={true}
         disabled={!editable}
         value={value}
+        onSelect={(event) => {
+          const target = event.target as HTMLTextAreaElement;
+          onSelect?.(
+            target.value.substring(target.selectionStart, target.selectionEnd)
+          );
+        }}
         onChange={(event) => onChange(event.target.value)}
       />
     </div>
