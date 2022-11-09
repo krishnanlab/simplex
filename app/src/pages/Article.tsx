@@ -37,6 +37,11 @@ import {
 import { sleep } from "@/util/debug";
 import { splitWords } from "@/util/string";
 
+interface Props {
+  /** whether starting a new article */
+  fresh: boolean;
+}
+
 const spinnerStyle = css({
   position: "fixed",
   right: "10px",
@@ -57,11 +62,6 @@ const blank: ReadArticle = {
   ignoreWords: [],
   collections: [],
 };
-
-interface Props {
-  /** whether starting a new article */
-  fresh: boolean;
-}
 
 /** methods for syncing version with url param */
 const VersionParam: QueryParamConfig<Version> = {

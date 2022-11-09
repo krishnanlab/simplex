@@ -17,6 +17,17 @@ import {
 } from "@floating-ui/react-dom-interactions";
 import { rounded, shadow, white } from "@/global/palette";
 
+interface Props {
+  /** element that triggers tooltip */
+  reference: ReactElement;
+  /** content in opened tooltip */
+  content: string | ReactElement;
+  /** whether to force open on render */
+  open?: boolean;
+  /** func called on close */
+  onClose?: () => unknown;
+}
+
 const tooltipStyle = css({
   display: "flex",
   flexDirection: "column",
@@ -55,17 +66,6 @@ const arrowStyle = css({
     bottom: "0",
   },
 });
-
-interface Props {
-  /** element that triggers tooltip */
-  reference: ReactElement;
-  /** content in opened tooltip */
-  content: string | ReactElement;
-  /** whether to force open on render */
-  open?: boolean;
-  /** func called on close */
-  onClose?: () => unknown;
-}
 
 /**  tooltip popup */
 const Tooltip = ({

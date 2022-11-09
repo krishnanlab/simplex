@@ -1,5 +1,9 @@
 import { css, keyframes } from "@emotion/react";
 
+interface Props {
+  className?: string;
+}
+
 const radius = 10;
 const thickness = 3;
 
@@ -24,10 +28,6 @@ const spinnerStyle = css({
     animation: spin + " 0.65s linear infinite",
   },
 });
-
-interface Props {
-  className?: string;
-}
 
 /** loading spinner svg */
 const Spinner = ({ className = "" }: Props) => (

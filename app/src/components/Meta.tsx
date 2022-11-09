@@ -6,7 +6,7 @@ interface Props {
   title: string | Array<string>;
 }
 
-/** set page meta data, similar to react-helmet */
+/** set page meta data, like react-helmet */
 export const Meta = ({ title }: Props) => {
   /** set title */
   useEffect(() => {

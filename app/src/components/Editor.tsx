@@ -20,6 +20,19 @@ import {
 } from "@/global/palette";
 import { splitWords } from "@/util/string";
 
+interface Props {
+  value: string;
+  onChange: (value: string) => void;
+  /** whether to show highlights */
+  highlights: boolean;
+  /** map of word to scores */
+  scores: Record<string, number>;
+  /** whether editable */
+  editable?: boolean;
+  /** tooltip element to show on word click */
+  tooltip?: (word: string) => ReactElement;
+}
+
 const wrapperStyle = css({
   position: "relative",
   display: "flex",
@@ -92,19 +105,6 @@ const inputStyle = css({
 // https://github.com/facebook/lexical
 
 const label = "Type or paste text";
-
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
-  /** whether to show highlights */
-  highlights: boolean;
-  /** map of word to scores */
-  scores: Record<string, number>;
-  /** whether editable */
-  editable?: boolean;
-  /** tooltip element to show on word click */
-  tooltip?: (word: string) => ReactElement;
-}
 
 /** cache of computed hex colors based on score */
 const colors = new Map<number, string>();

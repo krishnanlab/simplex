@@ -14,6 +14,15 @@ import {
 import Button from "@/components/Button";
 import { dark, rounded, shadow, white } from "@/global/palette";
 
+interface Props {
+  /** element that triggers dialog */
+  reference: ReactElement;
+  /** content in opened dialog */
+  content: ReactElement;
+  /** text at top of dialog */
+  heading: string;
+}
+
 const overlayStyle = css({
   display: "grid",
   placeItems: "center",
@@ -42,15 +51,6 @@ const headingStyle = css({
     margin: "0",
   },
 });
-
-interface Props {
-  /** element that triggers dialog */
-  reference: ReactElement;
-  /** content in opened dialog */
-  content: ReactElement;
-  /** text at top of dialog */
-  heading: string;
-}
 
 /** popup modal */
 export const Dialog = ({ reference, content, heading }: Props) => {

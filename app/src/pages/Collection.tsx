@@ -23,6 +23,11 @@ import Stat from "@/components/Stat";
 import { State } from "@/global/state";
 import { ReadCollection } from "@/global/types";
 
+interface Props {
+  /** whether starting a new collection */
+  fresh: boolean;
+}
+
 /** blank collection to start with and fallback to */
 const blank: ReadCollection = {
   id: "",
@@ -32,11 +37,6 @@ const blank: ReadCollection = {
   description: "",
   articles: [],
 };
-
-interface Props {
-  /** whether starting a new collection */
-  fresh: boolean;
-}
 
 /** new/edit/view page for collection */
 const Collection = ({ fresh }: Props) => {
