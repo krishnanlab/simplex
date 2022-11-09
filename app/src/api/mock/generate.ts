@@ -1,6 +1,8 @@
 import { exampleText } from "@/assets/example.json";
 import { ReadArticle, ReadAuthor, ReadCollection } from "@/global/types";
 
+/** code used to generate mock data */
+
 const order: Record<string, number> = {};
 const rand = <T>(array: Array<T>, key?: string): T =>
   array[
