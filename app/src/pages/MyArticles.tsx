@@ -11,14 +11,17 @@ import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
+/** logged-in user's page of articles and collections */
 const MyArticles = () => {
   const { loggedIn } = useContext(State);
 
+  /** query for user's articles */
   const articles = useQuery({
     queryKey: ["getArticles", loggedIn?.id],
     queryFn: () => getArticles(),
   });
 
+  /** query for user's collection */
   const collections = useQuery({
     queryKey: ["getCollections", loggedIn?.id],
     queryFn: () => getCollections(),
@@ -27,11 +30,17 @@ const MyArticles = () => {
   return (
     <Section>
       <Meta title="My Articles" />
+
       <h2>My Articles</h2>
 
+      {/* statuses */}
       {articles.isLoading && (
         <Notification type="loading" text="Loading your articles" />
       )}
+      {articles.isError && (
+        <Notification type="error" text="Error loading your articles" />
+      )}
+
       {articles.data && (
         <Grid>
           {articles.data.map((article, index) => (
@@ -43,13 +52,22 @@ const MyArticles = () => {
           ))}
         </Grid>
       )}
+
+      {/* new */}
       <Flex>
         <Button to="/" text="New Article" icon="plus" />
       </Flex>
+
       <h2>My Collections</h2>
+
+      {/* statuses */}
       {collections.isLoading && (
         <Notification type="loading" text="Loading your collections" />
       )}
+      {collections.isError && (
+        <Notification type="error" text="Error loading your collections" />
+      )}
+
       {collections.data && (
         <Grid>
           {collections.data.map((collection, index) => (
@@ -61,6 +79,8 @@ const MyArticles = () => {
           ))}
         </Grid>
       )}
+
+      {/* new */}
       <Flex>
         <Button to="/collection" text="New Collection" icon="plus" />
       </Flex>

@@ -3,21 +3,22 @@ import { css } from "@emotion/react";
 import { dark, deep, pale } from "@/global/palette";
 
 interface Props {
+  /** background */
   fill?: "none" | "deep" | "dark";
-  children: ReactNode;
   className?: string;
+  children: ReactNode;
 }
 
 const pageWidth = "1000px";
 
 const sectionStyle = css({
   padding: `60px max(60px, calc((100% - ${pageWidth})/2));`,
-  // "& > *:first-child": {
-  //   marginTop: "0",
-  // },
-  // "& > *:last-child": {
-  //   marginBottom: "0",
-  // },
+  "& > *:first-child": {
+    marginTop: "0",
+  },
+  "& > *:last-child": {
+    marginBottom: "0",
+  },
 });
 
 const fills = {
@@ -26,6 +27,7 @@ const fills = {
   dark: dark,
 };
 
+/** util section wrapper */
 const Section = ({ fill = "none", children, className }: Props) => (
   <section
     css={[

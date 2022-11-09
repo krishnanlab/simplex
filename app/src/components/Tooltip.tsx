@@ -1,4 +1,4 @@
-import { cloneElement, ReactElement, useEffect, useRef, useState } from "react";
+import { cloneElement, ReactElement, useRef, useState } from "react";
 import { css } from "@emotion/react";
 import {
   arrow,
@@ -9,7 +9,6 @@ import {
   offset,
   safePolygon,
   shift,
-  useClick,
   useDismiss,
   useFloating,
   useHover,
@@ -58,12 +57,17 @@ const arrowStyle = css({
 });
 
 interface Props {
+  /** element that triggers tooltip */
   reference: ReactElement;
+  /** content in opened tooltip */
   content: string | ReactElement;
+  /** whether to force open on render */
   open?: boolean;
+  /** func called on close */
   onClose?: () => unknown;
 }
 
+/**  tooltip popup */
 const Tooltip = ({
   reference,
   content,
@@ -104,10 +108,7 @@ const Tooltip = ({
     useHover(context, {
       enabled: !passedOpen,
       handleClose: safePolygon(),
-      delay: {
-        open: 200,
-        close: 100,
-      },
+      delay: { open: 200, close: 100 },
     }),
     useRole(context),
     useDismiss(context),
@@ -115,7 +116,10 @@ const Tooltip = ({
 
   return (
     <>
+      {/* reference */}
       {cloneElement(reference, getReferenceProps({ ref, ...reference.props }))}
+
+      {/* tooltip */}
       <FloatingPortal>
         {open && (
           <>
@@ -135,6 +139,8 @@ const Tooltip = ({
                 {...getFloatingProps()}
               >
                 {content}
+
+                {/* arrow/caret */}
                 <div
                   ref={arrowRef}
                   data-placement={placement}

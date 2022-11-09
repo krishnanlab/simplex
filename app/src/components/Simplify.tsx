@@ -7,8 +7,11 @@ import Icon from "@/components/Icon";
 import Notification from "@/components/Notification";
 
 interface Props {
+  /** word to simplified */
   word: string;
+  /** whether word is in ignore list */
   ignored: boolean;
+  /** on click of ignore button */
   setIgnored: () => unknown;
 }
 
@@ -24,7 +27,9 @@ const imageStyle = css({
   width: "100%",
 });
 
+/** synonyms, definitions, etc. of provided word HOC  */
 const Simplification = ({ word, ignored, setIgnored }: Props) => {
+  /** query for simplification */
   const {
     data: simplification,
     isLoading: simplifyLoading,
@@ -37,6 +42,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
 
   return (
     <Flex dir="col" gap="small">
+      {/* top */}
       <Flex hAlign="space" wrap={false}>
         <h4>Simplify &quot;{word}&quot;</h4>
         <Button
@@ -46,7 +52,9 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
           onClick={() => setIgnored?.()}
         />
       </Flex>
+
       <div css={contentStyle}>
+        {/* content */}
         {simplification && (
           <Flex dir="col" hAlign="left" gap="small">
             <strong>Synonyms:</strong>
@@ -59,6 +67,8 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
             <img src={simplification.image} css={imageStyle} alt="" />
           </Flex>
         )}
+
+        {/* statuses */}
         {simplifyLoading && (
           <Notification type="loading" text="Getting synonyms and definition" />
         )}

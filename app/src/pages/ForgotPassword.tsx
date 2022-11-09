@@ -1,34 +1,46 @@
-import { FormEventHandler, useCallback } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
 import { forgotPassword } from "@/api/account";
 import Button from "@/components/Button";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import Form from "@/components/Form";
+import Form, { FormValues } from "@/components/Form";
 import Meta from "@/components/Meta";
+import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
+import { State } from "@/global/state";
 
-const Account = () => {
+/** password reset page */
+const ForgotPassword = () => {
+  const { loggedIn } = useContext(State);
   const navigate = useNavigate();
 
-  const onReset: FormEventHandler<HTMLFormElement> = useCallback(
-    async (event) => {
-      event.preventDefault();
+  /** redirect if already logged in */
+  useEffect(() => {
+    if (loggedIn) navigate("/");
+  });
 
-      const { email } = Object.fromEntries(
-        new FormData(event.target as HTMLFormElement)
-      ) as Record<string, string>;
-
-      try {
-        await forgotPassword({ email });
-        window.alert("We sent you an email to reset your password.");
-        navigate("/");
-      } catch (error) {
-        window.alert("There was a problem resetting your password.");
-        console.error(error);
-      }
+  /** mutation for resetting password */
+  const {
+    mutate: resetMutate,
+    isLoading: resetLoading,
+    isError: resetError,
+  } = useMutation({
+    mutationFn: forgotPassword,
+    onSuccess: async () => {
+      await navigate("/login");
+      notification("success", "Sent password reset email");
     },
-    [navigate]
+  });
+
+  /** when reset form submitted */
+  const onReset = useCallback(
+    async (data: FormValues) => {
+      const { email } = data;
+      resetMutate({ email });
+    },
+    [resetMutate]
   );
 
   return (
@@ -42,14 +54,21 @@ const Account = () => {
         placeholder="jane.smith@email.com"
         form="forgot"
       />
-
       <Flex>
         <Button text="Request Reset" icon="lock" form="forgot" />
       </Flex>
+
+      {/* statuses */}
+      {resetLoading && (
+        <Notification type="loading" text="Submitting password reset" />
+      )}
+      {resetError && (
+        <Notification type="error" text="Error submitting password" />
+      )}
 
       <Form id="forgot" onSubmit={onReset} />
     </Section>
   );
 };
 
-export default Account;
+export default ForgotPassword;

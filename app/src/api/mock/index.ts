@@ -5,10 +5,13 @@ import collections from "./collections.json";
 import { audiences } from "@/global/types";
 import { isWord } from "@/util/string";
 
+/** dummy cache store of word scores */
 const scoreStore: Record<string, number> = {};
+
 export const getWordScore = (word: string) =>
   scoreStore[word] || (scoreStore[word] = Math.random() * 100);
 
+/** mock api responses */
 export const handlers = [
   rest.post(/\/signup/, async (req, res, ctx) => {
     const body = await req.json();

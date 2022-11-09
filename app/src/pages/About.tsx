@@ -3,6 +3,7 @@ import Citation from "@/components/Citation";
 import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 
+/** about page */
 const About = () => (
   <Section>
     <Meta title="About" />

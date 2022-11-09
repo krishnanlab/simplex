@@ -2,6 +2,7 @@ import { ReactNode } from "react";
 import { css } from "@emotion/react";
 
 interface Props {
+  /** max number of columns */
   cols?: number;
   children: ReactNode;
 }
@@ -15,6 +16,7 @@ const gridStyle = css({
   },
 });
 
+/** util grid wrapper */
 const Grid = ({ cols = 3, children }: Props) => {
   // const items = Array.isArray(children) ? children.length : 3;
   const breakpoints = [

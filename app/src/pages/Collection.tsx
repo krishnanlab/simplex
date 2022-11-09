@@ -23,6 +23,7 @@ import Stat from "@/components/Stat";
 import { State } from "@/global/state";
 import { ReadCollection } from "@/global/types";
 
+/** blank collection to start with and fallback to */
 const blank: ReadCollection = {
   id: "",
   author: "",
@@ -33,23 +34,29 @@ const blank: ReadCollection = {
 };
 
 interface Props {
+  /** whether starting a new collection */
   fresh: boolean;
 }
 
+/** new/edit/view page for collection */
 const Collection = ({ fresh }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
+  /** redirect if not logged in */
   useEffect(() => {
     if (!loggedIn) navigate("/login");
   });
 
+  /** main editable collection state */
   const [collection, setCollection] = useState(blank);
 
+  /** whether collection is writable (either new, or belongs to logged in user) */
   const editable = fresh || (!!loggedIn && collection?.author === loggedIn.id);
 
+  /** query for loading collection data (if loading existing collection) */
   const {
     data: loadedCollection,
     isInitialLoading: collectionLoading,
@@ -60,6 +67,7 @@ const Collection = ({ fresh }: Props) => {
     initialData: fresh ? blank : undefined,
   });
 
+  /** query for getting author details from just id */
   const {
     data: author,
     isInitialLoading: authorLoading,
@@ -71,6 +79,7 @@ const Collection = ({ fresh }: Props) => {
     enabled: !!loadedCollection?.author,
   });
 
+  /** query for getting logged-in user's articles */
   const {
     data: userArticles,
     isInitialLoading: userArticlesLoading,
@@ -81,6 +90,7 @@ const Collection = ({ fresh }: Props) => {
     enabled: editable && !!loggedIn?.id,
   });
 
+  /** query for getting collection's articles (if third-party collection) */
   const {
     data: collectionArticles,
     isInitialLoading: collectionArticlesLoading,
@@ -91,6 +101,7 @@ const Collection = ({ fresh }: Props) => {
     enabled: !editable && !!loadedCollection?.articles,
   });
 
+  /** mutation for saving collection */
   const {
     mutate: save,
     isLoading: saveLoading,
@@ -104,6 +115,7 @@ const Collection = ({ fresh }: Props) => {
     },
   });
 
+  /** mutation for deleting collection */
   const {
     mutate: trash,
     isLoading: trashLoading,
@@ -121,16 +133,19 @@ const Collection = ({ fresh }: Props) => {
     },
   });
 
+  /** when loaded collection changes, set editable collection data */
   useEffect(() => {
     if (loadedCollection) setCollection(loadedCollection);
   }, [loadedCollection]);
 
+  /** helper func to edit collection data state */
   const editField = useCallback(
     <T extends keyof ReadCollection>(key: T, value: ReadCollection[T]) =>
       setCollection((collection) => ({ ...collection, [key]: value })),
     []
   );
 
+  /** helper func to add article to list in collection data */
   const addArticle = useCallback(
     (id: ReadCollection["articles"][0]) =>
       setCollection((collection) => ({
@@ -140,6 +155,7 @@ const Collection = ({ fresh }: Props) => {
     []
   );
 
+  /** helper func to remove article from list in collection data */
   const removeArticle = useCallback(
     (id: ReadCollection["articles"][0]) =>
       setCollection((collection) => ({
@@ -149,10 +165,12 @@ const Collection = ({ fresh }: Props) => {
     []
   );
 
+  /** author string */
   const by = author
     ? author.name + (editable ? " (You)" : "") + " | " + author.institution
     : "You";
 
+  /** user's articles that are selected */
   const selected = useMemo(
     () =>
       collection.articles
@@ -161,6 +179,7 @@ const Collection = ({ fresh }: Props) => {
     [collection.articles, userArticles]
   );
 
+  /** user's articles that are not selected */
   const unselected = useMemo(
     () =>
       userArticles?.filter(
@@ -169,6 +188,7 @@ const Collection = ({ fresh }: Props) => {
     [collection.articles, userArticles]
   );
 
+  /** overall loading */
   if (
     collectionLoading ||
     authorLoading ||
@@ -181,6 +201,7 @@ const Collection = ({ fresh }: Props) => {
       </Section>
     );
 
+  /** overall error */
   if (
     collectionError ||
     authorError ||
@@ -193,6 +214,7 @@ const Collection = ({ fresh }: Props) => {
       </Section>
     );
 
+  /** heading and title text */
   let heading = "";
   if (fresh) heading = "New Collection";
   else if (editable) heading = "Edit Collection";

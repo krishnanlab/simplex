@@ -13,14 +13,17 @@ import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
+/** signup page */
 const SignUp = () => {
   const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
+  /** redirect if already logged in */
   useEffect(() => {
-    if (loggedIn) navigate("/account");
+    if (loggedIn) navigate("/");
   });
 
+  /** mutation to signup */
   const {
     mutate: signupMutate,
     isLoading: signupLoading,
@@ -33,6 +36,7 @@ const SignUp = () => {
     },
   });
 
+  /** when signup form submitted */
   const onSignup = useCallback(
     async (data: FormValues) => {
       const { name, email, institution, password, confirm, newsletter } = data;
@@ -56,6 +60,7 @@ const SignUp = () => {
       <Meta title="Sign Up" />
       <h2>Sign Up</h2>
 
+      {/* pitch */}
       <p>
         <strong>Why sign up?</strong>
       </p>
@@ -110,6 +115,7 @@ const SignUp = () => {
         <Button text="Sign Up" icon="user-plus" form="signup" />
       </Flex>
 
+      {/* statuses */}
       {signupLoading && <Notification type="loading" text="Signing up" />}
       {signupError && <Notification type="error" text="Error signing up" />}
 

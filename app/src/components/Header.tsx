@@ -54,18 +54,22 @@ const buttonStyle = css({
   },
 });
 
+/** section at top of every page, with logo and nav bar */
 const Header = () => {
+  /** use global state */
   const { loggedIn } = useContext(State);
+  /** whether nav bar expanded */
   const [open, setOpen] = useState(false);
 
+  /** point where header collapses into menu */
   const menuBreakpoint = loggedIn ? "920px" : "640px";
 
+  /** styles from breakpoint */
   const wrapHeader: CSSObject = {
     [`@media (max-width: ${menuBreakpoint})`]: {
       flexDirection: "column",
     },
   };
-
   const hideButton = {
     [`@media not screen and (max-width: ${menuBreakpoint})`]: {
       display: "none",
@@ -80,6 +84,7 @@ const Header = () => {
   return (
     <header css={[headerStyle, wrapHeader]}>
       <div css={titleStyle}>
+        {/* title/logo */}
         <Logo
           css={logoStyle}
           onMouseEnter={(event) => restartAnimations(event.target as Element)}
@@ -87,6 +92,8 @@ const Header = () => {
         <Link css={homeStyle} to="/">
           <h1>Simplex</h1>
         </Link>
+
+        {/* expand/collapse button */}
         <div style={{ width: 0 }}>
           <button
             css={[buttonStyle, hideButton]}
@@ -98,6 +105,8 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* nav bar */}
       <nav css={[navStyle, hideNav]}>
         <Link to="/">Editor</Link>
         <Link to="about">About</Link>

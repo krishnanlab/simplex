@@ -13,14 +13,17 @@ import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
+/** logged-in user's account page */
 const Account = () => {
   const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
+  /** redirect if not logged in */
   useEffect(() => {
     if (!loggedIn) navigate("/login");
   });
 
+  /** mutation for saving info */
   const {
     mutate: saveInfoMutate,
     isLoading: saveInfoLoading,
@@ -33,6 +36,7 @@ const Account = () => {
     },
   });
 
+  /** when save info form submitted */
   const onSaveInfo = useCallback(
     async (data: FormValues) => {
       const { name, email, institution, newsletter } = data;
@@ -41,6 +45,7 @@ const Account = () => {
     [saveInfoMutate]
   );
 
+  /** mutation for changing password */
   const {
     mutate: changePasswordMutate,
     isLoading: changePasswordLoading,
@@ -52,6 +57,7 @@ const Account = () => {
     },
   });
 
+  /** when change password form submitted */
   const onChangePassword = useCallback(
     async (data: FormValues) => {
       const { current, fresh, confirm } = data;
@@ -69,6 +75,7 @@ const Account = () => {
       <Meta title="Account" />
       <h2>Account</h2>
 
+      {/* form */}
       <h3>Personal Info</h3>
       <Grid>
         <Field
@@ -109,11 +116,13 @@ const Account = () => {
         />
       </Flex>
 
+      {/* statuses */}
       {saveInfoLoading && <Notification type="loading" text="Saving info" />}
       {saveInfoError && <Notification type="error" text="Error saving info" />}
 
       <Form id="save-info" onSubmit={onSaveInfo} />
 
+      {/* form */}
       <h3>Change Password</h3>
       <Grid>
         <Field

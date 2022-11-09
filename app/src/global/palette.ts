@@ -4,7 +4,7 @@ import * as fab from "@fortawesome/free-brands-svg-icons";
 import * as far from "@fortawesome/free-regular-svg-icons";
 import * as fas from "@fortawesome/free-solid-svg-icons";
 
-// colors
+/** colors */
 const deep = "#0081A7";
 const pale = "#F8F1ED";
 const light = "#FFB4A2";
@@ -15,12 +15,12 @@ const gray = "#E0E0E0";
 const offWhite = "#F8F8F8";
 const white = "#FFFFFF";
 
-// effects
+/** effects styles */
 const rounded = "3px";
 const shadow = "0 4px 2px 0 #00000010, 0 0 5px 2px #00000020";
 const fast = "0.1s ease";
 
-// text
+/** text styles */
 const serif = "'Roboto Slab', serif";
 const spacing = 1.7;
 const small: CSSObject = { fontSize: "0.9rem", lineHeight: spacing };
@@ -62,7 +62,7 @@ export {
   title,
 };
 
-// font awesome icons
+/** font awesome icons */
 library.add(
   fab.faGithub,
   far.faCopy,

@@ -14,9 +14,13 @@ import {
 } from "@/global/palette";
 
 type Props = {
+  /** location when link */
   to?: To;
+  /** text to show */
   text?: string;
+  /** font awesome icon name */
   icon?: IconName;
+  /** fill design */
   fill?: boolean;
 } & Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
   Partial<LinkProps>;
@@ -67,15 +71,17 @@ const squareStyle = css({
   },
 });
 
+/** button that links somewhere or does something */
 const Button = forwardRef(
   ({ to, text, icon, fill = true, ...props }: Props, ref) => {
+    /** inner text and icon  */
     const content = (
       <>
-        {" "}
         {text && <span>{text}</span>}
         {icon && <Icon icon={icon} />}
       </>
     );
+
     const css = [
       buttonStyle,
       fill ? fillStyle : null,

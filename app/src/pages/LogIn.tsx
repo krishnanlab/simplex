@@ -12,14 +12,17 @@ import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
+/** login page */
 const LogIn = () => {
   const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
+  /** redirect if already logged in */
   useEffect(() => {
-    if (loggedIn) navigate("/account");
+    if (loggedIn) navigate("/");
   });
 
+  /** mutation for logging in */
   const {
     mutate: loginMutate,
     isLoading: loginLoading,
@@ -32,6 +35,7 @@ const LogIn = () => {
     },
   });
 
+  /** when login form submitted */
   const onLogin = useCallback(
     async (data: FormValues) => {
       const { email, password } = data;
@@ -65,6 +69,7 @@ const LogIn = () => {
         <Button text="Log In" icon="right-to-bracket" form="login" />
       </Flex>
 
+      {/* statuses */}
       {loginLoading && <Notification type="loading" text="Logging in" />}
       {loginError && <Notification type="error" text="Error logging in" />}
 

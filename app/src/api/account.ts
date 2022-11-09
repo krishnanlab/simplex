@@ -24,11 +24,13 @@ export const login = (params: Login) =>
 
 export const logout = () => request("/logout", { method: "POST" });
 
+/** lookup public info of author */
 export const getAuthor = (id: string) =>
   request<PublicReadAuthor>(`/author/${id}`);
 
 type SaveInfo = WriteAuthor;
 
+/** save user's account info */
 export const saveInfo = (props: SaveInfo) =>
   request<ReadAuthor>("/save-info", {
     method: "POST",

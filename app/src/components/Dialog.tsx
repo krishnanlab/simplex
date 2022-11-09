@@ -44,11 +44,15 @@ const headingStyle = css({
 });
 
 interface Props {
+  /** element that triggers dialog */
   reference: ReactElement;
+  /** content in opened dialog */
   content: ReactElement;
+  /** text at top of dialog */
   heading: string;
 }
 
+/** popup modal */
 export const Dialog = ({ reference, content, heading }: Props) => {
   const [open, setOpen] = useState(false);
 
@@ -71,7 +75,10 @@ export const Dialog = ({ reference, content, heading }: Props) => {
 
   return (
     <>
+      {/* reference */}
       {cloneElement(reference, getReferenceProps({ ref, ...reference.props }))}
+
+      {/* dialog */}
       <FloatingPortal>
         {open && (
           <FloatingOverlay lockScroll css={overlayStyle}>
@@ -83,6 +90,7 @@ export const Dialog = ({ reference, content, heading }: Props) => {
                 aria-describedby={`${id}-heading`}
                 {...getFloatingProps()}
               >
+                {/* top */}
                 <div css={headingStyle}>
                   <h3 id={`${id}-heading`}>{heading}</h3>
                   <Button
@@ -91,6 +99,7 @@ export const Dialog = ({ reference, content, heading }: Props) => {
                     onClick={() => setOpen(false)}
                   />
                 </div>
+
                 {content}
               </div>
             </FloatingFocusManager>

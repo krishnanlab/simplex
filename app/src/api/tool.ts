@@ -7,6 +7,7 @@ export interface Analysis {
   grade: number;
 }
 
+/** main analysis of complexity */
 export const analyze = (
   words: Array<string>,
   audience: Audience,
@@ -24,5 +25,6 @@ export interface Simplify {
   link: string;
 }
 
+/** get synonyms, definition, etc. */
 export const simplify = (word: string) =>
   request<Simplify>(`/simplify/${word}`);

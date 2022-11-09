@@ -5,10 +5,12 @@ import { logout } from "@/api/account";
 import Notification from "@/components/Notification";
 import { State } from "@/global/state";
 
+/** logout page */
 const LogOut = () => {
   const { setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
+  /** mutation to logout */
   const {
     mutate: logoutMutate,
     isLoading: logoutLoading,
@@ -21,6 +23,7 @@ const LogOut = () => {
     },
   });
 
+  /** try to logout immediately */
   useEffect(() => {
     logoutMutate();
   }, [logoutMutate]);

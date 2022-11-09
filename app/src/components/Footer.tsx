@@ -16,6 +16,7 @@ const iconStyle = css({
   fontSize: "1.2rem",
 });
 
+/** section at bottom of every page */
 const Footer = () => (
   <footer css={footerStyle}>
     <Flex gap="small">

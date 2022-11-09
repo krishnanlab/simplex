@@ -5,8 +5,11 @@ import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
 
 export type Props = {
+  /** text above input */
   label: string;
+  /** question mark text on hover */
   help?: string;
+  /** whether field is optional for form */
   optional?: boolean;
   onChange?: (value: string) => unknown;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
@@ -40,6 +43,7 @@ const inputStyle = css({
   },
 });
 
+/** text input with label */
 const Field = ({
   label,
   help,

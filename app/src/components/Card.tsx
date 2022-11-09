@@ -8,9 +8,13 @@ import { ReadArticle, ReadCollection } from "@/global/types";
 import { shortenURl } from "@/util/string";
 
 interface Props {
+  /** article details */
   article?: ReadArticle;
+  /** collection details */
   collection?: ReadCollection;
+  /** change design/icons/etc based on whether editable */
   editable?: boolean;
+  /** extra action button */
   action?: {
     icon: IconName;
     onClick: () => void;
@@ -33,6 +37,7 @@ const countStyle = css({
   color: dark,
 });
 
+/** card to display article or collection  */
 const Card = ({ article, collection, editable = false, action }: Props) => (
   <Flex
     dir="col"
@@ -41,16 +46,24 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
     css={cardStyle}
     data-editable={editable}
   >
+    {/* title */}
     <strong>{article?.title || collection?.title}</strong>
+    {/* secondary info */}
     {article && <a href={article.source}>{shortenURl(article.source)}</a>}
     {collection && <div>{collection.description}</div>}
+
     <Spacer />
+
+    {/* tertiary info */}
     <div css={countStyle}>
       {article
         ? `In ${article.collections.length} collection(s)`
         : `Has ${collection?.articles.length} article(s)`}
     </div>
+
+    {/* actions */}
     <Flex gap="tiny">
+      {/* view/edit button */}
       <Button
         to={
           "/" +
@@ -62,7 +75,10 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
         icon={editable ? "pen-to-square" : "eye"}
       />
       <Ago date={article?.date || collection?.date || ""} />
+
       <Spacer />
+
+      {/* extra action button */}
       {editable && action && (
         <Button fill={false} icon={action.icon} onClick={action.onClick} />
       )}

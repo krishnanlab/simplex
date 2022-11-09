@@ -45,6 +45,7 @@ const spinnerStyle = css({
   height: "30px",
 });
 
+/** blank article to start with and fallback to */
 const blank: ReadArticle = {
   id: "",
   author: "",
@@ -58,9 +59,11 @@ const blank: ReadArticle = {
 };
 
 interface Props {
+  /** whether starting a new article */
   fresh: boolean;
 }
 
+/** methods for syncing version with url param */
 const VersionParam: QueryParamConfig<Version> = {
   encode: (value: Version) => value,
   decode: (value): Version => {
@@ -69,6 +72,7 @@ const VersionParam: QueryParamConfig<Version> = {
   },
 };
 
+/** methods for syncing audience with url param */
 const AudienceParam: QueryParamConfig<Audience> = {
   encode: (value: Audience) => value,
   decode: (value): Audience => {
@@ -77,11 +81,13 @@ const AudienceParam: QueryParamConfig<Audience> = {
   },
 };
 
+/** methods for syncing highlights with url param */
 const HighlightsParam: QueryParamConfig<boolean> = {
   encode: (value: boolean) => String(value),
   decode: (value): boolean => (value === "false" ? false : true),
 };
 
+/** new/edit/view page for article, and homepage content */
 const Article = ({ fresh }: Props) => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -89,22 +95,32 @@ const Article = ({ fresh }: Props) => {
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
+  /** version of saved article */
   const [version, setVersion] = useQueryParam<Version>("version", VersionParam);
+  /** audience to analyze for */
   const [audience, setAudience] = useQueryParam<Audience>(
     "audience",
     AudienceParam
   );
+  /** whether to show highlights */
   const [highlights, setHighlights] = useQueryParam<boolean>(
     "highlights",
     HighlightsParam
   );
 
+  /** whether to show loading spinner */
   const [analyzing, setAnalyzing] = useState(false);
+
+  /** main editable article state */
   const [article, setArticle] = useState(blank);
 
+  /** whether article is writable (either new, or belongs to logged in user) */
   const editable = fresh || (!!loggedIn && article?.author === loggedIn.id);
+
+  /** is homepage of site */
   const homepage = location.pathname === "/";
 
+  /** query for loading article data (if loading existing article) */
   const {
     data: loadedArticle,
     isInitialLoading: articleLoading,
@@ -115,6 +131,7 @@ const Article = ({ fresh }: Props) => {
     initialData: fresh ? blank : undefined,
   });
 
+  /** query for getting author details from just id */
   const {
     data: author,
     isInitialLoading: authorLoading,
@@ -126,6 +143,7 @@ const Article = ({ fresh }: Props) => {
     enabled: !!loadedArticle?.author,
   });
 
+  /** mutation for saving article details */
   const {
     mutate: save,
     isLoading: saveLoading,
@@ -139,6 +157,7 @@ const Article = ({ fresh }: Props) => {
     },
   });
 
+  /** mutation for deleting article */
   const {
     mutate: trash,
     isLoading: trashLoading,
@@ -156,16 +175,19 @@ const Article = ({ fresh }: Props) => {
     },
   });
 
+  /** when loaded article changes, set editable article data */
   useEffect(() => {
     if (loadedArticle) setArticle(loadedArticle);
   }, [loadedArticle]);
 
+  /** helper func to edit article data state */
   const editField = useCallback(
     <T extends keyof ReadArticle>(key: T, value: ReadArticle[T]) =>
       setArticle((article) => ({ ...article, [key]: value })),
     []
   );
 
+  /** helper func to add word to ignore list in article data */
   const addIgnore = useCallback(
     (text: ReadArticle["ignoreWords"][0]) =>
       setArticle((article) => ({
@@ -175,6 +197,7 @@ const Article = ({ fresh }: Props) => {
     []
   );
 
+  /** helper func to remove word from ignore list in article data */
   const removeIgnore = useCallback(
     (text: ReadArticle["ignoreWords"][0]) =>
       setArticle((article) => ({
@@ -184,24 +207,30 @@ const Article = ({ fresh }: Props) => {
     []
   );
 
+  /** author string */
   const by = author
     ? author.name + (editable ? " (You)" : "") + " | " + author.institution
     : "You";
 
+  /** text to render in editor */
   const text =
     version === "original" ? article.originalText : article.simplifiedText;
 
+  /** array of words in editor */
   const words = useMemo(() => splitWords(text), [text]);
 
+  /** results of complexity analysis */
   const [analysis, setAnalysis] = useState<Analysis>({
     scores: {},
     complexity: 0,
     grade: 0,
   });
 
+  /** when params that would affect the analysis change */
   useEffect(() => {
     let latest = true;
 
+    /** run analysis */
     (async () => {
       if (!words.length) return;
       await sleep(500); // debounce
@@ -218,6 +247,7 @@ const Article = ({ fresh }: Props) => {
     };
   }, [words, audience, article.ignoreWords]);
 
+  /** overall loading */
   if (articleLoading || authorLoading)
     return (
       <Section>
@@ -225,6 +255,7 @@ const Article = ({ fresh }: Props) => {
       </Section>
     );
 
+  /** overall error */
   if (articleError || authorError)
     return (
       <Section>
@@ -232,6 +263,7 @@ const Article = ({ fresh }: Props) => {
       </Section>
     );
 
+  /** metadata fields section */
   const metadata = (
     <Grid cols={2}>
       <Field
@@ -254,6 +286,7 @@ const Article = ({ fresh }: Props) => {
     </Grid>
   );
 
+  /** heading and title text */
   let heading = "";
   if (!homepage) {
     if (fresh) heading = "New Article";
@@ -267,6 +300,7 @@ const Article = ({ fresh }: Props) => {
       <Meta title={[heading, article.title]} />
       <h2>{heading}</h2>
 
+      {/* if not on homepage, put metadata above editor */}
       {!homepage && metadata}
 
       {/* details */}
@@ -380,6 +414,7 @@ const Article = ({ fresh }: Props) => {
         onChange={(value) => editField("ignoreWords", value)}
       />
 
+      {/* if on homepage, put metadata after so editor is first and foremost */}
       {homepage && metadata}
 
       {/* actions */}
@@ -398,7 +433,6 @@ const Article = ({ fresh }: Props) => {
             form="article-form"
           />
         )}
-
         {!(loggedIn && fresh) && (
           <Share
             heading="Share Article"

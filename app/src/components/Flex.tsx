@@ -11,6 +11,7 @@ interface Props {
   [key: string]: unknown;
 }
 
+/** map intuitive align name to actual css prop */
 const aligns = {
   left: "flex-start",
   top: "flex-start",
@@ -21,6 +22,7 @@ const aligns = {
   space: "space-between",
 };
 
+/** gap palette */
 const gaps = {
   none: "0",
   tiny: "5px",
@@ -29,6 +31,7 @@ const gaps = {
   big: "60px",
 };
 
+/** util flex wrapper */
 const Flex = ({
   display = "block",
   dir = "row",
@@ -41,6 +44,7 @@ const Flex = ({
 }: Props) => (
   <div
     css={{
+      /** computed style */
       display: display === "inline" ? "inline-flex" : "flex",
       width: display === "block" ? "100%" : "",
       flexDirection: dir === "col" ? "column" : "row",

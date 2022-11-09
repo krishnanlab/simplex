@@ -4,6 +4,7 @@ import { dark, deep } from "@/global/palette";
 import { capitalize } from "@/util/string";
 
 interface Props<Option> {
+  /** label next to input */
   label: string;
   options?: readonly Option[];
   onChange?: (value: Option, index: number) => unknown;
@@ -29,6 +30,7 @@ const selectStyle = css({
   cursor: "pointer",
 });
 
+/** util select component */
 const Select = <Option extends string>({
   label,
   options,

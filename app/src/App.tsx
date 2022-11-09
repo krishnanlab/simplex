@@ -7,9 +7,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { TopNotification } from "@/components/Notification";
-import { State } from "@/global/state";
+import { State, StateType } from "@/global/state";
 import globalStyles from "@/global/styles";
-import { LoggedIn } from "@/global/types";
 import About from "@/pages/About";
 import Account from "@/pages/Account";
 import Article from "@/pages/Article";
@@ -21,6 +20,7 @@ import LogOut from "@/pages/LogOut";
 import MyArticles from "@/pages/MyArticles";
 import SignUp from "@/pages/SignUp";
 
+/** react-query configuration  */
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -37,8 +37,12 @@ const queryClient = new QueryClient({
   },
 });
 
+/** main app entry point */
 const App = () => {
-  const [loggedIn, setLoggedIn] = useLocalStorage<LoggedIn>("logged-in", null);
+  const [loggedIn, setLoggedIn] = useLocalStorage<StateType["loggedIn"]>(
+    "logged-in",
+    null
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -52,6 +56,7 @@ const App = () => {
 
 export default App;
 
+/** route layout */
 const Layout = () => (
   <>
     <Header />
@@ -68,6 +73,7 @@ const Layout = () => (
   </>
 );
 
+/** route definitions */
 const router = createBrowserRouter([
   {
     path: "/",

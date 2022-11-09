@@ -4,6 +4,7 @@ import { css } from "@emotion/react";
 export type FormValues = Record<string, string>;
 
 interface Props {
+  /** page-unique id to refer to from fields */
   id: string;
   onSubmit: (data: FormValues) => unknown;
 }
@@ -12,6 +13,7 @@ const formStyle = css({
   display: "contents",
 });
 
+/** util form component */
 const Form = ({ id, onSubmit }: Props) =>
   createPortal(
     <form

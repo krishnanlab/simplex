@@ -3,6 +3,7 @@ import Icon from "@/components/Icon";
 import Tooltip from "@/components/Tooltip";
 
 interface Props {
+  /** text on hover */
   tooltip: string;
 }
 
@@ -12,6 +13,7 @@ const helpStyle = css({
   border: "none",
 });
 
+/** question mark with text on hover */
 const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={

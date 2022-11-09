@@ -11,7 +11,9 @@ import { accent, dark, deep } from "@/global/palette";
 import { sleep } from "@/util/debug";
 
 export interface Props {
+  /** determins icon and color */
   type: "loading" | "error" | "success";
+  /** text to show */
   text: string;
   children?: ReactNode;
 }
@@ -31,6 +33,7 @@ const notificationStyle = css({
   },
 });
 
+/** notification for status with icon and text */
 const Notification = ({ type, text, children }: Props) => (
   <Flex css={notificationStyle} gap="small" wrap={false} data-type={type}>
     {type === "loading" && <Spinner />}
@@ -43,6 +46,7 @@ const Notification = ({ type, text, children }: Props) => (
 
 export default Notification;
 
+/** function to dispatch global notification */
 export const notification = async (
   type: Props["type"],
   text: Props["text"]
@@ -54,26 +58,30 @@ export const notification = async (
   window.scrollTo(0, 0);
 };
 
+/** global singleton notification at top of page */
 export const TopNotification = () => {
   const [type, setType] = useState<Props["type"]>();
   const [text, setMessage] = useState<Props["text"]>();
-  const route = useLocation();
 
+  /** clear */
   const reset = useCallback(() => {
     setType(undefined);
     setMessage(undefined);
   }, []);
 
+  const route = useLocation();
+
+  /** clear when page changes */
   useEffect(() => {
     reset();
   }, [reset, route]);
 
+  /** listen for global notification event */
   const onNotification = useCallback((event: CustomEvent) => {
     const { type, text } = event.detail as Props;
     setType(type);
     setMessage(text);
   }, []);
-
   useEvent("notification", onNotification);
 
   if (!type || !text) return <></>;

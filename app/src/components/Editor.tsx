@@ -42,7 +42,7 @@ const wrapperStyle = css({
 
 const scrollbar = 50;
 
-const underlayStyle = css({
+const markStyle = css({
   position: "absolute",
   top: "0",
   right: `-${scrollbar}px`,
@@ -96,13 +96,20 @@ const label = "Type or paste text";
 interface Props {
   value: string;
   onChange: (value: string) => void;
+  /** whether to show highlights */
   highlights: boolean;
+  /** map of word to scores */
   scores: Record<string, number>;
+  /** whether editable */
   editable?: boolean;
+  /** tooltip element to show on word click */
   tooltip?: (word: string) => ReactElement;
 }
 
+/** cache of computed hex colors based on score */
 const colors = new Map<number, string>();
+
+/** get hex color of score */
 const getColor = (score: number) =>
   colors.get(score) ||
   colors
@@ -115,6 +122,7 @@ const getColor = (score: number) =>
     )
     .get(score);
 
+/** multi-line text area with word highlighting */
 const Editor = ({
   value,
   onChange,
@@ -123,28 +131,33 @@ const Editor = ({
   editable = false,
   tooltip,
 }: Props) => {
-  const underlay = useRef<HTMLDivElement>(null);
+  /** mark layer element */
+  const mark = useRef<HTMLDivElement>(null);
+  /** textarea layer element */
   const input = useRef<HTMLTextAreaElement>(null);
 
-  const [selected, setSelected] = useState(-1);
-
+  /** split words */
   const words = useMemo(() => splitWords(value), [value]);
 
-  const matchScroll = useCallback(() => {
-    if (!underlay.current || !input.current) return;
-    underlay.current.scrollTop = input.current.scrollTop;
-  }, []);
+  /** index of selected word in split words */
+  const [selected, setSelected] = useState(-1);
 
+  /** sync scrolls of layers */
+  const matchScroll = useCallback(() => {
+    if (!mark.current || !input.current) return;
+    mark.current.scrollTop = input.current.scrollTop;
+  }, []);
   useEffect(() => {
     matchScroll();
   }, [words, highlights, matchScroll]);
   useResizeObserver(input, matchScroll);
 
+  /** when text area clicked */
   const onClick: ReactEventHandler<HTMLTextAreaElement> = (event) => {
-    const target = event.target as HTMLTextAreaElement;
-    const start = target.selectionStart;
+    /** cursor caret location */
+    const start = (event.target as HTMLTextAreaElement).selectionStart;
+    /** determine corresponding word number */
     let total = 0;
-    setSelected(-1);
     for (const [index, word] of Object.entries(words)) {
       if (start >= total && start < total + word.length) {
         setSelected(Number(index));
@@ -157,11 +170,14 @@ const Editor = ({
   return (
     <div css={wrapperStyle} data-editable={editable}>
       {highlights && (
-        <div ref={underlay} css={underlayStyle}>
+        <div ref={mark} css={markStyle}>
           {words.map((word, index, array) => {
+            /** if word is highlight-able */
             if (scores[word] !== undefined) {
               const background = getColor(scores[word]);
+
               if (index === selected && tooltip)
+                /** if selected, show tooltip */
                 return (
                   <Tooltip
                     key={index}
@@ -171,18 +187,25 @@ const Editor = ({
                     onClose={() => setSelected(-1)}
                   />
                 );
-              else
+              else {
+                /** otherwise just show mark */
                 return (
                   <mark key={index} style={{ background }}>
                     {word}
                   </mark>
                 );
-            } else if (index === array.length - 1)
+              }
+            } else if (index === array.length - 1) {
+              /** correct end of input peculiarity */
               return word.replace(/\n$/, "\n ");
-            else return word;
+            } else {
+              /** pass through as string */
+              return word;
+            }
           })}
         </div>
       )}
+
       <textarea
         ref={input}
         css={inputStyle}

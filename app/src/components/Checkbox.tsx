@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { deep } from "@/global/palette";
 
 type Props = {
+  /** label above input */
   label: string;
   onChange?: (value: boolean) => unknown;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
@@ -27,6 +28,7 @@ const inputStyle = css({
   cursor: "pointer",
 });
 
+/** checkbox with label */
 const Checkbox = ({ label, onChange, ...props }: Props) => (
   <label css={wrapperStyle}>
     <input

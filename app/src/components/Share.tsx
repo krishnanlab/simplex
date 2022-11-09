@@ -7,15 +7,20 @@ import Flex from "@/components/Flex";
 import { WriteArticle } from "@/global/types";
 
 interface Props {
+  /** heading in dialog */
   heading: string;
+  /** field title in dialog  */
   field: string;
+  /** question mark text on hover */
   help?: string;
+  /** info needed for generating link */
   generate?: {
     article: WriteArticle;
     options: ShareOptions;
   };
 }
 
+/** share button with dialog HOC */
 const Share = ({ heading, ...rest }: Props) => (
   <Dialog
     reference={<Button text="Share" icon="share-nodes" />}
@@ -26,12 +31,15 @@ const Share = ({ heading, ...rest }: Props) => (
 
 export default Share;
 
+/** dialog content */
 const Content = ({ field, help, generate }: Omit<Props, "heading">) => {
   const [link, setLink] = useState("");
   const [copied, setCopied] = useState(false);
 
+  /** get link */
   useEffect(() => {
     (async () => {
+      /** generate link from provided article */
       if (generate) {
         setLink("generating link...");
         try {
@@ -44,10 +52,14 @@ const Content = ({ field, help, generate }: Omit<Props, "heading">) => {
           console.error(error);
           setLink("error generating link");
         }
-      } else setLink(window.location.href);
+      } else {
+        /** otherwise, just take url in address bar */
+        setLink(window.location.href);
+      }
     })();
   }, [generate]);
 
+  /** copy link to clipboard */
   const copy = useCallback(async () => {
     await window.navigator.clipboard.writeText(link);
     setCopied(true);

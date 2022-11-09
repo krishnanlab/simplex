@@ -1,3 +1,4 @@
+/** how to cite app instructions */
 const Citation = () => (
   <p>
     <strong>

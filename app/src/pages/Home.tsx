@@ -12,10 +12,11 @@ const heroStyle = css({
   textAlign: "center",
 });
 
+/** homepage of app */
 const Home = () => {
   const navigate = useNavigate();
 
-  // handle 404 redirect
+  /** handle 404 redirect */
   useEffect(() => {
     const redirect = window.sessionStorage.redirect as string;
     if (!redirect) return;

@@ -1,9 +1,11 @@
 import { request } from "./";
 import { Id, ReadArticle, WriteArticle } from "@/global/types";
 
+/** lookup article details by id */
 export const getArticle = (id: string) =>
   request<ReadArticle>(`/article/${id}`);
 
+/** get user's articles, or batch lookup by id */
 export const getArticles = (ids?: Array<string>) =>
   request<Array<ReadArticle>>("/articles", {
     method: ids ? "POST" : "GET",
@@ -23,6 +25,7 @@ export interface ShareOptions {
   highlights: boolean;
 }
 
+/** share article when not logged in */
 export const shareArticle = (article: WriteArticle, options: ShareOptions) =>
   request<{ link: string }>("/share", {
     method: "POST",

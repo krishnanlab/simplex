@@ -29,6 +29,7 @@ interface Props {
   className?: string;
 }
 
+/** loading spinner svg */
 const Spinner = ({ className = "" }: Props) => (
   <svg css={spinnerStyle} className={className} viewBox={viewBox}>
     <path fill="none" stroke="currentColor" strokeWidth={thickness} d={d} />
