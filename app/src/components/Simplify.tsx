@@ -18,9 +18,6 @@ interface Props {
 const contentStyle = css({
   maxHeight: "250px",
   overflowY: "auto",
-  "& > *": {
-    margin: "0 !important",
-  },
 });
 
 const imageStyle = css({
