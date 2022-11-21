@@ -1,11 +1,12 @@
 import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
-import { css, CSSObject } from "@emotion/react";
+import { css } from "@stitches/react";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
 import Icon from "@/components/Icon";
 import { fast, gray, pale, plus, rounded } from "@/global/palette";
 import { State } from "@/global/state";
 import { restartAnimations } from "@/util/dom";
+import { classNames } from "@/util/string";
 
 const headerStyle = css({
   display: "flex",
@@ -65,38 +66,38 @@ const Header = () => {
   const menuBreakpoint = loggedIn ? "920px" : "640px";
 
   /** styles from breakpoint */
-  const wrapHeader: CSSObject = {
+  const wrapHeader = css({
     [`@media (max-width: ${menuBreakpoint})`]: {
       flexDirection: "column",
     },
-  };
-  const hideButton = {
+  });
+  const hideButton = css({
     [`@media not screen and (max-width: ${menuBreakpoint})`]: {
       display: "none",
     },
-  };
-  const hideNav = {
+  });
+  const hideNav = css({
     [`@media (max-width: ${menuBreakpoint})`]: {
       display: open ? "" : "none",
     },
-  };
+  });
 
   return (
-    <header css={[headerStyle, wrapHeader]}>
-      <div css={titleStyle}>
+    <header className={classNames([headerStyle(), wrapHeader()])}>
+      <div className={titleStyle()}>
         {/* title/logo */}
         <Logo
-          css={logoStyle}
+          className={logoStyle()}
           onMouseEnter={(event) => restartAnimations(event.target as Element)}
         />
-        <Link css={homeStyle} to="/">
+        <Link className={homeStyle()} to="/">
           <h1>Simplex</h1>
         </Link>
 
         {/* expand/collapse button */}
         <div style={{ width: 0 }}>
           <button
-            css={[buttonStyle, hideButton]}
+            className={classNames([buttonStyle(), hideButton()])}
             onClick={() => setOpen(!open)}
             aria-expanded={open}
             aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
@@ -107,7 +108,7 @@ const Header = () => {
       </div>
 
       {/* nav bar */}
-      <nav css={[navStyle, hideNav]}>
+      <nav className={classNames([navStyle(), hideNav()])}>
         <Link to="/">Editor</Link>
         <Link to="about">About</Link>
         {loggedIn && (

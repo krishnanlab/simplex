@@ -1,7 +1,7 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
 import { useLocation } from "react-router";
 import { useEvent } from "react-use";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
@@ -35,7 +35,12 @@ const notificationStyle = css({
 
 /** notification for status with icon and text */
 const Notification = ({ type, text, children }: Props) => (
-  <Flex css={notificationStyle} gap="small" wrap={false} data-type={type}>
+  <Flex
+    className={notificationStyle()}
+    gap="small"
+    wrap={false}
+    data-type={type}
+  >
     {type === "loading" && <Spinner />}
     {type === "error" && <Icon icon="circle-exclamation" />}
     {type === "success" && <Icon icon="circle-check" />}
@@ -87,7 +92,7 @@ export const TopNotification = () => {
   if (!type || !text) return <></>;
 
   return (
-    <Section css={css({ marginBottom: "-30px" })}>
+    <Section style={{ marginBottom: "-30px" }}>
       <Notification type={type} text={text}>
         <Button icon="times" fill={false} onClick={reset} />
       </Notification>

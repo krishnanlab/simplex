@@ -15,7 +15,7 @@ export const Meta = ({ title }: Props) => {
       .flat()
       .concat("Simplex")
       .map((part) => truncate(part, { length: 25, separator: " " }))
-      .filter((part) => part)
+      .filter(Boolean)
       .join(" | ");
 
     document.title = string;

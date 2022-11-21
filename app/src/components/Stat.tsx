@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, deep } from "@/global/palette";
@@ -21,12 +21,12 @@ const Stat = ({ help, label, value }: Props) => (
   <Flex display="inline" gap="tiny" hAlign="left">
     {help && <Help tooltip={help} />}
     {label && (
-      <span css={labelStyle}>
+      <span className={labelStyle()}>
         {label}
         {value !== undefined ? ":" : ""}
       </span>
     )}
-    {value !== undefined && <span css={valueStyle}>{value}</span>}
+    {value !== undefined && <span className={valueStyle()}>{value}</span>}
   </Flex>
 );
 

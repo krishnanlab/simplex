@@ -2,7 +2,6 @@ import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { useLocalStorage } from "react-use";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
-import { Global } from "@emotion/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
@@ -45,12 +44,14 @@ const App = () => {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <State.Provider value={{ loggedIn, setLoggedIn }}>
-        <RouterProvider router={router} />
-        <Global styles={globalStyles} />
-      </State.Provider>
-    </QueryClientProvider>
+    <>
+      {globalStyles()}
+      <QueryClientProvider client={queryClient}>
+        <State.Provider value={{ loggedIn, setLoggedIn }}>
+          <RouterProvider router={router} />
+        </State.Provider>
+      </QueryClientProvider>
+    </>
   );
 };
 

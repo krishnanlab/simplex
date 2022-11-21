@@ -1,4 +1,5 @@
 import { ReactNode } from "react";
+import { css } from "@stitches/react";
 
 interface Props {
   display?: "inline" | "block";
@@ -10,6 +11,15 @@ interface Props {
   children: ReactNode;
   [key: string]: unknown;
 }
+
+const flexStyle = css({
+  "& > *": {
+    margin: "0 !important",
+  },
+  "section > &": {
+    margin: "30px 0",
+  },
+});
 
 /** map intuitive align name to actual css prop */
 const aligns = {
@@ -43,7 +53,8 @@ const Flex = ({
   ...props
 }: Props) => (
   <div
-    css={{
+    className={flexStyle()}
+    style={{
       /** computed style */
       display: display === "inline" ? "inline-flex" : "flex",
       width: display === "block" ? "100%" : "",
@@ -52,12 +63,6 @@ const Flex = ({
       alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
       gap: gaps[gap],
       flexWrap: wrap ? "wrap" : "nowrap",
-      "& > *": {
-        margin: "0 !important",
-      },
-      "section > &": {
-        margin: "30px 0",
-      },
     }}
     {...props}
   >

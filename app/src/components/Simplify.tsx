@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import { useQuery } from "@tanstack/react-query";
 import { simplify } from "@/api/tool";
 import Button from "@/components/Button";
@@ -50,7 +50,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
         />
       </Flex>
 
-      <div css={contentStyle}>
+      <div className={contentStyle()}>
         {/* content */}
         {simplification && (
           <Flex dir="col" hAlign="left" gap="small">
@@ -61,7 +61,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
             <a href={simplification.link} target="_blank" rel="noreferrer">
               See more <Icon icon="arrow-up-right-from-square" />
             </a>
-            <img src={simplification.image} css={imageStyle} alt="" />
+            <img src={simplification.image} className={imageStyle()} alt="" />
           </Flex>
         )}
 

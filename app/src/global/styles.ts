@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { globalCss } from "@stitches/react";
 import {
   big,
   black,
@@ -13,7 +13,7 @@ import {
   title,
 } from "@/global/palette";
 
-const globalStyles = css({
+const globalStyles = globalCss({
   "*": {
     boxSizing: "border-box",
   },

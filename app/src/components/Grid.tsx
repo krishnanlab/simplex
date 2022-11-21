@@ -1,5 +1,6 @@
 import { ReactNode } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
+import { classNames } from "@/util/string";
 
 interface Props {
   /** max number of columns */
@@ -16,28 +17,32 @@ const gridStyle = css({
   },
 });
 
+const breakpointStyles = [
+  css({
+    "@media (min-width: 0)": {
+      gridTemplateColumns: "1fr",
+    },
+  }),
+  css({
+    "@media (min-width: 600px)": {
+      gridTemplateColumns: "1fr 1fr",
+    },
+  }),
+  css({
+    "@media (min-width: 900px)": {
+      gridTemplateColumns: "1fr 1fr 1fr",
+    },
+  }),
+];
+
 /** util grid wrapper */
 const Grid = ({ cols = 3, children }: Props) => {
   // const items = Array.isArray(children) ? children.length : 3;
-  const breakpoints = [
-    {
-      "@media (min-width: 0)": {
-        gridTemplateColumns: "1fr",
-      },
-    },
-    {
-      "@media (min-width: 600px)": {
-        gridTemplateColumns: "1fr 1fr",
-      },
-    },
-    {
-      "@media (min-width: 900px)": {
-        gridTemplateColumns: "1fr 1fr 1fr",
-      },
-    },
-  ].slice(0, cols);
+  const breakpoints = breakpointStyles.map((style) => style()).slice(0, cols);
 
-  return <div css={[gridStyle, ...breakpoints]}>{children}</div>;
+  return (
+    <div className={classNames([gridStyle(), ...breakpoints])}>{children}</div>
+  );
 };
 
 export default Grid;

@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
@@ -51,8 +51,8 @@ const Field = ({
   onChange,
   ...props
 }: Props) => (
-  <label css={wrapperStyle}>
-    <Flex hAlign="left" gap="tiny" css={labelStyle}>
+  <label className={wrapperStyle()}>
+    <Flex hAlign="left" gap="tiny" className={labelStyle()}>
       {help && <Help tooltip={help} />}
       <span>
         {label}: {optional ? "" : "*"}
@@ -60,7 +60,7 @@ const Field = ({
     </Flex>
     <input
       required={!optional}
-      css={inputStyle}
+      className={inputStyle()}
       {...props}
       onChange={(event) => onChange?.(event.target.value as string)}
     />

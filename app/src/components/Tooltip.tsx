@@ -1,5 +1,5 @@
 import { cloneElement, ReactElement, useRef, useState } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import {
   arrow,
   autoUpdate,
@@ -130,7 +130,7 @@ const Tooltip = ({
             >
               <div
                 ref={floating}
-                css={tooltipStyle}
+                className={tooltipStyle()}
                 style={{
                   position,
                   top: top ?? "",
@@ -149,7 +149,7 @@ const Tooltip = ({
                     top: placement === "top" ? "100%" : "",
                     bottom: placement === "bottom" ? "100%" : "",
                   }}
-                  css={arrowStyle}
+                  className={arrowStyle()}
                 />
               </div>
             </FloatingFocusManager>

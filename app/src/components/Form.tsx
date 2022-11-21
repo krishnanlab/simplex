@@ -1,5 +1,5 @@
 import { createPortal } from "react-dom";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 
 export type FormValues = Record<string, string>;
 
@@ -17,7 +17,7 @@ const formStyle = css({
 const Form = ({ id, onSubmit }: Props) =>
   createPortal(
     <form
-      css={formStyle}
+      className={formStyle()}
       id={id}
       onSubmit={(event) => {
         event.preventDefault();

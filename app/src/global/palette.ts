@@ -1,4 +1,4 @@
-import { CSSObject } from "@emotion/react";
+import { CSSProperties } from "@stitches/react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as fab from "@fortawesome/free-brands-svg-icons";
 import * as far from "@fortawesome/free-regular-svg-icons";
@@ -23,18 +23,18 @@ const fast = "0.1s ease";
 /** text styles */
 const serif = "'Roboto Slab', serif";
 const spacing = 1.7;
-const small: CSSObject = { fontSize: "0.9rem", lineHeight: spacing };
-const plus: CSSObject = {
+const small: CSSProperties = { fontSize: "0.9rem", lineHeight: spacing };
+const plus: CSSProperties = {
   fontSize: "1.1rem",
   fontWeight: "400",
   lineHeight: spacing,
 };
-const big: CSSObject = {
+const big: CSSProperties = {
   fontSize: "1.3rem",
   fontWeight: "300",
   lineHeight: spacing,
 };
-const title: CSSObject = {
+const title: CSSProperties = {
   fontSize: "1.4rem",
   fontWeight: "300",
   letterSpacing: "5px",

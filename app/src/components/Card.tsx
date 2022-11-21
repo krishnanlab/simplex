@@ -1,5 +1,5 @@
-import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
+import { css } from "@stitches/react";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
@@ -43,7 +43,7 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
     dir="col"
     gap="small"
     hAlign="left"
-    css={cardStyle}
+    className={cardStyle()}
     data-editable={editable}
   >
     {/* title */}
@@ -55,7 +55,7 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
     <Spacer />
 
     {/* tertiary info */}
-    <div css={countStyle}>
+    <div className={countStyle()}>
       {article
         ? `In ${article.collections.length} collection(s)`
         : `Has ${collection?.articles.length} article(s)`}

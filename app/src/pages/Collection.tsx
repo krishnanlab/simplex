@@ -175,7 +175,7 @@ const Collection = ({ fresh }: Props) => {
     () =>
       collection.articles
         .map((id) => userArticles?.find((article) => article.id === id))
-        .filter((article) => article) || [],
+        .filter(Boolean) || [],
     [collection.articles, userArticles]
   );
 
