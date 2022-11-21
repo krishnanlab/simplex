@@ -1,9 +1,11 @@
 import { ReactNode } from "react";
 import { css } from "@emotion/react";
-import { deep, dark, pale } from "@/palette";
+import { dark, deep, pale } from "@/global/palette";
 
 interface Props {
+  /** background */
   fill?: "none" | "deep" | "dark";
+  className?: string;
   children: ReactNode;
 }
 
@@ -25,7 +27,8 @@ const fills = {
   dark: dark,
 };
 
-const Section = ({ fill = "none", children }: Props) => (
+/** util section wrapper */
+const Section = ({ fill = "none", children, className }: Props) => (
   <section
     css={[
       sectionStyle,
@@ -34,6 +37,7 @@ const Section = ({ fill = "none", children }: Props) => (
         color: fills[fill] ? pale : "",
       },
     ]}
+    className={className}
   >
     {children}
   </section>

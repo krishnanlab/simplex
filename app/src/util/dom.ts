@@ -1,13 +1,13 @@
-// restart animations on element
+/** restart animations on element */
 export const restartAnimations = (element: Element): void => {
-  // get all animations on or under element
+  /** get all animations on or under element */
   const animations = document
     .getAnimations()
     .filter((animation) =>
       element.contains((animation.effect as KeyframeEffect).target)
     );
 
-  // play in reverse
+  /** play in reverse */
   const reverseSpeed = 4;
   animations.forEach((animation) => {
     animation.playbackRate = -reverseSpeed;
@@ -15,7 +15,7 @@ export const restartAnimations = (element: Element): void => {
     animation.play();
   });
 
-  // restart forward
+  /** restart forward */
   const delay = Math.max(...animations.map(getAnimationLength)) / reverseSpeed;
   type ElementWithTimer = Element & { animationTimer: number };
   window.clearTimeout((element as ElementWithTimer).animationTimer);
@@ -28,13 +28,13 @@ export const restartAnimations = (element: Element): void => {
   }, delay);
 };
 
-// get length of animation in ms
+/** get length of animation in ms */
 const getAnimationLength = (animation: Animation) => {
   const element = (animation.effect as KeyframeEffect).target;
   if (!element) return 0;
   return getDurationMs(window.getComputedStyle(element).animationDuration);
 };
 
-// get css duration in ms
+/** get css duration in ms */
 const getDurationMs = (duration: string) =>
   (parseFloat(duration) || 0) * (duration.indexOf("ms") !== -1 ? 1 : 1000);

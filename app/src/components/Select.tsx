@@ -1,9 +1,10 @@
 import { SelectHTMLAttributes } from "react";
 import { css } from "@emotion/react";
-import { dark, deep } from "@/palette";
+import { dark, deep } from "@/global/palette";
 import { capitalize } from "@/util/string";
 
 interface Props<Option> {
+  /** label next to input */
   label: string;
   options?: readonly Option[];
   onChange?: (value: Option, index: number) => unknown;
@@ -29,10 +30,11 @@ const selectStyle = css({
   cursor: "pointer",
 });
 
-const Field = <Option extends string>({
+/** util select component */
+const Select = <Option extends string>({
   label,
   options,
-  onChange = () => null,
+  onChange,
   ...props
 }: Props<Option> &
   Omit<SelectHTMLAttributes<HTMLSelectElement>, "options" | "onChange">) => (
@@ -40,10 +42,10 @@ const Field = <Option extends string>({
     <span css={labelStyle}>{label}:</span>
     <select
       css={selectStyle}
-      {...props}
       onChange={(event) =>
-        onChange(event.target.value as Option, event.target.selectedIndex)
+        onChange?.(event.target.value as Option, event.target.selectedIndex)
       }
+      {...props}
     >
       {options?.map((option, index) => (
         <option key={index} value={option}>
@@ -54,4 +56,4 @@ const Field = <Option extends string>({
   </label>
 );
 
-export default Field;
+export default Select;

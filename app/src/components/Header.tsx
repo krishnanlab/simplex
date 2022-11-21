@@ -1,11 +1,10 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link } from "react-router-dom";
 import { css, CSSObject } from "@emotion/react";
-import { useAtom } from "jotai";
-import { pale, gray, fast, rounded, plus } from "@/palette";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
-import { loggedInState } from "@/state";
 import Icon from "@/components/Icon";
+import { fast, gray, pale, plus, rounded } from "@/global/palette";
+import { State } from "@/global/state";
 import { restartAnimations } from "@/util/dom";
 
 const headerStyle = css({
@@ -55,18 +54,22 @@ const buttonStyle = css({
   },
 });
 
+/** section at top of every page, with logo and nav bar */
 const Header = () => {
-  const [loggedIn] = useAtom(loggedInState);
+  /** use global state */
+  const { loggedIn } = useContext(State);
+  /** whether nav bar expanded */
   const [open, setOpen] = useState(false);
 
-  const menuBreakpoint = loggedIn ? "840px" : "500px";
+  /** point where header collapses into menu */
+  const menuBreakpoint = loggedIn ? "920px" : "640px";
 
+  /** styles from breakpoint */
   const wrapHeader: CSSObject = {
     [`@media (max-width: ${menuBreakpoint})`]: {
       flexDirection: "column",
     },
   };
-
   const hideButton = {
     [`@media not screen and (max-width: ${menuBreakpoint})`]: {
       display: "none",
@@ -81,6 +84,7 @@ const Header = () => {
   return (
     <header css={[headerStyle, wrapHeader]}>
       <div css={titleStyle}>
+        {/* title/logo */}
         <Logo
           css={logoStyle}
           onMouseEnter={(event) => restartAnimations(event.target as Element)}
@@ -88,6 +92,8 @@ const Header = () => {
         <Link css={homeStyle} to="/">
           <h1>Simplex</h1>
         </Link>
+
+        {/* expand/collapse button */}
         <div style={{ width: 0 }}>
           <button
             css={[buttonStyle, hideButton]}
@@ -99,6 +105,8 @@ const Header = () => {
           </button>
         </div>
       </div>
+
+      {/* nav bar */}
       <nav css={[navStyle, hideNav]}>
         <Link to="/">Editor</Link>
         <Link to="about">About</Link>
@@ -110,7 +118,12 @@ const Header = () => {
             <strong>{loggedIn.name}</strong>
           </>
         )}
-        {!loggedIn && <Link to="login">Log In</Link>}
+        {!loggedIn && (
+          <>
+            <Link to="login">Log In</Link>
+            <Link to="signup">Sign Up</Link>
+          </>
+        )}
       </nav>
     </header>
   );

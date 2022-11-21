@@ -1,14 +1,21 @@
-import { css, SerializedStyles, keyframes } from "@emotion/react";
-import { dark, white } from "@/palette";
+import { css, keyframes } from "@emotion/react";
 
 interface Props {
-  css?: SerializedStyles;
   className?: string;
 }
 
+const radius = 10;
+const thickness = 3;
+
+const size = radius * 2 + thickness;
+const circumference = 2 * Math.PI * radius;
+
+const viewBox = [-size / 2, -size / 2, size, size].join(" ");
+const d = `M -${radius} 0 A ${radius} ${radius} 0 0 1 ${radius} 0 A 4 4 0 0 1 -${radius} 0`;
+
 const spin = keyframes({
   from: {
-    strokeDashoffset: "25.13",
+    strokeDashoffset: circumference,
   },
   to: {
     strokeDashoffset: "0",
@@ -16,27 +23,16 @@ const spin = keyframes({
 });
 
 const spinnerStyle = css({
-  height: "1.2em",
   "& > path": {
-    strokeDasharray: "18.85 6.28",
-    animation: spin + " 1s linear infinite",
+    strokeDasharray: circumference * 0.75 + " " + circumference * 0.25,
+    animation: spin + " 0.65s linear infinite",
   },
 });
 
-const Spinner = ({ className }: Props) => (
-  <svg css={spinnerStyle} className={className} viewBox="-5 -5 10 10">
-    <path
-      fill="none"
-      stroke={white}
-      strokeWidth="2"
-      d="M -4 0 A 4 4 0 0 1 4 0 A 4 4 0 0 1 -4 0"
-    />
-    <path
-      fill="none"
-      stroke={dark}
-      strokeWidth="1"
-      d="M -4 0 A 4 4 0 0 1 4 0 A 4 4 0 0 1 -4 0"
-    />
+/** loading spinner svg */
+const Spinner = ({ className = "" }: Props) => (
+  <svg css={spinnerStyle} className={className} viewBox={viewBox}>
+    <path fill="none" stroke="currentColor" strokeWidth={thickness} d={d} />
   </svg>
 );
 

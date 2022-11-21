@@ -1,82 +1,79 @@
-import { useNavigate, Link } from "react-router-dom";
-import { useAtom } from "jotai";
+import { useCallback, useContext, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useMutation } from "@tanstack/react-query";
+import { login } from "@/api/account";
 import Button from "@/components/Button";
-import Section from "@/components/Section";
-import { exampleLogin, loggedInState } from "@/state";
-import Flex from "@/components/Flex";
-import Grid from "@/components/Grid";
 import Field from "@/components/Field";
-import Checkbox from "@/components/Checkbox";
+import Flex from "@/components/Flex";
+import Form, { FormValues } from "@/components/Form";
+import Grid from "@/components/Grid";
+import Meta from "@/components/Meta";
+import Notification from "@/components/Notification";
+import Section from "@/components/Section";
+import { State } from "@/global/state";
 
+/** login page */
 const LogIn = () => {
-  const [, setLoggedIn] = useAtom(loggedInState);
+  const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
+
+  /** redirect if already logged in */
+  useEffect(() => {
+    if (loggedIn) navigate("/");
+  });
+
+  /** mutation for logging in */
+  const {
+    mutate: loginMutate,
+    isLoading: loginLoading,
+    isError: loginError,
+  } = useMutation({
+    mutationFn: login,
+    onSuccess: async (data) => {
+      setLoggedIn(data);
+      navigate("/");
+    },
+  });
+
+  /** when login form submitted */
+  const onLogin = useCallback(
+    async (data: FormValues) => {
+      const { email, password } = data;
+      loginMutate({ email, password });
+    },
+    [loginMutate]
+  );
 
   return (
     <Section>
+      <Meta title="Log In" />
       <h2>Log In</h2>
-      <Grid>
-        <Field label="Email" placeholder={exampleLogin.email} />
+
+      <Grid cols={2}>
+        <Field
+          label="Email"
+          name="email"
+          placeholder="jane.smith@email.com"
+          form="login"
+        />
         <Field
           label="Password"
+          name="password"
           type="password"
-          placeholder={exampleLogin.password}
+          placeholder="**********"
+          form="login"
         />
       </Grid>
       <Flex dir="col">
-        <Link to="/">Forgot password</Link>
-        <Button
-          text="Log In"
-          icon="right-to-bracket"
-          onClick={() => {
-            navigate("/");
-            setLoggedIn(exampleLogin);
-          }}
-        />
+        <Link to="/forgot-password">Forgot password</Link>
+        <Button text="Log In" icon="right-to-bracket" form="login" />
       </Flex>
 
-      <h3>Sign Up</h3>
-      <p>
-        <strong>Why sign up?</strong>
-      </p>
-      <ul>
-        <li>Track revisions to your articles.</li>
-        <li>Organize your articles into collections and share them.</li>
-        <li>Get important updates via our newsletter.</li>
-      </ul>
-      <Grid>
-        <Field label="Display Name" placeholder={exampleLogin.name} />
-        <Field label="Email" optional={true} placeholder={exampleLogin.email} />
-        <Field
-          label="Institution"
-          optional={true}
-          placeholder={exampleLogin.institution}
-        />
-        <Field
-          label="Password"
-          type="password"
-          placeholder={exampleLogin.password}
-        />
-        <Field
-          label="Confirm Password"
-          type="password"
-          placeholder={exampleLogin.password}
-        />
-      </Grid>
-      <Flex dir="col">
-        <Checkbox
-          label="Subscribe to our newsletter"
-          defaultChecked={exampleLogin.newsletter}
-        />
-        <Button
-          text="Sign Up"
-          icon="user-plus"
-          onClick={() => {
-            navigate("/");
-            setLoggedIn(exampleLogin);
-          }}
-        />
-      </Flex>
+      {/* statuses */}
+      {loginLoading && <Notification type="loading" text="Logging in" />}
+      {loginError && <Notification type="error" text="Error logging in" />}
+
+      <Form id="login" onSubmit={onLogin} />
     </Section>
   );
 };

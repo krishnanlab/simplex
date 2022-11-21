@@ -1,9 +1,9 @@
 import { css } from "@emotion/react";
-import { pale } from "@/palette";
-import Icon from "@/components/Icon";
 import Flex from "@/components/Flex";
+import Icon from "@/components/Icon";
+import { pale } from "@/global/palette";
 
-const style = css({
+const footerStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "10px",
@@ -12,14 +12,19 @@ const style = css({
   textAlign: "center",
 });
 
+const iconStyle = css({
+  fontSize: "1.2rem",
+});
+
+/** section at bottom of every page */
 const Footer = () => (
-  <footer css={style}>
-    <Flex gap="medium">
+  <footer css={footerStyle}>
+    <Flex gap="small">
       <a href="https://github.com/krishnanlab">
-        <Icon icon="envelope" />
+        <Icon css={iconStyle} icon="envelope" />
       </a>
       <a href="mailto:arjun.krishnan@cuanschutz.edu">
-        <Icon icon="github" />
+        <Icon css={iconStyle} icon="github" />
       </a>
     </Flex>
     <div>

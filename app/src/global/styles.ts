@@ -1,17 +1,17 @@
 import { css } from "@emotion/react";
 import {
-  light,
-  black,
-  fast,
-  serif,
-  deep,
-  gray,
-  spacing,
-  plus,
   big,
-  title,
+  black,
+  deep,
+  fast,
+  gray,
+  light,
   offWhite,
-} from "@/palette";
+  plus,
+  serif,
+  spacing,
+  title,
+} from "@/global/palette";
 
 const globalStyles = css({
   "*": {
@@ -80,10 +80,12 @@ const globalStyles = css({
   },
   p: {
     margin: "20px 0",
+    lineHeight: spacing + 0.4,
     textAlign: "justify",
   },
   ul: {
     margin: "20px 0",
+    lineHeight: spacing + 0.4,
   },
   hr: {
     height: "1px",
@@ -93,9 +95,6 @@ const globalStyles = css({
   },
   strong: {
     fontWeight: "400",
-  },
-  form: {
-    display: "contents",
   },
   ".spacer": {
     content: "''",

@@ -1,32 +1,30 @@
-import { isWord } from "./../util/string";
-import { Audience, audiences } from "@/api/types";
-import { sleep } from "@/util/debug";
+import { request } from "./";
+import { Audience } from "@/global/types";
 
-// dummy api
-const scoreStore: Record<string, number> = {};
-const getWordScore = (word: string) =>
-  scoreStore[word] || (scoreStore[word] = Math.random() * 100);
+export interface Analysis {
+  scores: Record<string, number>;
+  complexity: number;
+  grade: number;
+}
 
-export const analyze = async (
+/** main analysis of complexity */
+export const analyze = (
   words: Array<string>,
   audience: Audience,
   ignoreWords: Array<string>
-) => {
-  const scores: Record<string, number> = {};
-  for (const word of words)
-    if (isWord(word))
-      scores[word] = ignoreWords.includes(word)
-        ? 0
-        : getWordScore(word) / (audiences.indexOf(audience) + 1);
+) =>
+  request<Analysis>("/analyze", {
+    method: "POST",
+    body: JSON.stringify({ words, audience, ignoreWords }),
+  });
 
-  const calc =
-    Object.values(scores).reduce((sum, val) => sum + val, 0) /
-      Object.values(scores).length || 0;
+export interface Simplify {
+  definition: string;
+  image: string;
+  synonyms: Array<string>;
+  link: string;
+}
 
-  const complexity = calc;
-  const gradeLevel = calc;
-
-  await sleep(100);
-
-  return { scores, complexity, gradeLevel };
-};
+/** get synonyms, definition, etc. */
+export const simplify = (word: string) =>
+  request<Simplify>(`/simplify/${word}`);

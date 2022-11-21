@@ -1,20 +1,25 @@
+import { ReactNode } from "react";
 import { css } from "@emotion/react";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
-import { dark, deep } from "@/palette";
+import Help from "@/components/Help";
+import { dark, deep } from "@/global/palette";
 
 interface Props {
-  tooltip?: string;
+  /** question mark text on hover */
+  help?: string;
+  /** left text (key) */
   label?: string;
-  value?: string | number;
+  /** right text (value) */
+  value?: string | number | ReactNode;
 }
 
 const labelStyle = css({ color: dark, lineHeight: 1 });
 const valueStyle = css({ color: deep, lineHeight: 1 });
 
-const Stat = ({ tooltip, label, value }: Props) => (
+/** simple left/right key/value text with help text */
+const Stat = ({ help, label, value }: Props) => (
   <Flex display="inline" gap="tiny" hAlign="left">
-    {tooltip && <Icon icon="question-circle" title={tooltip} />}
+    {help && <Help tooltip={help} />}
     {label && (
       <span css={labelStyle}>
         {label}

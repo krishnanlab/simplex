@@ -1,11 +1,18 @@
 import { InputHTMLAttributes } from "react";
 import { css } from "@emotion/react";
-import { dark, rounded, shadow } from "@/palette";
+import Flex from "@/components/Flex";
+import Help from "@/components/Help";
+import { dark, rounded, shadow } from "@/global/palette";
 
-interface Props {
+export type Props = {
+  /** text above input */
   label: string;
+  /** question mark text on hover */
+  help?: string;
+  /** whether field is optional for form */
   optional?: boolean;
-}
+  onChange?: (value: string) => unknown;
+} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
 const wrapperStyle = css({
   display: "block",
@@ -13,7 +20,6 @@ const wrapperStyle = css({
 });
 
 const labelStyle = css({
-  width: "100%",
   color: dark,
   marginBottom: "15px",
 });
@@ -37,16 +43,27 @@ const inputStyle = css({
   },
 });
 
+/** text input with label */
 const Field = ({
   label,
+  help,
   optional = false,
+  onChange,
   ...props
-}: Props & InputHTMLAttributes<HTMLInputElement>) => (
+}: Props) => (
   <label css={wrapperStyle}>
-    <div css={labelStyle}>
-      {label}: {optional ? "" : "*"}
-    </div>
-    <input required={!optional} css={inputStyle} {...props} type={props.type} />
+    <Flex hAlign="left" gap="tiny" css={labelStyle}>
+      {help && <Help tooltip={help} />}
+      <span>
+        {label}: {optional ? "" : "*"}
+      </span>
+    </Flex>
+    <input
+      required={!optional}
+      css={inputStyle}
+      {...props}
+      onChange={(event) => onChange?.(event.target.value as string)}
+    />
   </label>
 );
 

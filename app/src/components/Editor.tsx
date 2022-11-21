@@ -1,21 +1,53 @@
-import { useEffect, useCallback, useRef, useMemo } from "react";
-import useResizeObserver from "@react-hook/resize-observer";
+import {
+  ReactElement,
+  ReactEventHandler,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { css } from "@emotion/react";
-import { light, shadow, accent, offWhite } from "@/palette";
+import useResizeObserver from "@react-hook/resize-observer";
+import Tooltip from "@/components/Tooltip";
+import {
+  accent,
+  light,
+  offWhite,
+  rounded,
+  shadow,
+  spacing,
+} from "@/global/palette";
 import { splitWords } from "@/util/string";
+
+interface Props {
+  value: string;
+  onChange: (value: string) => void;
+  /** whether to show highlights */
+  highlights: boolean;
+  /** map of word to scores */
+  scores: Record<string, number>;
+  /** whether editable */
+  editable?: boolean;
+  /** tooltip element to show on word click */
+  tooltip?: (word: string) => ReactElement;
+}
 
 const wrapperStyle = css({
   position: "relative",
   display: "flex",
   margin: "20px 0",
-  boxShadow: shadow,
+  borderRadius: rounded,
   resize: "none",
   overflow: "hidden",
   zIndex: "0",
   "&:focus-within": {
     outline: accent,
   },
-  "&[data-disabled='true']": {
+  "&[data-editable='true']": {
+    boxShadow: shadow,
+  },
+  "&[data-editable='false']": {
     background: offWhite,
     boxShadow: "none",
   },
@@ -23,7 +55,7 @@ const wrapperStyle = css({
 
 const scrollbar = 50;
 
-const underlayStyle = css({
+const markStyle = css({
   position: "absolute",
   top: "0",
   right: `-${scrollbar}px`,
@@ -32,6 +64,7 @@ const underlayStyle = css({
   margin: "0",
   padding: "15px 20px",
   paddingRight: scrollbar + 20 + "px !important",
+  lineHeight: spacing + 0.2,
   whiteSpace: "pre-wrap",
   overflowWrap: "break-word",
   overflowX: "hidden",
@@ -54,7 +87,7 @@ const inputStyle = css({
   padding: "15px 20px",
   background: "none",
   fontFamily: "inherit",
-  lineHeight: "inherit",
+  lineHeight: spacing + 0.2,
   fontSize: "inherit",
   fontWeight: "inherit",
   border: "none",
@@ -73,63 +106,106 @@ const inputStyle = css({
 
 const label = "Type or paste text";
 
-interface Props {
-  value: string;
-  onChange: (value: string) => void;
-  showHighlights: boolean;
-  scores: Record<string, number>;
-  disabled?: boolean;
-}
+/** cache of computed hex colors based on score */
+const colors = new Map<number, string>();
 
+/** get hex color of score */
+const getColor = (score: number) =>
+  colors.get(score) ||
+  colors
+    .set(
+      score,
+      light +
+        Math.floor((255 * (score || 0)) / 100)
+          .toString(16)
+          .padStart(2, "0")
+    )
+    .get(score);
+
+/** multi-line text area with word highlighting */
 const Editor = ({
   value,
   onChange,
-  showHighlights,
+  highlights,
   scores,
-  disabled = false,
+  editable = false,
+  tooltip,
 }: Props) => {
-  const underlay = useRef<HTMLDivElement>(null);
+  /** mark layer element */
+  const mark = useRef<HTMLDivElement>(null);
+  /** textarea layer element */
   const input = useRef<HTMLTextAreaElement>(null);
 
+  /** split words */
   const words = useMemo(() => splitWords(value), [value]);
 
-  const matchScroll = useCallback(() => {
-    if (!underlay.current || !input.current) return;
-    underlay.current.scrollTop = input.current.scrollTop;
-  }, []);
+  /** index of selected word in split words */
+  const [selected, setSelected] = useState(-1);
 
+  /** sync scrolls of layers */
+  const matchScroll = useCallback(() => {
+    if (!mark.current || !input.current) return;
+    mark.current.scrollTop = input.current.scrollTop;
+  }, []);
   useEffect(() => {
     matchScroll();
-  }, [words, showHighlights, matchScroll]);
+  }, [words, highlights, matchScroll]);
   useResizeObserver(input, matchScroll);
 
+  /** when text area clicked */
+  const onClick: ReactEventHandler<HTMLTextAreaElement> = (event) => {
+    /** cursor caret location */
+    const start = (event.target as HTMLTextAreaElement).selectionStart;
+    /** determine corresponding word number */
+    let total = 0;
+    for (const [index, word] of Object.entries(words)) {
+      if (start >= total && start < total + word.length) {
+        setSelected(Number(index));
+        break;
+      }
+      total += word.length;
+    }
+  };
+
   return (
-    <div css={wrapperStyle} data-disabled={disabled}>
-      {showHighlights && (
-        <div ref={underlay} css={underlayStyle}>
+    <div css={wrapperStyle} data-editable={editable}>
+      {highlights && (
+        <div ref={mark} css={markStyle}>
           {words.map((word, index, array) => {
-            if (scores[word])
-              return (
-                <mark
-                  key={index}
-                  style={{
-                    background:
-                      light +
-                      Math.floor((255 * (scores[word] || 0)) / 100)
-                        .toString(16)
-                        .padStart(2, "0"),
-                  }}
-                >
-                  {word}
-                </mark>
-              );
-            else
-              return index === array.length - 1
-                ? word.replace(/\n$/, "\n ")
-                : word;
+            /** if word is highlight-able */
+            if (scores[word] !== undefined) {
+              const background = getColor(scores[word]);
+
+              if (index === selected && tooltip)
+                /** if selected, show tooltip */
+                return (
+                  <Tooltip
+                    key={index}
+                    reference={<mark style={{ background }}>{word}</mark>}
+                    content={tooltip(word)}
+                    open={true}
+                    onClose={() => setSelected(-1)}
+                  />
+                );
+              else {
+                /** otherwise just show mark */
+                return (
+                  <mark key={index} style={{ background }}>
+                    {word}
+                  </mark>
+                );
+              }
+            } else if (index === array.length - 1) {
+              /** correct end of input peculiarity */
+              return word.replace(/\n$/, "\n ");
+            } else {
+              /** pass through as string */
+              return word;
+            }
           })}
         </div>
       )}
+
       <textarea
         ref={input}
         css={inputStyle}
@@ -137,8 +213,9 @@ const Editor = ({
         placeholder={label}
         aria-label={label}
         required={true}
-        disabled={disabled}
+        disabled={!editable}
         value={value}
+        onClick={onClick}
         onChange={(event) => onChange(event.target.value)}
       />
     </div>

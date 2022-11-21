@@ -1,19 +1,33 @@
-import { exampleText } from "@/assets/example.json";
-import { Article } from "@/api/types";
-import { sleep } from "@/util/debug";
-import { exampleLogin } from "@/state";
+import { request } from "./";
+import { Id, ReadArticle, WriteArticle } from "@/global/types";
 
-export const getArticle = async (): Promise<Article> => {
-  await sleep(100);
+/** lookup article details by id */
+export const getArticle = (id: string) =>
+  request<ReadArticle>(`/article/${id}`);
 
-  return {
-    id: "dummy-article-id",
-    author: exampleLogin,
-    date: new Date(),
-    title: "Dummy article title",
-    source: "https://fake.com",
-    originalText: exampleText,
-    simplifiedText: exampleText.replaceAll("coronavirus", "cat"),
-    ignoreWords: ["coronavirus", "respiratory"],
-  };
-};
+/** get user's articles, or batch lookup by id */
+export const getArticles = (ids?: Array<string>) =>
+  request<Array<ReadArticle>>("/articles", {
+    method: ids ? "POST" : "GET",
+    body: ids ? JSON.stringify({ ids }) : undefined,
+  });
+
+export const saveArticle = (id?: string) =>
+  request<{ id: Id }>("/article" + (id ? "/" + id : ""), {
+    method: id ? "PUT" : "POST",
+  });
+
+export const deleteArticle = (id: string) =>
+  request(`/article/${id}`, { method: "DELETE" });
+
+export interface ShareOptions {
+  audience: string;
+  highlights: boolean;
+}
+
+/** share article when not logged in */
+export const shareArticle = (article: WriteArticle, options: ShareOptions) =>
+  request<{ link: string }>("/share", {
+    method: "POST",
+    body: JSON.stringify({ article, options }),
+  });

@@ -1,19 +1,39 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAtom } from "jotai";
-import Section from "@/components/Section";
-import { loggedInState } from "@/state";
+import { useMutation } from "@tanstack/react-query";
+import { logout } from "@/api/account";
+import Notification from "@/components/Notification";
+import { State } from "@/global/state";
 
+/** logout page */
 const LogOut = () => {
-  const [, setLoggedIn] = useAtom(loggedInState);
+  const { setLoggedIn } = useContext(State);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setLoggedIn(null);
-    navigate("/");
+  /** mutation to logout */
+  const {
+    mutate: logoutMutate,
+    isLoading: logoutLoading,
+    isError: logoutError,
+  } = useMutation({
+    mutationFn: logout,
+    onSuccess: () => {
+      setLoggedIn(null);
+      navigate("/");
+    },
   });
 
-  return <Section>Logging Out</Section>;
+  /** try to logout immediately */
+  useEffect(() => {
+    logoutMutate();
+  }, [logoutMutate]);
+
+  return (
+    <>
+      {logoutLoading && <Notification type="loading" text="Logging out" />}
+      {logoutError && <Notification type="error" text="Error logging out" />}
+    </>
+  );
 };
 
 export default LogOut;
