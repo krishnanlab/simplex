@@ -1,5 +1,5 @@
-import { classNames } from "@/util/string";
 import { css, keyframes } from "@stitches/react";
+import { classNames } from "@/util/string";
 
 interface Props {
   className?: string;

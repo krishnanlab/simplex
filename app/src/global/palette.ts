@@ -1,8 +1,8 @@
-import { CSSProperties } from "@stitches/react";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import * as fab from "@fortawesome/free-brands-svg-icons";
 import * as far from "@fortawesome/free-regular-svg-icons";
 import * as fas from "@fortawesome/free-solid-svg-icons";
+import { CSSProperties } from "@stitches/react";
 
 /** colors */
 const deep = "#0081A7";

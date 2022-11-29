@@ -1,12 +1,11 @@
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
-import { useLocalStorage } from "react-use";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import { TopNotification } from "@/components/Notification";
-import { State, StateType } from "@/global/state";
+import StateProvider from "@/global/state";
 import globalStyles from "@/global/styles";
 import About from "@/pages/About";
 import Account from "@/pages/Account";
@@ -37,23 +36,16 @@ const queryClient = new QueryClient({
 });
 
 /** main app entry point */
-const App = () => {
-  const [loggedIn, setLoggedIn] = useLocalStorage<StateType["loggedIn"]>(
-    "logged-in",
-    null
-  );
-
-  return (
-    <>
-      {globalStyles()}
-      <QueryClientProvider client={queryClient}>
-        <State.Provider value={{ loggedIn, setLoggedIn }}>
-          <RouterProvider router={router} />
-        </State.Provider>
-      </QueryClientProvider>
-    </>
-  );
-};
+const App = () => (
+  <>
+    {globalStyles()}
+    <QueryClientProvider client={queryClient}>
+      <StateProvider>
+        <RouterProvider router={router} />
+      </StateProvider>
+    </QueryClientProvider>
+  </>
+);
 
 export default App;
 

@@ -1,5 +1,4 @@
 import { cloneElement, ReactElement, useRef, useState } from "react";
-import { css } from "@stitches/react";
 import {
   arrow,
   autoUpdate,
@@ -15,6 +14,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react-dom-interactions";
+import { css } from "@stitches/react";
 import { rounded, shadow, white } from "@/global/palette";
 
 interface Props {
