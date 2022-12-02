@@ -7,8 +7,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { css } from "@emotion/react";
 import useResizeObserver from "@react-hook/resize-observer";
+import { css } from "@stitches/react";
 import Tooltip from "@/components/Tooltip";
 import {
   accent,
@@ -168,9 +168,9 @@ const Editor = ({
   };
 
   return (
-    <div css={wrapperStyle} data-editable={editable}>
+    <div className={wrapperStyle()} data-editable={editable}>
       {highlights && (
-        <div ref={mark} css={markStyle}>
+        <div ref={mark} className={markStyle()}>
           {words.map((word, index, array) => {
             /** if word is highlight-able */
             if (scores[word] !== undefined) {
@@ -208,7 +208,7 @@ const Editor = ({
 
       <textarea
         ref={input}
-        css={inputStyle}
+        className={inputStyle()}
         onScroll={matchScroll}
         placeholder={label}
         aria-label={label}

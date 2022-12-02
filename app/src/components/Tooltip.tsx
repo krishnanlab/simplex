@@ -1,5 +1,4 @@
 import { cloneElement, ReactElement, useRef, useState } from "react";
-import { css } from "@emotion/react";
 import {
   arrow,
   autoUpdate,
@@ -15,6 +14,7 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react-dom-interactions";
+import { css } from "@stitches/react";
 import { rounded, shadow, white } from "@/global/palette";
 
 interface Props {
@@ -130,7 +130,7 @@ const Tooltip = ({
             >
               <div
                 ref={floating}
-                css={tooltipStyle}
+                className={tooltipStyle()}
                 style={{
                   position,
                   top: top ?? "",
@@ -149,7 +149,7 @@ const Tooltip = ({
                     top: placement === "top" ? "100%" : "",
                     bottom: placement === "bottom" ? "100%" : "",
                   }}
-                  css={arrowStyle}
+                  className={arrowStyle()}
                 />
               </div>
             </FloatingFocusManager>

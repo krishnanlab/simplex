@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Citation from "@/components/Citation";
 import Meta from "@/components/Meta";
 import Section from "@/components/Section";
@@ -30,7 +30,7 @@ const Home = () => {
       <Meta title="" />
 
       <Section fill="deep">
-        <p css={heroStyle}>
+        <p className={heroStyle()}>
           Scientific and medical writing is often hard for non-experts to
           understand because it&apos;s full of jargon. Simplex helps you
           identify complexity in your writing and simplify it.

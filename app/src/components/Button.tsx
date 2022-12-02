@@ -1,7 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef, Ref } from "react";
 import { Link, LinkProps, To } from "react-router-dom";
-import { css } from "@emotion/react";
 import { IconName } from "@fortawesome/fontawesome-svg-core";
+import { css } from "@stitches/react";
 import Icon from "@/components/Icon";
 import {
   accent,
@@ -12,6 +12,7 @@ import {
   rounded,
   white,
 } from "@/global/palette";
+import { classNames } from "@/util/string";
 
 type Props = {
   /** location when link */
@@ -82,18 +83,18 @@ const Button = forwardRef(
       </>
     );
 
-    const css = [
-      buttonStyle,
-      fill ? fillStyle : null,
-      icon && !text ? squareStyle : null,
-    ];
+    const className = classNames([
+      buttonStyle(),
+      fill ? fillStyle() : "",
+      icon && !text ? squareStyle() : "",
+    ]);
 
     if (to)
       return (
         <Link
           ref={ref as Ref<HTMLAnchorElement>}
           to={to || ""}
-          css={css}
+          className={className}
           {...props}
         >
           {content}
@@ -101,7 +102,11 @@ const Button = forwardRef(
       );
     else
       return (
-        <button ref={ref as Ref<HTMLButtonElement>} css={css} {...props}>
+        <button
+          ref={ref as Ref<HTMLButtonElement>}
+          className={className}
+          {...props}
+        >
           {content}
         </button>
       );

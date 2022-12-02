@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 type Props = {
   /** font awesome icon name */
   icon: IconName;
+  className?: string;
 } & HTMLAttributes<SVGElement>;
 
 /** get matching icon in library from icon name */

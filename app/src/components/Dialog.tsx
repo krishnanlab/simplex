@@ -1,5 +1,4 @@
 import { cloneElement, ReactElement, useState } from "react";
-import { css } from "@emotion/react";
 import {
   FloatingFocusManager,
   FloatingOverlay,
@@ -11,8 +10,9 @@ import {
   useInteractions,
   useRole,
 } from "@floating-ui/react-dom-interactions";
+import { css } from "@stitches/react";
 import Button from "@/components/Button";
-import { dark, rounded, shadow, white } from "@/global/palette";
+import { rounded, shadow, white } from "@/global/palette";
 
 interface Props {
   /** element that triggers dialog */
@@ -26,7 +26,7 @@ interface Props {
 const overlayStyle = css({
   display: "grid",
   placeItems: "center",
-  background: dark + "80",
+  backgroundColor: 1,
 });
 
 const dialogStyle = css({
@@ -81,17 +81,17 @@ export const Dialog = ({ reference, content, heading }: Props) => {
       {/* dialog */}
       <FloatingPortal>
         {open && (
-          <FloatingOverlay lockScroll css={overlayStyle}>
+          <FloatingOverlay lockScroll className={overlayStyle()}>
             <FloatingFocusManager context={context}>
               <div
                 ref={floating}
-                css={dialogStyle}
+                className={dialogStyle()}
                 aria-labelledby={`${id}-heading`}
                 aria-describedby={`${id}-heading`}
                 {...getFloatingProps()}
               >
                 {/* top */}
-                <div css={headingStyle}>
+                <div className={headingStyle()}>
                   <h3 id={`${id}-heading`}>{heading}</h3>
                   <Button
                     icon="times"

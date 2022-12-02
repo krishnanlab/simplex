@@ -9,7 +9,6 @@
     "lint": "eslint . --ext .ts,.tsx"
   },
   "dependencies": {
-    "@emotion/react": "^11.10.4",
     "@floating-ui/react-dom": "^1.0.0",
     "@floating-ui/react-dom-interactions": "^0.10.3",
     "@fortawesome/fontawesome-svg-core": "^6.2.0",
@@ -18,8 +17,8 @@
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@react-hook/resize-observer": "^1.2.6",
+    "@stitches/react": "^1.2.8",
     "@tanstack/react-query": "^4.14.1",
-    "@vanilla-extract/css": "^1.9.1",
     "javascript-time-ago": "^2.5.7",
     "lodash": "^4.17.21",
     "react": "^18.2.0",
@@ -31,7 +30,6 @@
     "use-query-params": "^2.1.2"
   },
   "devDependencies": {
-    "@emotion/babel-plugin": "^11.10.2",
     "@simbathesailor/use-what-changed": "^2.0.0",
     "@tanstack/react-query-devtools": "^4.14.1",
     "@types/lodash": "^4.14.188",
@@ -41,7 +39,6 @@
     "@types/react-router-dom": "^5.3.3",
     "@typescript-eslint/eslint-plugin": "^5.38.1",
     "@typescript-eslint/parser": "^5.38.1",
-    "@vanilla-extract/vite-plugin": "^3.6.1",
     "@vitejs/plugin-react": "^2.1.0",
     "eslint": "^8.24.0",
     "eslint-config-prettier": "^8.5.0",

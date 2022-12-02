@@ -2,7 +2,7 @@ import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { QueryParamConfig, useQueryParam } from "use-query-params";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
 import { deleteArticle, getArticle, saveArticle } from "@/api/article";
@@ -367,7 +367,7 @@ const Article = ({ fresh }: Props) => {
           />
         )}
       />
-      {analyzing && <Spinner css={spinnerStyle} />}
+      {analyzing && <Spinner className={spinnerStyle()} />}
 
       {/* results */}
       <Flex>
@@ -386,10 +386,7 @@ const Article = ({ fresh }: Props) => {
           <Stat label="Simpler" />
         </Flex>
         <Stat label="Chars" value={text.length} />
-        <Stat
-          label="Words"
-          value={text.split(/\s+/).filter((word) => word).length}
-        />
+        <Stat label="Words" value={text.split(/\s+/).filter(Boolean).length} />
       </Flex>
       <Flex>
         <Stat

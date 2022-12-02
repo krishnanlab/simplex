@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Icon from "@/components/Icon";
 import Tooltip from "@/components/Tooltip";
 
@@ -17,7 +17,7 @@ const helpStyle = css({
 const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={
-      <button css={helpStyle} aria-label="Help">
+      <button className={helpStyle()} aria-label="Help">
         <Icon icon="question-circle" />
       </button>
     }

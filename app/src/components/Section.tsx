@@ -1,13 +1,13 @@
-import { ReactNode } from "react";
-import { css } from "@emotion/react";
+import { HTMLAttributes } from "react";
+import { css } from "@stitches/react";
 import { dark, deep, pale } from "@/global/palette";
+import { classNames } from "@/util/string";
 
-interface Props {
+type Props = {
   /** background */
   fill?: "none" | "deep" | "dark";
   className?: string;
-  children: ReactNode;
-}
+} & Partial<HTMLAttributes<HTMLElement>>;
 
 const pageWidth = "1000px";
 
@@ -28,19 +28,15 @@ const fills = {
 };
 
 /** util section wrapper */
-const Section = ({ fill = "none", children, className }: Props) => (
+const Section = ({ fill = "none", className, ...props }: Props) => (
   <section
-    css={[
-      sectionStyle,
-      {
-        background: fills[fill],
-        color: fills[fill] ? pale : "",
-      },
-    ]}
-    className={className}
-  >
-    {children}
-  </section>
+    className={classNames([sectionStyle(), className])}
+    style={{
+      background: fills[fill],
+      color: fills[fill] ? pale : "",
+    }}
+    {...props}
+  />
 );
 
 export default Section;

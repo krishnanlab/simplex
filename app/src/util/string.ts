@@ -7,14 +7,14 @@ export const isWord = (value: string) => value.match(/[\p{L}|\p{N}|-]+/u);
 
 /** split string into words */
 export const splitWords = (value: string) =>
-  value.split(/([\p{L}|\p{N}|-]+)/u).filter((part) => part);
+  value.split(/([\p{L}|\p{N}|-]+)/u).filter(Boolean);
 
 /** split comma-separated list */
 export const splitComma = (value: string) =>
   value
     .split(",")
     .map((part) => part.trim())
-    .filter((part) => part);
+    .filter(Boolean);
 
 /** shorten url text */
 export const shortenURl = (value: string) => {
@@ -25,3 +25,7 @@ export const shortenURl = (value: string) => {
     return value;
   }
 };
+
+/** array of strings to classname list */
+export const classNames = (array: Array<string | undefined | null>) =>
+  array.filter(Boolean).join(" ");

@@ -1,4 +1,4 @@
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import Flex from "@/components/Flex";
 import Icon from "@/components/Icon";
 import { pale } from "@/global/palette";
@@ -18,13 +18,13 @@ const iconStyle = css({
 
 /** section at bottom of every page */
 const Footer = () => (
-  <footer css={footerStyle}>
+  <footer className={footerStyle()}>
     <Flex gap="small">
       <a href="https://github.com/krishnanlab">
-        <Icon css={iconStyle} icon="envelope" />
+        <Icon className={iconStyle().toString()} icon="envelope" />
       </a>
       <a href="mailto:arjun.krishnan@cuanschutz.edu">
-        <Icon css={iconStyle} icon="github" />
+        <Icon className={iconStyle().toString()} icon="github" />
       </a>
     </Flex>
     <div>

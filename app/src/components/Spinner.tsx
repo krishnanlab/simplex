@@ -1,4 +1,5 @@
-import { css, keyframes } from "@emotion/react";
+import { css, keyframes } from "@stitches/react";
+import { classNames } from "@/util/string";
 
 interface Props {
   className?: string;
@@ -31,7 +32,7 @@ const spinnerStyle = css({
 
 /** loading spinner svg */
 const Spinner = ({ className = "" }: Props) => (
-  <svg css={spinnerStyle} className={className} viewBox={viewBox}>
+  <svg className={classNames([spinnerStyle(), className])} viewBox={viewBox}>
     <path fill="none" stroke="currentColor" strokeWidth={thickness} d={d} />
   </svg>
 );

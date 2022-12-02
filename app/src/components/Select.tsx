@@ -1,5 +1,5 @@
 import { SelectHTMLAttributes } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import { dark, deep } from "@/global/palette";
 import { capitalize } from "@/util/string";
 
@@ -39,9 +39,9 @@ const Select = <Option extends string>({
 }: Props<Option> &
   Omit<SelectHTMLAttributes<HTMLSelectElement>, "options" | "onChange">) => (
   <label>
-    <span css={labelStyle}>{label}:</span>
+    <span className={labelStyle()}>{label}:</span>
     <select
-      css={selectStyle}
+      className={selectStyle()}
       onChange={(event) =>
         onChange?.(event.target.value as Option, event.target.selectedIndex)
       }

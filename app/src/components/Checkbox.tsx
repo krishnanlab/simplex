@@ -1,5 +1,5 @@
 import { InputHTMLAttributes } from "react";
-import { css } from "@emotion/react";
+import { css } from "@stitches/react";
 import { deep } from "@/global/palette";
 
 type Props = {
@@ -30,14 +30,14 @@ const inputStyle = css({
 
 /** checkbox with label */
 const Checkbox = ({ label, onChange, ...props }: Props) => (
-  <label css={wrapperStyle}>
+  <label className={wrapperStyle()}>
     <input
       type="checkbox"
-      css={inputStyle}
+      className={inputStyle()}
       onChange={(event) => onChange?.(event.target.checked)}
       {...props}
     ></input>
-    <span css={labelStyle}>{label}</span>
+    <span className={labelStyle()}>{label}</span>
   </label>
 );
 
