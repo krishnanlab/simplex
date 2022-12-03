@@ -26,7 +26,7 @@ export const logout = () => request("/logout", { method: "POST" });
 
 /** lookup public info of author */
 export const getAuthor = (id: string) =>
-  request<PublicReadAuthor>(`/author/${id}`);
+  request<PublicReadAuthor>(`/authors/${id}`);
 
 type SaveInfo = WriteAuthor;
 

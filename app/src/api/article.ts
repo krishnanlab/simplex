@@ -3,7 +3,7 @@ import { Id, ReadArticle, WriteArticle } from "@/global/types";
 
 /** lookup article details by id */
 export const getArticle = (id: string) =>
-  request<ReadArticle>(`/article/${id}`);
+  request<ReadArticle>(`/articles/${id}`);
 
 /** get user's articles, or batch lookup by id */
 export const getArticles = (ids?: Array<string>) =>
@@ -13,12 +13,12 @@ export const getArticles = (ids?: Array<string>) =>
   });
 
 export const saveArticle = (id?: string) =>
-  request<{ id: Id }>("/article" + (id ? "/" + id : ""), {
+  request<{ id: Id }>("/articles" + (id ? "/" + id : ""), {
     method: id ? "PUT" : "POST",
   });
 
 export const deleteArticle = (id: string) =>
-  request(`/article/${id}`, { method: "DELETE" });
+  request(`/articles/${id}`, { method: "DELETE" });
 
 export interface ShareOptions {
   audience: string;
