@@ -1,4 +1,5 @@
 import { cloneElement, ReactElement, useState } from "react";
+import { FaTimes } from "react-icons/fa";
 import {
   FloatingFocusManager,
   FloatingOverlay,
@@ -94,7 +95,7 @@ export const Dialog = ({ reference, content, heading }: Props) => {
                 <div className={headingStyle()}>
                   <h3 id={`${id}-heading`}>{heading}</h3>
                   <Button
-                    icon="times"
+                    icon={<FaTimes />}
                     fill={false}
                     onClick={() => setOpen(false)}
                   />

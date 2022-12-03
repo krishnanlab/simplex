@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FaRegSave, FaRegTrashAlt } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
@@ -304,7 +305,7 @@ const Collection = ({ fresh }: Props) => {
         {editable && (
           <Button
             text="Save"
-            icon="floppy-disk"
+            icon={<FaRegSave />}
             disabled={saveLoading || trashLoading}
             type="submit"
             form="collection-form"
@@ -316,7 +317,7 @@ const Collection = ({ fresh }: Props) => {
         {!fresh && editable && (
           <Button
             text="Delete"
-            icon="trash-alt"
+            icon={<FaRegTrashAlt />}
             disabled={saveLoading || trashLoading}
             onClick={() => trash()}
           />

@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { QueryParamConfig, useQueryParam } from "use-query-params";
@@ -317,7 +318,7 @@ const Article = ({ fresh }: Props) => {
         {fresh && (
           <Button
             text="Try Example"
-            icon="lightbulb"
+            icon={<FaRegLightbulb />}
             onClick={() => editField("simplifiedText", exampleText)}
           />
         )}
@@ -424,7 +425,7 @@ const Article = ({ fresh }: Props) => {
         {!(fresh && !loggedIn) && editable && (
           <Button
             text="Save"
-            icon="floppy-disk"
+            icon={<FaRegSave />}
             disabled={saveLoading || trashLoading}
             type="submit"
             form="article-form"
@@ -443,7 +444,7 @@ const Article = ({ fresh }: Props) => {
         {!fresh && editable && (
           <Button
             text="Delete"
-            icon="trash-alt"
+            icon={<FaRegTrashAlt />}
             disabled={saveLoading || trashLoading}
             onClick={() => trash()}
           />

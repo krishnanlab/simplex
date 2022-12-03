@@ -1,9 +1,9 @@
+import { FaExternalLinkAlt } from "react-icons/fa";
 import { css } from "@stitches/react";
 import { useQuery } from "@tanstack/react-query";
 import { simplify } from "@/api/tool";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
 import Notification from "@/components/Notification";
 
 interface Props {
@@ -59,7 +59,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
             <strong>Definition:</strong>
             <p>{simplification.definition}</p>
             <a href={simplification.link} target="_blank" rel="noreferrer">
-              See more <Icon icon="arrow-up-right-from-square" />
+              See more <FaExternalLinkAlt />
             </a>
             <img src={simplification.image} className={imageStyle()} alt="" />
           </Flex>

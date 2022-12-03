@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
+import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { forgotPassword } from "@/api/account";
@@ -55,7 +56,7 @@ const ForgotPassword = () => {
         form="forgot"
       />
       <Flex>
-        <Button text="Request Reset" icon="lock" form="forgot" />
+        <Button text="Request Reset" icon={<FaLock />} form="forgot" />
       </Flex>
 
       {/* statuses */}

@@ -1,5 +1,5 @@
+import { FaRegQuestionCircle } from "react-icons/fa";
 import { css } from "@stitches/react";
-import Icon from "@/components/Icon";
 import Tooltip from "@/components/Tooltip";
 
 interface Props {
@@ -18,7 +18,7 @@ const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={
       <button className={helpStyle()} aria-label="Help">
-        <Icon icon="question-circle" />
+        <FaRegQuestionCircle />
       </button>
     }
     content={tooltip}

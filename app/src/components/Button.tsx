@@ -1,8 +1,6 @@
-import { ButtonHTMLAttributes, forwardRef, Ref } from "react";
+import { ButtonHTMLAttributes, forwardRef, ReactNode, Ref } from "react";
 import { Link, LinkProps, To } from "react-router-dom";
-import { IconName } from "@fortawesome/fontawesome-svg-core";
 import { css } from "@stitches/react";
-import Icon from "@/components/Icon";
 import {
   accent,
   black,
@@ -20,7 +18,7 @@ type Props = {
   /** text to show */
   text?: string;
   /** font awesome icon name */
-  icon?: IconName;
+  icon?: ReactNode;
   /** fill design */
   fill?: boolean;
 } & Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
@@ -79,7 +77,7 @@ const Button = forwardRef(
     const content = (
       <>
         {text && <span>{text}</span>}
-        {icon && <Icon icon={icon} />}
+        {icon}
       </>
     );
 

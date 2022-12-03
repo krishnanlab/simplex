@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
+import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
@@ -110,7 +111,7 @@ const Account = () => {
         />
         <Button
           text="Save Info"
-          icon="floppy-disk"
+          icon={<FaRegSave />}
           disabled={saveInfoLoading}
           form="save-info"
         />
@@ -150,7 +151,7 @@ const Account = () => {
       <Flex>
         <Button
           text="Change Password"
-          icon="lock"
+          icon={<FaLock />}
           form="change-password"
           disabled={changePasswordLoading}
         />

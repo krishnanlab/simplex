@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { FaShareAlt } from "react-icons/fa";
 import { shareArticle, ShareOptions } from "@/api/article";
 import Button from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
@@ -23,7 +24,7 @@ interface Props {
 /** share button with dialog HOC */
 const Share = ({ heading, ...rest }: Props) => (
   <Dialog
-    reference={<Button text="Share" icon="share-nodes" />}
+    reference={<Button text="Share" icon={<FaShareAlt />} />}
     content={<Content {...rest} />}
     heading={heading}
   />

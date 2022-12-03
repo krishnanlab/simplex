@@ -1,4 +1,5 @@
 import { useContext } from "react";
+import { FaPlus } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
 import { getArticles } from "@/api/article";
 import { getCollections } from "@/api/collection";
@@ -55,7 +56,7 @@ const MyArticles = () => {
 
       {/* new */}
       <Flex>
-        <Button to="/" text="New Article" icon="plus" />
+        <Button to="/" text="New Article" icon={<FaPlus />} />
       </Flex>
 
       <h2>My Collections</h2>
@@ -82,7 +83,7 @@ const MyArticles = () => {
 
       {/* new */}
       <Flex>
-        <Button to="/collection" text="New Collection" icon="plus" />
+        <Button to="/collection" text="New Collection" icon={<FaPlus />} />
       </Flex>
     </Section>
   );

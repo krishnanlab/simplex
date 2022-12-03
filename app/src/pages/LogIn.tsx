@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
+import { FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/account";
@@ -66,7 +67,7 @@ const LogIn = () => {
       </Grid>
       <Flex dir="col">
         <Link to="/forgot-password">Forgot password</Link>
-        <Button text="Log In" icon="right-to-bracket" form="login" />
+        <Button text="Log In" icon={<FaSignInAlt />} form="login" />
       </Flex>
 
       {/* statuses */}

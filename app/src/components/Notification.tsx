@@ -1,10 +1,10 @@
 import { ReactNode, useCallback, useEffect, useState } from "react";
+import { FaExclamationCircle, FaRegCheckCircle, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router";
 import { useEvent } from "react-use";
 import { css } from "@stitches/react";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
 import Section from "@/components/Section";
 import Spinner from "@/components/Spinner";
 import { accent, dark, deep } from "@/global/palette";
@@ -42,8 +42,8 @@ const Notification = ({ type, text, children }: Props) => (
     data-type={type}
   >
     {type === "loading" && <Spinner />}
-    {type === "error" && <Icon icon="circle-exclamation" />}
-    {type === "success" && <Icon icon="circle-check" />}
+    {type === "error" && <FaExclamationCircle />}
+    {type === "success" && <FaRegCheckCircle />}
     {text && <span>{text}</span>}
     {children}
   </Flex>
@@ -94,7 +94,7 @@ export const TopNotification = () => {
   return (
     <Section style={{ marginBottom: "-30px" }}>
       <Notification type={type} text={text}>
-        <Button icon="times" fill={false} onClick={reset} />
+        <Button icon={<FaTimes />} fill={false} onClick={reset} />
       </Notification>
     </Section>
   );

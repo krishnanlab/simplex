@@ -1,7 +1,3 @@
-import { library } from "@fortawesome/fontawesome-svg-core";
-import * as fab from "@fortawesome/free-brands-svg-icons";
-import * as far from "@fortawesome/free-regular-svg-icons";
-import * as fas from "@fortawesome/free-solid-svg-icons";
 import { CSSProperties } from "@stitches/react";
 
 /** colors */
@@ -61,27 +57,3 @@ export {
   big,
   title,
 };
-
-/** font awesome icons */
-library.add(
-  fab.faGithub,
-  far.faCopy,
-  far.faEnvelope,
-  far.faFloppyDisk,
-  far.faLightbulb,
-  far.faPenToSquare,
-  far.faQuestionCircle,
-  far.faTrashAlt,
-  far.faTrashCan,
-  fas.faArrowUpRightFromSquare,
-  fas.faBars,
-  fas.faCircleCheck,
-  fas.faCircleExclamation,
-  fas.faEye,
-  fas.faLock,
-  fas.faPlus,
-  fas.faRightToBracket,
-  fas.faShareNodes,
-  fas.faTimes,
-  fas.faUserPlus
-);

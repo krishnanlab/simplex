@@ -1,4 +1,5 @@
 import { useCallback, useContext, useEffect } from "react";
+import { FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/api/account";
@@ -112,7 +113,7 @@ const SignUp = () => {
           defaultChecked={true}
           form="signup"
         />
-        <Button text="Sign Up" icon="user-plus" form="signup" />
+        <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
       </Flex>
 
       {/* statuses */}

@@ -1,8 +1,8 @@
 import { useContext, useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { css } from "@stitches/react";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
-import Icon from "@/components/Icon";
 import { fast, gray, pale, plus, rounded } from "@/global/palette";
 import { State } from "@/global/state";
 import { restartAnimations } from "@/util/dom";
@@ -102,7 +102,7 @@ const Header = () => {
             aria-expanded={open}
             aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
           >
-            <Icon icon={open ? "times" : "bars"} />
+            {open ? <FaTimes /> : <FaBars />}
           </button>
         </div>
       </div>
