@@ -1,13 +1,28 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import {
+  ComponentProps,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { capitalize } from "lodash";
 import { QueryParamConfig, useQueryParam } from "use-query-params";
 import { css } from "@stitches/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
-import { deleteArticle, getArticle, saveArticle } from "@/api/article";
-import { Analysis, analyze } from "@/api/tool";
+import {
+  deleteArticle,
+  getArticle,
+  getLatestArticle,
+  getRevisions,
+  saveArticle,
+  saveNewArticle,
+} from "@/api/article";
+import { analyze } from "@/api/tool";
 import { exampleText } from "@/assets/example.json";
 import Ago from "@/components/Ago";
 import ArrayField from "@/components/ArrayField";
@@ -29,19 +44,22 @@ import Stat from "@/components/Stat";
 import { dark, light } from "@/global/palette";
 import { State } from "@/global/state";
 import {
+  Analysis,
+  Article,
   Audience,
   audiences,
-  ReadArticle,
-  Version,
-  versions,
+  blankAnalysis,
+  blankArticle,
+  blankAuthor,
+  Revision,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
-import { splitWords } from "@/util/string";
-
-interface Props {
-  /** whether starting a new article */
-  fresh: boolean;
-}
+import {
+  authorString,
+  dateString,
+  shortenUrl,
+  splitWords,
+} from "@/util/string";
 
 const spinnerStyle = css({
   position: "fixed",
@@ -51,34 +69,18 @@ const spinnerStyle = css({
   height: "30px",
 });
 
-/** blank article to start with and fallback to */
-const blank: ReadArticle = {
-  id: "",
-  author: "",
-  date: new Date().toISOString(),
-  title: "",
-  source: "",
-  originalText: "",
-  simplifiedText: "",
-  ignoreWords: [],
-  collections: [],
-};
-
-/** methods for syncing version with url param */
-const VersionParam: QueryParamConfig<Version> = {
-  encode: (value: Version) => value,
-  decode: (value): Version => {
-    const decoded = value as Version;
-    return versions.includes(decoded) ? decoded : "simplified";
-  },
+/** methods for syncing revision with url param */
+const RevisionParam: QueryParamConfig<Revision> = {
+  encode: (value: Revision) => (value ? String(value) : undefined),
+  decode: (value): Revision => Number(value) || 0,
 };
 
 /** methods for syncing audience with url param */
 const AudienceParam: QueryParamConfig<Audience> = {
-  encode: (value: Audience) => value,
+  encode: (value: Audience) => value.value,
   decode: (value): Audience => {
-    const decoded = value as Audience;
-    return audiences.includes(decoded) ? decoded : "general";
+    const decoded = audiences.find((audience) => audience.value === value);
+    return decoded || audiences[0];
   },
 };
 
@@ -89,15 +91,27 @@ const HighlightsParam: QueryParamConfig<boolean> = {
 };
 
 /** new/edit/view page for article, and homepage content */
-const Article = ({ fresh }: Props) => {
-  const { id } = useParams();
+const ArticlePage = () => {
+  const { id = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
-  /** version of saved article */
-  const [version, setVersion] = useQueryParam<Version>("version", VersionParam);
+  /** whether to show loading spinner */
+  const [analyzing, setAnalyzing] = useState(false);
+
+  /** results of complexity analysis */
+  const [analysis, setAnalysis] = useState<Analysis>(blankAnalysis);
+
+  /** editable article state */
+  const [editableArticle, setEditableArticle] = useState(blankArticle);
+
+  /** selected revision of article */
+  const [revision, setRevision] = useQueryParam<Revision>(
+    "revision",
+    RevisionParam
+  );
   /** audience to analyze for */
   const [audience, setAudience] = useQueryParam<Audience>(
     "audience",
@@ -109,39 +123,73 @@ const Article = ({ fresh }: Props) => {
     HighlightsParam
   );
 
-  /** whether to show loading spinner */
-  const [analyzing, setAnalyzing] = useState(false);
+  /** what "mode" we are in */
+  let mode: "new" | "anon" | "edit" | "view" = "view";
 
-  /** main editable article state */
-  const [article, setArticle] = useState(blank);
-
-  /** whether article is writable (either new, or belongs to logged in user) */
-  const editable = fresh || (!!loggedIn && article?.author === loggedIn.id);
+  /** determine mode */
+  if (!id && !!loggedIn) {
+    /** logged in user creating new collection */
+    mode = "new";
+  } else if (!id && !loggedIn) {
+    /** anonymous user creating new collection */
+    mode = "anon";
+  } else if (!!loggedIn && editableArticle.author === loggedIn.id) {
+    /** logged in user editing collection belonging to them */
+    mode = "edit";
+  } else {
+    /** logged in or anonymous user viewing someone else's collection */
+    mode = "view";
+  }
 
   /** is homepage of site */
   const homepage = location.pathname === "/";
 
-  /** query for loading article data (if loading existing article) */
+  /** heading and title text */
+  const heading = homepage ? "" : capitalize(mode) + " Article";
+
+  /** query for loading revision of article data */
   const {
-    data: loadedArticle,
+    data: loadedArticle = blankArticle,
     isInitialLoading: articleLoading,
     isError: articleError,
   } = useQuery({
-    queryKey: ["getArticle", id],
-    queryFn: () => getArticle(id || ""),
-    initialData: fresh ? blank : undefined,
+    queryKey: ["getArticle", id, revision],
+    queryFn: () => getArticle(id, revision),
+    enabled: !!id && !!revision,
+    keepPreviousData: true,
+  });
+
+  /** query for loading latest revision of article data */
+  const {
+    data: latestArticle,
+    isInitialLoading: latestLoading,
+    isError: latestError,
+  } = useQuery({
+    queryKey: ["getLatestArticle", id],
+    queryFn: () => getLatestArticle(id),
+    enabled: !!id,
   });
 
   /** query for getting author details from just id */
   const {
-    data: author,
+    data: author = mode === "edit" ? loggedIn || blankAuthor : blankAuthor,
     isInitialLoading: authorLoading,
     isError: authorError,
   } = useQuery({
-    queryKey: ["getAuthor", loadedArticle?.author],
-    queryFn: () => getAuthor(loadedArticle?.author || ""),
-    initialData: loadedArticle?.author ? undefined : loggedIn,
-    enabled: !!loadedArticle?.author,
+    queryKey: ["getAuthor", loadedArticle.author],
+    queryFn: () => getAuthor(loadedArticle.author),
+    enabled: !!loadedArticle.author,
+  });
+
+  /** query for loading article revisions (if loading existing article) */
+  const {
+    data: revisions = [],
+    isInitialLoading: revisionsLoading,
+    isError: revisionsError,
+  } = useQuery({
+    queryKey: ["getRevisions", id],
+    queryFn: () => getRevisions(id),
+    enabled: !!id,
   });
 
   /** mutation for saving article details */
@@ -150,10 +198,11 @@ const Article = ({ fresh }: Props) => {
     isLoading: saveLoading,
     isError: saveError,
   } = useMutation({
-    mutationFn: () => saveArticle(id || ""),
+    mutationFn: () =>
+      id ? saveArticle(editableArticle, id) : saveNewArticle(editableArticle),
     onSuccess: async (data) => {
-      if (data.id) await navigate("/article/" + data.id);
-      notification("success", `Saved article "${article.title}"`);
+      if (data?.id) await navigate("/article/" + data.id);
+      notification("success", `Saved article "${editableArticle.title}"`);
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
@@ -167,64 +216,89 @@ const Article = ({ fresh }: Props) => {
     mutationFn: async () => {
       if (!window.confirm("Are you sure you want to delete this article?"))
         return;
-      await deleteArticle(id || "");
+      await deleteArticle(id);
     },
     onSuccess: async () => {
       await navigate("/my-articles");
-      notification("success", `Deleted article "${article.title}"`);
+      notification("success", `Deleted article "${editableArticle.title}"`);
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
     },
   });
 
-  /** when loaded article changes, set editable article data */
-  useEffect(() => {
-    if (loadedArticle) setArticle(loadedArticle);
-  }, [loadedArticle]);
-
   /** helper func to edit article data state */
   const editField = useCallback(
-    <T extends keyof ReadArticle>(key: T, value: ReadArticle[T]) =>
-      setArticle((article) => ({ ...article, [key]: value })),
+    <T extends keyof Article>(key: T, value: Article[T]) =>
+      setEditableArticle((editableArticle) => ({
+        ...editableArticle,
+        [key]: value,
+      })),
     []
   );
 
   /** helper func to add word to ignore list in article data */
   const addIgnore = useCallback(
-    (text: ReadArticle["ignoreWords"][0]) =>
-      setArticle((article) => ({
-        ...article,
-        ignoreWords: [...article.ignoreWords, text],
+    (text: Article["ignoreWords"][0]) =>
+      setEditableArticle((editableArticle) => ({
+        ...editableArticle,
+        ignoreWords: [...editableArticle.ignoreWords, text],
       })),
     []
   );
 
   /** helper func to remove word from ignore list in article data */
   const removeIgnore = useCallback(
-    (text: ReadArticle["ignoreWords"][0]) =>
-      setArticle((article) => ({
-        ...article,
-        ignoreWords: article.ignoreWords.filter((word) => word !== text),
+    (text: Article["ignoreWords"][0]) =>
+      setEditableArticle((editableArticle) => ({
+        ...editableArticle,
+        ignoreWords: editableArticle.ignoreWords.filter(
+          (word) => word !== text
+        ),
       })),
     []
   );
 
-  /** author string */
-  const by = author
-    ? author.name + (editable ? " (You)" : "") + " | " + author.institution
-    : "You";
+  /** options to show in revisions dropdown select */
+  const revisionOptions: ComponentProps<typeof Select>["options"] = useMemo(
+    () =>
+      revisions
+        .map((revision) => ({
+          label: `${revision.revision}: ${dateString(revision.date)}`,
+          value: String(revision.revision),
+        }))
+        .concat(mode === "edit" ? { label: "new", value: "0" } : []),
+    [revisions, mode]
+  );
 
-  /** text to render in editor */
-  const text =
-    version === "original" ? article.originalText : article.simplifiedText;
+  /** latest revision */
+  const latest = revisions?.at(-1)?.revision;
+
+  /** main article state to render */
+  const article = revision === 0 ? editableArticle : loadedArticle;
+
+  /** whether controls are editable */
+  const editable = mode !== "view" && revision === 0;
 
   /** array of words in editor */
-  const words = useMemo(() => splitWords(text), [text]);
+  const words = useMemo(() => splitWords(article.text || ""), [article.text]);
 
-  /** results of complexity analysis */
-  const [analysis, setAnalysis] = useState<Analysis>({
-    scores: {},
-    complexity: 0,
-    grade: 0,
+  /** initialize editable article from latest revision */
+  useEffect(() => {
+    if (latestArticle) setEditableArticle(latestArticle);
+  }, [latestArticle]);
+
+  /** auto select latest revision when appropriate */
+  useEffect(() => {
+    if (
+      /** in view mode */
+      mode === "view" &&
+      /** but not in view mode due to editable/latest article not being loaded yet */
+      editableArticle.id &&
+      /** no revision already selected or specified in url */
+      revision === 0 &&
+      /** latest revision defined */
+      latest
+    )
+      setRevision(latest);
   });
 
   /** when params that would affect the analysis change */
@@ -237,7 +311,11 @@ const Article = ({ fresh }: Props) => {
       await sleep(500); // debounce
       if (!latest) return;
       setAnalyzing(true);
-      const analysis = await analyze(words, audience, article.ignoreWords);
+      const analysis = await analyze(
+        words,
+        audience.value,
+        article.ignoreWords || []
+      );
       if (!latest) return;
       setAnalysis(analysis);
       setAnalyzing(false);
@@ -249,7 +327,7 @@ const Article = ({ fresh }: Props) => {
   }, [words, audience, article.ignoreWords]);
 
   /** overall loading */
-  if (articleLoading || authorLoading)
+  if (articleLoading || latestLoading || authorLoading || revisionsLoading)
     return (
       <Section>
         <Notification type="loading" text="Loading article" />
@@ -257,7 +335,7 @@ const Article = ({ fresh }: Props) => {
     );
 
   /** overall error */
-  if (articleError || authorError)
+  if (articleError || latestError || authorError || revisionsError)
     return (
       <Section>
         <Notification type="error" text="Error loading article" />
@@ -279,62 +357,63 @@ const Article = ({ fresh }: Props) => {
         label="Source"
         optional={true}
         placeholder="https://some-website.com/"
-        disabled={!editable}
         value={article.source}
         onChange={(value) => editField("source", value)}
         form="article-form"
-      />
+      >
+        {!editable ? (
+          <a href={article.source}>{shortenUrl(article.source)}</a>
+        ) : undefined}
+      </Field>
     </Grid>
   );
-
-  /** heading and title text */
-  let heading = "";
-  if (!homepage) {
-    if (fresh) heading = "New Article";
-    else if (editable) heading = "Edit Article";
-    else heading = "Article";
-  }
 
   return (
     <Section>
       {/* heading */}
       <Meta title={[heading, article.title]} />
-      <h2>{heading}</h2>
+      {heading && <h2>{heading}</h2>}
 
       {/* if not on homepage, put metadata above editor */}
       {!homepage && metadata}
 
       {/* details */}
-      {!homepage && (
+      {mode !== "new" && mode !== "anon" && (
         <Grid cols={2}>
-          <Stat label="Author" value={by} />
-          <Stat label="Last Saved" value={<Ago date={article.date} />} />
-          <Stat value={`In ${article.collections.length} collection(s)`} />
+          <Stat
+            label="Author"
+            value={authorString(author, mode === "edit")}
+            title={author.id}
+          />
+          {!editable && (
+            <Stat label="Saved" value={<Ago date={article.date} />} />
+          )}
+          <Stat label="In collection(s)" value={article.collections.length} />
         </Grid>
       )}
 
       {/* controls */}
       <Flex hAlign="space">
-        {fresh && (
+        {(mode === "new" || mode === "anon") && (
           <Button
             text="Try Example"
             icon={<FaRegLightbulb />}
-            onClick={() => editField("simplifiedText", exampleText)}
+            onClick={() => editField("text", exampleText)}
           />
         )}
-        {!fresh && (
+        {(mode === "edit" || mode === "view") && (
           <Select
-            label="Version"
-            options={["original", "simplified"]}
-            value={version}
-            onChange={(value) => setVersion(value)}
+            label="Revision"
+            options={revisionOptions}
+            value={String(revision)}
+            onChange={(value) => setRevision(Number(value.value) || 0)}
           />
         )}
-        <Flex display="inline">
+        <Flex display="inline" hAlign="left">
           <Select
             label="Audience"
             options={audiences}
-            value={audience}
+            value={audience.value}
             onChange={(value) => setAudience(value)}
           />
           <Checkbox
@@ -347,15 +426,11 @@ const Article = ({ fresh }: Props) => {
 
       {/* editor */}
       <Editor
-        value={text}
-        onChange={(value) =>
-          version === "original"
-            ? editField("originalText", value)
-            : editField("simplifiedText", value)
-        }
+        value={article.text}
+        onChange={(value) => editField("text", value)}
         scores={analysis.scores}
         highlights={highlights}
-        editable={editable && version == "simplified"}
+        editable={editable}
         tooltip={(word) => (
           <Simplify
             word={word}
@@ -372,40 +447,48 @@ const Article = ({ fresh }: Props) => {
 
       {/* results */}
       <Flex>
-        <Flex display="inline" gap="small">
+        <Flex display="inline">
+          <Flex display="inline" gap="small">
+            <Stat
+              label="Complex"
+              help="Click a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+            />
+            <svg viewBox="0 0 30 10" width="60px">
+              <g fill={light}>
+                <rect x="0" y="0" width="10" height="10" opacity="1" />
+                <rect x="10" y="0" width="10" height="10" opacity="0.66" />
+                <rect x="20" y="0" width="10" height="10" opacity="0.33" />
+              </g>
+            </svg>
+            <Stat label="Simpler" />
+          </Flex>
           <Stat
-            label="Complex"
-            help="Click a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+            label="Overall Complexity"
+            value={analysis.complexity}
+            help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
           />
-          <svg viewBox="0 0 30 10" width="60px">
-            <g fill={light}>
-              <rect x="0" y="0" width="10" height="10" opacity="1" />
-              <rect x="10" y="0" width="10" height="10" opacity="0.66" />
-              <rect x="20" y="0" width="10" height="10" opacity="0.33" />
-            </g>
-          </svg>
-          <Stat label="Simpler" />
+          <Stat
+            label="Grade Level"
+            value={analysis.gradeLevelText}
+            help={`Flesch-kincaid grade level score (${analysis.gradeLevel}), calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones.`}
+          />
         </Flex>
-        <Stat label="Chars" value={text.length} />
-        <Stat label="Words" value={text.split(/\s+/).filter(Boolean).length} />
       </Flex>
       <Flex>
+        <Stat label="Sentences" value={analysis.sentences} />
+        <Stat label="Syllables" value={analysis.syllables} />
         <Stat
-          label="Overall Complexity"
-          value={analysis.complexity.toFixed(0)}
-          help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
+          label="Words"
+          value={splitWords(article.text).filter(Boolean).length}
         />
-        <Stat
-          label="Grade Level"
-          value={analysis.grade.toFixed(0)}
-          help="Flesch-kincaid grade level score, calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones."
-        />
+        <Stat label="Chars" value={article.text.length} />
       </Flex>
 
       {/* more controls */}
       <ArrayField
         label="Ignore these words (exclude from complexity penalty)"
         optional={true}
+        disabled={!editable}
         value={article.ignoreWords}
         placeholder="word, some phrase, compound-word"
         form="article-form"
@@ -417,31 +500,34 @@ const Article = ({ fresh }: Props) => {
 
       {/* actions */}
       <Flex>
-        {fresh && !loggedIn && (
-          <span>
-            <Link to="/login">Log In</Link> to save
-          </span>
-        )}
-        {!(fresh && !loggedIn) && editable && (
+        {mode !== "view" && (
           <Button
-            text="Save"
+            text={
+              mode === "new"
+                ? "Save"
+                : mode === "anon"
+                ? "Save Anonymously"
+                : "Save"
+            }
             icon={<FaRegSave />}
             disabled={saveLoading || trashLoading}
             type="submit"
             form="article-form"
           />
         )}
-        {!(loggedIn && fresh) && (
+        {mode === "anon" && (
+          <span>
+            <Link to="/login">Log in</Link> to save to your account
+          </span>
+        )}
+        {mode !== "new" && mode !== "anon" && (
           <Share
             heading="Share Article"
             field="URL to this article"
-            help="With currently selected options (version, audience, highlights)"
-            generate={
-              fresh ? { article, options: { audience, highlights } } : undefined
-            }
+            help="With currently selected options (revision, audience, highlights)"
           />
         )}
-        {!fresh && editable && (
+        {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
@@ -449,6 +535,12 @@ const Article = ({ fresh }: Props) => {
             onClick={() => trash()}
           />
         )}
+      </Flex>
+
+      {/* note */}
+      <Flex>
+        {mode === "new" ||
+          (mode === "anon" && <strong>Save this article to share it!</strong>)}
       </Flex>
 
       {/* action statuses */}
@@ -465,4 +557,4 @@ const Article = ({ fresh }: Props) => {
   );
 };
 
-export default Article;
+export default ArticlePage;

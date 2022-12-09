@@ -1,7 +1,7 @@
 import { ReactNode } from "react";
 import { css } from "@stitches/react";
 
-interface Props {
+type Props = {
   display?: "inline" | "block";
   dir?: "row" | "col";
   gap?: "none" | "tiny" | "small" | "medium" | "big";
@@ -10,7 +10,7 @@ interface Props {
   wrap?: boolean;
   children: ReactNode;
   [key: string]: unknown;
-}
+};
 
 const flexStyle = css({
   "& > *": {
@@ -71,3 +71,5 @@ const Flex = ({
 );
 
 export default Flex;
+
+export const Spacer = () => <div style={{ flexGrow: 1 }}></div>;

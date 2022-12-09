@@ -105,6 +105,9 @@ const globalStyles = globalCss({
     color: "inherit",
     boxShadow: "none !important",
   },
+  ".react-icons": {
+    verticalAlign: "middle",
+  },
 });
 
 export default globalStyles;

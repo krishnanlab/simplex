@@ -1,8 +1,8 @@
 import { useContext } from "react";
 import { FaPlus } from "react-icons/fa";
 import { useQuery } from "@tanstack/react-query";
-import { getArticles } from "@/api/article";
-import { getCollections } from "@/api/collection";
+import { getUserArticles } from "@/api/article";
+import { getUserCollections } from "@/api/collection";
 import Button from "@/components/Button";
 import Card from "@/components/Card";
 import Flex from "@/components/Flex";
@@ -19,13 +19,13 @@ const MyArticles = () => {
   /** query for user's articles */
   const articles = useQuery({
     queryKey: ["getArticles", loggedIn?.id],
-    queryFn: () => getArticles(),
+    queryFn: () => getUserArticles(),
   });
 
   /** query for user's collection */
   const collections = useQuery({
     queryKey: ["getCollections", loggedIn?.id],
-    queryFn: () => getCollections(),
+    queryFn: () => getUserCollections(),
   });
 
   return (
@@ -45,11 +45,7 @@ const MyArticles = () => {
       {articles.data && (
         <Grid>
           {articles.data.map((article, index) => (
-            <Card
-              key={index}
-              article={article}
-              editable={article.author === loggedIn?.id}
-            />
+            <Card key={index} article={article} editable={true} />
           ))}
         </Grid>
       )}
@@ -72,11 +68,7 @@ const MyArticles = () => {
       {collections.data && (
         <Grid>
           {collections.data.map((collection, index) => (
-            <Card
-              key={index}
-              collection={collection}
-              editable={collection.author === loggedIn?.id}
-            />
+            <Card key={index} collection={collection} editable={true} />
           ))}
         </Grid>
       )}

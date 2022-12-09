@@ -116,7 +116,7 @@ const Header = () => {
             <Link to="my-articles">My Articles</Link>
             <Link to="account">Account</Link>
             <Link to="logout">Log Out</Link>
-            <strong>{loggedIn.name}</strong>
+            <strong title={loggedIn.id}>{loggedIn.name}</strong>
           </>
         )}
         {!loggedIn && (

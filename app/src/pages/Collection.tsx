@@ -1,13 +1,15 @@
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { FaRegSave, FaRegTrashAlt } from "react-icons/fa";
+import { FaPlus, FaRegSave, FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
+import { capitalize } from "lodash";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
-import { getArticles } from "@/api/article";
+import { getArticles, getUserArticles } from "@/api/article";
 import {
   deleteCollection,
   getCollection,
   saveCollection,
+  saveNewCollection,
 } from "@/api/collection";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
@@ -22,84 +24,87 @@ import Section from "@/components/Section";
 import Share from "@/components/Share";
 import Stat from "@/components/Stat";
 import { State } from "@/global/state";
-import { ReadCollection } from "@/global/types";
-
-interface Props {
-  /** whether starting a new collection */
-  fresh: boolean;
-}
-
-/** blank collection to start with and fallback to */
-const blank: ReadCollection = {
-  id: "",
-  author: "",
-  date: new Date().toISOString(),
-  title: "",
-  description: "",
-  articles: [],
-};
+import { blankAuthor, blankCollection, Collection } from "@/global/types";
+import { authorString } from "@/util/string";
 
 /** new/edit/view page for collection */
-const Collection = ({ fresh }: Props) => {
-  const { id } = useParams();
+const CollectionPage = () => {
+  const { id = "" } = useParams();
   const navigate = useNavigate();
   const { loggedIn } = useContext(State);
   const queryClient = useQueryClient();
 
-  /** redirect if not logged in */
+  /** main editable collection state */
+  const [editableCollection, setEditableCollection] = useState(blankCollection);
+
+  /** what "mode" we are in */
+  let mode: "new" | "anon" | "edit" | "view" = "view";
+
+  /** determine mode */
+  if (!id && !!loggedIn) {
+    /** logged in user creating new collection */
+    mode = "new";
+  } else if (!id && !loggedIn) {
+    /** anonymous user creating new collection */
+    mode = "anon";
+  } else if (!!loggedIn && editableCollection?.author === loggedIn.id) {
+    /** logged in user editing collection belonging to them */
+    mode = "edit";
+  } else {
+    /** logged in or anonymous user viewing someone else's collection */
+    mode = "view";
+  }
+
+  /** anonymous collections not supported, so redirect */
   useEffect(() => {
-    if (!loggedIn) navigate("/login");
+    if (mode === "anon") navigate("/login");
   });
 
-  /** main editable collection state */
-  const [collection, setCollection] = useState(blank);
+  /** heading and title text */
+  const heading = capitalize(mode) + " Collection";
 
-  /** whether collection is writable (either new, or belongs to logged in user) */
-  const editable = fresh || (!!loggedIn && collection?.author === loggedIn.id);
-
-  /** query for loading collection data (if loading existing collection) */
+  /** query for loading collection data */
   const {
-    data: loadedCollection,
+    data: loadedCollection = blankCollection,
     isInitialLoading: collectionLoading,
     isError: collectionError,
   } = useQuery({
     queryKey: ["getCollection", id],
-    queryFn: () => getCollection(id || ""),
-    initialData: fresh ? blank : undefined,
+    queryFn: () => getCollection(id),
+    onSuccess: (data) => setEditableCollection(data),
+    enabled: !!id,
   });
 
   /** query for getting author details from just id */
   const {
-    data: author,
+    data: author = blankAuthor,
     isInitialLoading: authorLoading,
     isError: authorError,
   } = useQuery({
-    queryKey: ["getAuthor", loadedCollection?.author],
-    queryFn: () => getAuthor(loadedCollection?.author || ""),
-    initialData: loadedCollection?.author ? undefined : loggedIn,
-    enabled: !!loadedCollection?.author,
+    queryKey: ["getAuthor", loadedCollection.author],
+    queryFn: () => getAuthor(loadedCollection.author),
+    enabled: !!loadedCollection.author,
   });
 
-  /** query for getting logged-in user's articles */
+  /** query for getting all of logged in user's articles */
   const {
-    data: userArticles,
+    data: userArticles = [],
     isInitialLoading: userArticlesLoading,
     isError: userArticlesError,
   } = useQuery({
-    queryKey: ["getArticles", "user", loggedIn?.id],
-    queryFn: () => getArticles(),
-    enabled: editable && !!loggedIn?.id,
+    queryKey: ["getUserArticles", "user", loggedIn?.id],
+    queryFn: getUserArticles,
   });
 
-  /** query for getting collection's articles (if third-party collection) */
+  /** query for getting collection's articles */
   const {
-    data: collectionArticles,
+    data: collectionArticles = [],
     isInitialLoading: collectionArticlesLoading,
     isError: collectionArticlesError,
   } = useQuery({
-    queryKey: ["getArticles", "collection", loadedCollection?.articles],
-    queryFn: () => getArticles(loadedCollection?.articles),
-    enabled: !editable && !!loadedCollection?.articles,
+    queryKey: ["getArticles", "collection", loadedCollection.articles],
+    queryFn: () => getArticles(loadedCollection.articles),
+    enabled: !!loadedCollection.articles,
   });
 
   /** mutation for saving collection */
@@ -108,10 +113,13 @@ const Collection = ({ fresh }: Props) => {
     isLoading: saveLoading,
     isError: saveError,
   } = useMutation({
-    mutationFn: () => saveCollection(id || ""),
+    mutationFn: () =>
+      id
+        ? saveCollection(editableCollection, id)
+        : saveNewCollection(editableCollection),
     onSuccess: async (data) => {
-      if (data.id) await navigate("/collection/" + data.id);
-      notification("success", `Saved collection "${collection.title}"`);
+      if (data?.id) await navigate("/collection/" + data.id);
+      notification("success", `Saved collection "${editableCollection.title}"`);
       await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
@@ -125,68 +133,67 @@ const Collection = ({ fresh }: Props) => {
     mutationFn: async () => {
       if (!window.confirm("Are you sure you want to delete this collection?"))
         return;
-      await deleteCollection(id || "");
+      await deleteCollection(id);
     },
     onSuccess: async () => {
       await navigate("/my-articles");
-      notification("success", `Deleted collection "${collection.title}"`);
+      notification(
+        "success",
+        `Deleted collection "${editableCollection.title}"`
+      );
       await queryClient.removeQueries({ queryKey: ["getCollection", id] });
     },
   });
 
-  /** when loaded collection changes, set editable collection data */
-  useEffect(() => {
-    if (loadedCollection) setCollection(loadedCollection);
-  }, [loadedCollection]);
-
   /** helper func to edit collection data state */
   const editField = useCallback(
-    <T extends keyof ReadCollection>(key: T, value: ReadCollection[T]) =>
-      setCollection((collection) => ({ ...collection, [key]: value })),
+    <T extends keyof Collection>(key: T, value: Collection[T]) =>
+      setEditableCollection((editableCollection) => ({
+        ...editableCollection,
+        [key]: value,
+      })),
     []
   );
 
   /** helper func to add article to list in collection data */
   const addArticle = useCallback(
-    (id: ReadCollection["articles"][0]) =>
-      setCollection((collection) => ({
-        ...collection,
-        articles: [...collection.articles, id],
+    (id: Collection["articles"][0]) =>
+      setEditableCollection((editableCollection) => ({
+        ...editableCollection,
+        articles: [...editableCollection.articles, id],
       })),
     []
   );
 
   /** helper func to remove article from list in collection data */
   const removeArticle = useCallback(
-    (id: ReadCollection["articles"][0]) =>
-      setCollection((collection) => ({
-        ...collection,
-        articles: collection.articles.filter((article) => article !== id),
+    (id: Collection["articles"][0]) =>
+      setEditableCollection((editableCollection) => ({
+        ...editableCollection,
+        articles: editableCollection.articles.filter(
+          (article) => article !== id
+        ),
       })),
     []
   );
 
-  /** author string */
-  const by = author
-    ? author.name + (editable ? " (You)" : "") + " | " + author.institution
-    : "You";
-
   /** user's articles that are selected */
   const selected = useMemo(
     () =>
-      collection.articles
-        .map((id) => userArticles?.find((article) => article.id === id))
-        .filter(Boolean) || [],
-    [collection.articles, userArticles]
+      userArticles.filter((article) =>
+        editableCollection.articles.find((id) => article.id === id)
+      ),
+    [editableCollection.articles, userArticles]
   );
 
   /** user's articles that are not selected */
   const unselected = useMemo(
     () =>
-      userArticles?.filter(
-        (article) => !collection.articles.find((id) => article.id === id)
-      ) || [],
-    [collection.articles, userArticles]
+      userArticles.filter(
+        (article) =>
+          !editableCollection.articles.find((id) => article.id === id)
+      ),
+    [editableCollection.articles, userArticles]
   );
 
   /** overall loading */
@@ -215,16 +222,10 @@ const Collection = ({ fresh }: Props) => {
       </Section>
     );
 
-  /** heading and title text */
-  let heading = "";
-  if (fresh) heading = "New Collection";
-  else if (editable) heading = "Edit Collection";
-  else heading = "Collection";
-
   return (
     <Section>
       {/* heading */}
-      <Meta title={[heading, collection.title]} />
+      <Meta title={[heading, editableCollection.title]} />
       <h2>{heading}</h2>
 
       {/* metadata */}
@@ -232,8 +233,8 @@ const Collection = ({ fresh }: Props) => {
         <Field
           label="Title"
           placeholder="Collection title"
-          disabled={!editable}
-          value={collection.title}
+          disabled={mode === "view"}
+          value={editableCollection.title}
           onChange={(value) => editField("title", value)}
           form="collection-form"
         />
@@ -241,21 +242,30 @@ const Collection = ({ fresh }: Props) => {
           label="Description"
           optional={true}
           placeholder="Collection description"
-          disabled={!editable}
-          value={collection.description}
+          disabled={mode === "view"}
+          value={editableCollection.description}
           onChange={(value) => editField("description", value)}
           form="collection-form"
         />
       </Grid>
 
       {/* details */}
-      <Grid cols={2}>
-        <Stat label="Author" value={by} />
-        <Stat label="Last Saved" value={<Ago date={collection.date} />} />
-      </Grid>
+      {mode !== "new" && (
+        <Grid cols={2}>
+          <Stat
+            label="Author"
+            value={authorString(author, mode === "edit")}
+            title={author.id}
+          />
+          <Stat
+            label="Last Saved"
+            value={<Ago date={editableCollection.date} />}
+          />
+        </Grid>
+      )}
 
       {/* editable article list */}
-      {editable && (
+      {mode !== "view" && (
         <>
           <h3>Selected Articles ({selected.length})</h3>
           <Grid>
@@ -263,10 +273,10 @@ const Collection = ({ fresh }: Props) => {
               <Card
                 key={index}
                 article={article}
-                editable={editable}
+                editable={true}
                 action={{
-                  icon: "times",
-                  onClick: () => removeArticle(article?.id || ""),
+                  icon: <FaTimes />,
+                  onClick: () => removeArticle(article.id),
                 }}
               />
             ))}
@@ -277,9 +287,9 @@ const Collection = ({ fresh }: Props) => {
               <Card
                 key={index}
                 article={article}
-                editable={editable}
+                editable={true}
                 action={{
-                  icon: "plus",
+                  icon: <FaPlus />,
                   onClick: () => addArticle(article.id),
                 }}
               />
@@ -289,12 +299,12 @@ const Collection = ({ fresh }: Props) => {
       )}
 
       {/* read-only article list */}
-      {!editable && (
+      {mode === "view" && (
         <>
           <h3>Articles ({collectionArticles?.length})</h3>
           <Grid>
             {collectionArticles?.map((article, index) => (
-              <Card key={index} article={article} />
+              <Card key={index} article={article} editable={false} />
             ))}
           </Grid>
         </>
@@ -302,7 +312,7 @@ const Collection = ({ fresh }: Props) => {
 
       {/* actions */}
       <Flex>
-        {editable && (
+        {mode !== "view" && (
           <Button
             text="Save"
             icon={<FaRegSave />}
@@ -311,10 +321,10 @@ const Collection = ({ fresh }: Props) => {
             form="collection-form"
           />
         )}
-        {!fresh && (
+        {mode !== "new" && (
           <Share heading="Share Collection" field="URL to this collection" />
         )}
-        {!fresh && editable && (
+        {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
@@ -342,4 +352,4 @@ const Collection = ({ fresh }: Props) => {
   );
 };
 
-export default Collection;
+export default CollectionPage;

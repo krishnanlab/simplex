@@ -1,13 +1,13 @@
 import { createContext, Dispatch, ReactNode, SetStateAction } from "react";
 import { useLocalStorage } from "react-use";
-import { ReadAuthor } from "@/global/types";
+import { Author } from "@/global/types";
 
-export interface StateType {
+export type StateType = {
   /** logged-in user/author  */
-  loggedIn: ReadAuthor | undefined | null;
+  loggedIn: Author | undefined | null;
   /** set logged-in user/author */
-  setLoggedIn: Dispatch<SetStateAction<ReadAuthor | undefined | null>>;
-}
+  setLoggedIn: Dispatch<SetStateAction<Author | undefined | null>>;
+};
 
 /** global app-wide state */
 export const State = createContext<StateType>({
@@ -15,9 +15,9 @@ export const State = createContext<StateType>({
   setLoggedIn: () => null,
 });
 
-interface Props {
+type Props = {
   children: ReactNode;
-}
+};
 
 /** provider for global state */
 const StateProvider = ({ children }: Props) => {

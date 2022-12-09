@@ -10,13 +10,13 @@ import Spinner from "@/components/Spinner";
 import { accent, dark, deep } from "@/global/palette";
 import { sleep } from "@/util/debug";
 
-export interface Props {
+type Props = {
   /** determins icon and color */
   type: "loading" | "error" | "success";
   /** text to show */
   text: string;
   children?: ReactNode;
-}
+};
 
 const notificationStyle = css({
   margin: "60px 0",
@@ -92,7 +92,7 @@ export const TopNotification = () => {
   if (!type || !text) return <></>;
 
   return (
-    <Section style={{ marginBottom: "-30px" }}>
+    <Section fill="offWhite">
       <Notification type={type} text={text}>
         <Button icon={<FaTimes />} fill={false} onClick={reset} />
       </Notification>

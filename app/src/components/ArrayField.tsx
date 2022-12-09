@@ -1,8 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
-import Field, { Props } from "@/components/Field";
+import { ComponentProps, useCallback, useEffect, useState } from "react";
+import Field from "@/components/Field";
 import { splitComma } from "@/util/string";
 
-type ModifiedProps = Omit<Props, "value" | "onChange"> & {
+type Props = Omit<ComponentProps<typeof Field>, "value" | "onChange"> & {
   value: Array<string>;
   onChange: (value: Array<string>) => unknown;
 };
@@ -14,7 +14,7 @@ const valueToRaw = (value: Array<string>) => value.join(", ");
 const rawToValue = (raw: string) => splitComma(raw);
 
 /** variation of field component with comma-separated array */
-const ArrayField = ({ value, onChange, ...props }: ModifiedProps) => {
+const ArrayField = ({ value, onChange, ...props }: Props) => {
   const [raw, setRaw] = useState("");
 
   /** when parent array value changes */

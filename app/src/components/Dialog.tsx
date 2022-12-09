@@ -13,21 +13,21 @@ import {
 } from "@floating-ui/react-dom-interactions";
 import { css } from "@stitches/react";
 import Button from "@/components/Button";
-import { rounded, shadow, white } from "@/global/palette";
+import { dark, rounded, shadow, white } from "@/global/palette";
 
-interface Props {
+type Props = {
   /** element that triggers dialog */
   reference: ReactElement;
   /** content in opened dialog */
   content: ReactElement;
   /** text at top of dialog */
   heading: string;
-}
+};
 
 const overlayStyle = css({
   display: "grid",
   placeItems: "center",
-  backgroundColor: 1,
+  backgroundColor: dark + "c0",
 });
 
 const dialogStyle = css({

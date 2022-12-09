@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { truncate } from "lodash";
 
-interface Props {
+type Props = {
   /** tab and document title */
   title: string | Array<string>;
-}
+};
 
 /** set page meta data, like react-helmet */
 export const Meta = ({ title }: Props) => {

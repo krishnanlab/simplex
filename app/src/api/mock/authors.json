@@ -12,5 +12,12 @@
     "email": "clark.kent@krypton.com",
     "institution": "Superman University",
     "newsletter": false
+  },
+  {
+    "id": "FfA1UYWAgV",
+    "name": "Anonymous",
+    "email": "",
+    "institution": "",
+    "newsletter": false
   }
 ]

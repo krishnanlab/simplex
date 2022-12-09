@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -12,17 +12,15 @@ import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
-/** password reset page */
+/** forgot password page */
 const ForgotPassword = () => {
   const { loggedIn } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEffect(() => {
-    if (loggedIn) navigate("/");
-  });
+  if (loggedIn) navigate("/");
 
-  /** mutation for resetting password */
+  /** mutation for requesting reset */
   const {
     mutate: resetMutate,
     isLoading: resetLoading,
@@ -30,12 +28,12 @@ const ForgotPassword = () => {
   } = useMutation({
     mutationFn: forgotPassword,
     onSuccess: async () => {
-      await navigate("/login");
+      await navigate("/");
       notification("success", "Sent password reset email");
     },
   });
 
-  /** when reset form submitted */
+  /** when forgot form submitted */
   const onReset = useCallback(
     async (data: FormValues) => {
       const { email } = data;
@@ -61,10 +59,10 @@ const ForgotPassword = () => {
 
       {/* statuses */}
       {resetLoading && (
-        <Notification type="loading" text="Submitting password reset" />
+        <Notification type="loading" text="Requesting password reset" />
       )}
       {resetError && (
-        <Notification type="error" text="Error submitting password" />
+        <Notification type="error" text="Error requesting password reset" />
       )}
 
       <Form id="forgot" onSubmit={onReset} />

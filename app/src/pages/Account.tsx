@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect } from "react";
 import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
@@ -18,6 +18,7 @@ import { State } from "@/global/state";
 const Account = () => {
   const { loggedIn, setLoggedIn } = useContext(State);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   /** redirect if not logged in */
   useEffect(() => {
@@ -34,6 +35,10 @@ const Account = () => {
     onSuccess: async (data) => {
       setLoggedIn(data);
       notification("success", "Saved info");
+      if (loggedIn?.id)
+        await queryClient.removeQueries({
+          queryKey: ["getAuthor", loggedIn.id],
+        });
     },
   });
 

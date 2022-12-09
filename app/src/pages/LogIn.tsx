@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
@@ -12,6 +12,7 @@ import Meta from "@/components/Meta";
 import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import Checkbox from "@/components/Checkbox";
 
 /** login page */
 const LogIn = () => {
@@ -19,9 +20,7 @@ const LogIn = () => {
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEffect(() => {
-    if (loggedIn) navigate("/");
-  });
+  if (loggedIn) navigate("/");
 
   /** mutation for logging in */
   const {
@@ -32,15 +31,15 @@ const LogIn = () => {
     mutationFn: login,
     onSuccess: async (data) => {
       setLoggedIn(data);
-      navigate("/");
+      await navigate("/");
     },
   });
 
   /** when login form submitted */
   const onLogin = useCallback(
     async (data: FormValues) => {
-      const { email, password } = data;
-      loginMutate({ email, password });
+      const { email, password, remember } = data;
+      loginMutate({ email, password, remember: Boolean(remember) });
     },
     [loginMutate]
   );
@@ -66,6 +65,12 @@ const LogIn = () => {
         />
       </Grid>
       <Flex dir="col">
+        <Checkbox
+          name="remember"
+          label="Keep me logged in"
+          defaultChecked={true}
+          form="login"
+        />
         <Link to="/forgot-password">Forgot password</Link>
         <Button text="Log In" icon={<FaSignInAlt />} form="login" />
       </Flex>

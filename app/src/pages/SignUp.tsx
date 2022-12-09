@@ -33,7 +33,7 @@ const SignUp = () => {
     mutationFn: signup,
     onSuccess: async (data) => {
       setLoggedIn(data);
-      navigate("/");
+      await navigate("/");
     },
   });
 

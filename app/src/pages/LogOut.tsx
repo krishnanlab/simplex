@@ -17,9 +17,9 @@ const LogOut = () => {
     isError: logoutError,
   } = useMutation({
     mutationFn: logout,
-    onSuccess: () => {
+    onSuccess: async () => {
       setLoggedIn(null);
-      navigate("/");
+      await navigate("/");
     },
   });
 

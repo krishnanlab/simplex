@@ -1,3 +1,4 @@
+import { IconContext } from "react-icons";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
@@ -16,6 +17,7 @@ import Home from "@/pages/Home";
 import LogIn from "@/pages/LogIn";
 import LogOut from "@/pages/LogOut";
 import MyArticles from "@/pages/MyArticles";
+import ResetPassword from "@/pages/ResetPassword";
 import SignUp from "@/pages/SignUp";
 
 /** react-query configuration  */
@@ -39,11 +41,13 @@ const queryClient = new QueryClient({
 const App = () => (
   <>
     {globalStyles()}
-    <QueryClientProvider client={queryClient}>
-      <StateProvider>
-        <RouterProvider router={router} />
-      </StateProvider>
-    </QueryClientProvider>
+    <IconContext.Provider value={{ className: "react-icons" }}>
+      <QueryClientProvider client={queryClient}>
+        <StateProvider>
+          <RouterProvider router={router} />
+        </StateProvider>
+      </QueryClientProvider>
+    </IconContext.Provider>
   </>
 );
 
@@ -90,19 +94,19 @@ const router = createBrowserRouter([
       },
       {
         path: "article/:id",
-        element: <Article fresh={false} />,
+        element: <Article />,
       },
       {
         path: "article",
-        element: <Article fresh={true} />,
+        element: <Article />,
       },
       {
         path: "collection/:id",
-        element: <Collection fresh={false} />,
+        element: <Collection />,
       },
       {
         path: "collection",
-        element: <Collection fresh={true} />,
+        element: <Collection />,
       },
       {
         path: "login",
@@ -119,6 +123,10 @@ const router = createBrowserRouter([
       {
         path: "forgot-password",
         element: <ForgotPassword />,
+      },
+      {
+        path: "reset-password",
+        element: <ResetPassword />,
       },
       {
         path: "*",

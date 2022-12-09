@@ -1,25 +1,25 @@
-import { IconName } from "@fortawesome/fontawesome-svg-core";
+import { ReactNode } from "react";
+import { FaEdit, FaEye } from "react-icons/fa";
 import { css } from "@stitches/react";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
-import Flex from "@/components/Flex";
+import Flex, { Spacer } from "@/components/Flex";
 import { dark, gray, rounded, shadow } from "@/global/palette";
-import { ReadArticle, ReadCollection } from "@/global/types";
-import { shortenURl } from "@/util/string";
+import { ArticleSummary, CollectionSummary } from "@/global/types";
 
-interface Props {
+type Props = {
   /** article details */
-  article?: ReadArticle;
+  article?: ArticleSummary;
   /** collection details */
-  collection?: ReadCollection;
+  collection?: CollectionSummary;
   /** change design/icons/etc based on whether editable */
   editable?: boolean;
   /** extra action button */
   action?: {
-    icon: IconName;
+    icon: ReactNode;
     onClick: () => void;
   };
-}
+};
 
 const cardStyle = css({
   padding: "15px 20px",
@@ -31,6 +31,10 @@ const cardStyle = css({
     outline: "solid 1px",
     outlineColor: gray,
   },
+});
+
+const summaryStyle = css({
+  flexGrow: 1,
 });
 
 const countStyle = css({
@@ -49,16 +53,16 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
     {/* title */}
     <strong>{article?.title || collection?.title}</strong>
     {/* secondary info */}
-    {article && <a href={article.source}>{shortenURl(article.source)}</a>}
-    {collection && <div>{collection.description}</div>}
-
-    <Spacer />
+    <div className={summaryStyle()}>
+      {article && article.textTruncated}
+      {collection && collection.description}
+    </div>
 
     {/* tertiary info */}
     <div className={countStyle()}>
       {article
-        ? `In ${article.collections.length} collection(s)`
-        : `Has ${collection?.articles.length} article(s)`}
+        ? `In ${article.collectionCount} collection(s)`
+        : `Has ${collection?.articleCount} article(s)`}
     </div>
 
     {/* actions */}
@@ -72,7 +76,7 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
           (article?.id || collection?.id)
         }
         fill={false}
-        icon={editable ? "pen-to-square" : "eye"}
+        icon={editable ? <FaEdit /> : <FaEye />}
       />
       <Ago date={article?.date || collection?.date || ""} />
 
@@ -87,5 +91,3 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
 );
 
 export default Card;
-
-const Spacer = () => <div style={{ flexGrow: 1 }}></div>;

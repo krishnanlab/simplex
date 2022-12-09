@@ -1,6 +1,4 @@
-/** capitalize string */
-export const capitalize = (string: string) =>
-  string.substring(0, 1).toUpperCase() + string.substring(1);
+import { AuthorPublic } from "@/global/types";
 
 /** is word */
 export const isWord = (value: string) => value.match(/[\p{L}|\p{N}|-]+/u);
@@ -17,7 +15,7 @@ export const splitComma = (value: string) =>
     .filter(Boolean);
 
 /** shorten url text */
-export const shortenURl = (value: string) => {
+export const shortenUrl = (value: string) => {
   try {
     const url = new URL(value);
     return url.hostname + url.pathname;
@@ -29,3 +27,27 @@ export const shortenURl = (value: string) => {
 /** array of strings to classname list */
 export const classNames = (array: Array<string | undefined | null>) =>
   array.filter(Boolean).join(" ");
+
+/** format date to string */
+export const dateString = (date: string | Date) =>
+  parseDate(date).toLocaleString(undefined, {
+    dateStyle: "medium",
+    timeStyle: "short",
+  });
+
+/** parse date string with fallback */
+export const parseDate = (date: string | Date) => {
+  try {
+    const parsed = new Date(date);
+    if (isNaN(parsed.getTime())) throw Error("");
+    return new Date(date);
+  } catch (error) {
+    return new Date();
+  }
+};
+
+/** make "by" string from author object */
+export const authorString = (author: AuthorPublic, you: boolean) =>
+  [author.name, you ? "(You)" : "", author.institution]
+    .filter(Boolean)
+    .join(" | ");

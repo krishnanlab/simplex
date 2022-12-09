@@ -1,14 +1,17 @@
 import { SelectHTMLAttributes } from "react";
 import { css } from "@stitches/react";
 import { dark, deep } from "@/global/palette";
-import { capitalize } from "@/util/string";
 
-interface Props<Option> {
+type Props<Option> = {
   /** label next to input */
   label: string;
+  value?: string;
   options?: readonly Option[];
-  onChange?: (value: Option, index: number) => unknown;
-}
+  onChange?: (value: Option) => unknown;
+} & Omit<
+  SelectHTMLAttributes<HTMLSelectElement>,
+  "value" | "options" | "onChange"
+>;
 
 const labelStyle = css({
   color: dark,
@@ -31,25 +34,28 @@ const selectStyle = css({
 });
 
 /** util select component */
-const Select = <Option extends string>({
+const Select = <Option extends { label: string; value: string }>({
   label,
+  value,
   options,
   onChange,
   ...props
-}: Props<Option> &
-  Omit<SelectHTMLAttributes<HTMLSelectElement>, "options" | "onChange">) => (
+}: Props<Option>) => (
   <label>
     <span className={labelStyle()}>{label}:</span>
     <select
       className={selectStyle()}
-      onChange={(event) =>
-        onChange?.(event.target.value as Option, event.target.selectedIndex)
-      }
+      value={value}
+      onChange={(event) => {
+        const { value, selectedIndex, options } = event.target;
+        const label = options[selectedIndex].innerHTML;
+        onChange?.({ value, label } as Option);
+      }}
       {...props}
     >
       {options?.map((option, index) => (
-        <option key={index} value={option}>
-          {capitalize(option)}
+        <option key={index} value={option.value}>
+          {option.label}
         </option>
       ))}
     </select>
