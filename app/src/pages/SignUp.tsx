@@ -57,71 +57,78 @@ const SignUp = () => {
   );
 
   return (
-    <Section>
-      <Meta title="Sign Up" />
-      <h2>Sign Up</h2>
+    <>
+      <Section>
+        <Meta title="Sign Up" />
+        <h2>Sign Up</h2>
+      </Section>
 
       {/* pitch */}
-      <p>
-        <strong>Why sign up?</strong>
-      </p>
-      <ul>
-        <li>Track revisions to your articles.</li>
-        <li>Organize your articles into collections and share them.</li>
-        <li>Get important updates via our newsletter.</li>
-      </ul>
+      <Section fill="offWhite">
+        <p>
+          <strong>Why sign up?</strong>
+        </p>
+        <ul>
+          <li>Track revisions to your articles.</li>
+          <li>Organize your articles into collections and share them.</li>
+          <li>Get important updates via our newsletter.</li>
+        </ul>
+      </Section>
 
-      <Grid>
-        <Field
-          label="Name"
-          name="name"
-          placeholder="Jane Smith"
-          form="signup"
-        />
-        <Field
-          label="Email"
-          name="email"
-          placeholder="jane.smith@email.com"
-          form="signup"
-        />
-        <Field
-          label="Institution"
-          name="institution"
-          optional={true}
-          placeholder="University of Colorado"
-          form="signup"
-        />
-        <Field
-          label="Password"
-          name="password"
-          type="password"
-          placeholder="**********"
-          form="signup"
-        />
-        <Field
-          label="Confirm Password"
-          name="confirm"
-          type="password"
-          placeholder="**********"
-          form="signup"
-        />
-      </Grid>
-      <Flex dir="col">
-        <Checkbox
-          name="newsletter"
-          label="Subscribe to our newsletter"
-          defaultChecked={true}
-          form="signup"
-        />
-        <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
-      </Flex>
+      {/* form */}
+      <Section>
+        <Grid>
+          <Field
+            label="Name"
+            name="name"
+            placeholder="Jane Smith"
+            form="signup"
+          />
+          <Field
+            label="Email"
+            name="email"
+            placeholder="jane.smith@email.com"
+            form="signup"
+          />
+          <Field
+            label="Institution"
+            name="institution"
+            optional={true}
+            placeholder="University of Colorado"
+            form="signup"
+          />
+          <Field
+            label="Password"
+            name="password"
+            type="password"
+            placeholder="**********"
+            form="signup"
+          />
+          <Field
+            label="Confirm Password"
+            name="confirm"
+            type="password"
+            placeholder="**********"
+            form="signup"
+          />
+        </Grid>
+        <Flex dir="col">
+          <Checkbox
+            name="newsletter"
+            label="Subscribe to our newsletter"
+            defaultChecked={true}
+            form="signup"
+          />
+          <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
+        </Flex>
 
-      {/* statuses */}
-      {signupLoading && <Notification type="loading" text="Signing up" />}
-      {signupError && <Notification type="error" text="Error signing up" />}
+        {/* statuses */}
+        {signupLoading && <Notification type="loading" text="Signing up" />}
+        {signupError && <Notification type="error" text="Error signing up" />}
 
-      <Form id="signup" onSubmit={onSignup} />
-    </Section>
+        <Form id="signup" onSubmit={onSignup} />
+      </Section>
+    </>
   );
 };
 

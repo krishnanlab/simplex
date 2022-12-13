@@ -31,11 +31,7 @@ const Home = () => {
       <Meta title="" />
 
       <Section fill="deep">
-        <p className={heroStyle()}>
-          Scientific and medical writing is often hard for non-experts to
-          understand because it&apos;s full of jargon. Simplex helps you
-          identify complexity in your writing and simplify it.
-        </p>
+        <p className={heroStyle()}>{import.meta.env.VITE_DESCRIPTION}</p>
       </Section>
 
       <Article />

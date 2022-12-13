@@ -34,13 +34,14 @@ export const getArticles = (ids: Array<Id>) =>
 
 /** save new article */
 export const saveNewArticle = async (article: ArticleWrite) => {
-  const response = await request<{ id: Id }>("/articles", {
+  const response = await request<{ id: Id; anonymous: boolean }>("/articles", {
     method: "POST",
     body: JSON.stringify(article),
   });
 
-  /** save created articles locally so anon ones aren't lost */
-  setStorage("anon-articles", (value) => value + "," + response.id);
+  /** save anonymously created articles locally so they aren't lost */
+  if (response.anonymous)
+    setStorage("anonymous-articles", (value) => value + "," + response.id);
 
   return response;
 };

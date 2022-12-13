@@ -96,10 +96,6 @@ const globalStyles = globalCss({
   strong: {
     fontWeight: "400",
   },
-  ".spacer": {
-    content: "''",
-    flexGrow: "1",
-  },
   "[disabled]": {
     background: offWhite,
     color: "inherit",

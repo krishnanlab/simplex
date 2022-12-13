@@ -71,8 +71,8 @@ const LogIn = () => {
           defaultChecked={true}
           form="login"
         />
-        <Link to="/forgot-password">Forgot password</Link>
         <Button text="Log In" icon={<FaSignInAlt />} form="login" />
+        <Link to="/forgot-password">Forgot password</Link>
       </Flex>
 
       {/* statuses */}

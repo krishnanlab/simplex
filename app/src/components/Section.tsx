@@ -4,10 +4,10 @@ import { dark, deep, offWhite, pale } from "@/global/palette";
 import { classNames } from "@/util/string";
 
 const fills = {
-  none: "",
-  offWhite: offWhite,
-  deep: deep,
-  dark: dark,
+  none: { bg: "", color: "" },
+  offWhite: { bg: offWhite, color: "" },
+  deep: { bg: deep, color: pale },
+  dark: { bg: dark, color: pale },
 };
 
 type Props = {
@@ -33,8 +33,8 @@ const Section = ({ fill = "none", className, ...props }: Props) => (
   <section
     className={classNames([sectionStyle(), className])}
     style={{
-      background: fills[fill],
-      color: fills[fill] ? pale : "",
+      background: fills[fill].bg,
+      color: fills[fill].color,
     }}
     {...props}
   />

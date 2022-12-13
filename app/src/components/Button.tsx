@@ -17,7 +17,7 @@ type Props = {
   to?: To;
   /** text to show */
   text?: string;
-  /** font awesome icon name */
+  /** icon component */
   icon?: ReactNode;
   /** fill design */
   fill?: boolean;

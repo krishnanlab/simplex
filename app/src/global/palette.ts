@@ -33,7 +33,7 @@ const big: CSSProperties = {
 const title: CSSProperties = {
   fontSize: "1.4rem",
   fontWeight: "300",
-  letterSpacing: "5px",
+  letterSpacing: "0.3em",
   textTransform: "uppercase",
 };
 
