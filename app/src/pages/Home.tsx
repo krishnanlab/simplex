@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { css } from "@stitches/react";
 import Citation from "@/components/Citation";
@@ -5,7 +6,6 @@ import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { big } from "@/global/palette";
 import Article from "@/pages/Article";
-import { useEffect } from "react";
 
 const heroStyle = css({
   ...big,

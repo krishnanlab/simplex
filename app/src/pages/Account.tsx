@@ -16,7 +16,7 @@ import { State } from "@/global/state";
 
 /** logged-in user's account page */
 const Account = () => {
-  const { loggedIn, setLoggedIn } = useContext(State);
+  const { loggedIn, logIn } = useContext(State);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
@@ -33,7 +33,7 @@ const Account = () => {
   } = useMutation({
     mutationFn: saveInfo,
     onSuccess: async (data) => {
-      setLoggedIn(data);
+      logIn(data);
       notification("success", "Saved info");
       if (loggedIn?.id)
         await queryClient.removeQueries({

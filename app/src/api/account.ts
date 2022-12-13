@@ -1,6 +1,17 @@
 import { request } from "./";
 import { Author, AuthorPublic, AuthorWrite, Id } from "@/global/types";
 
+/** check if user logged in */
+export const checkLogin = async () => {
+  try {
+    await request("/check-login");
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 type Signup = AuthorWrite & {
   password: string;
 };

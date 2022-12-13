@@ -13,6 +13,10 @@ export const getWordScore = (word: string) =>
 
 /** mock api responses */
 export const handlers = [
+  rest.get(/\/check-login$/, async (req, res, ctx) =>
+    res(ctx.status(200), ctx.json({}))
+  ),
+
   rest.post(/\/signup$/, async (req, res, ctx) =>
     res(ctx.status(200), ctx.json(authors[0]))
   ),
@@ -128,7 +132,7 @@ export const handlers = [
   ),
 
   rest.put(/\/articles\/\w+$/, (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
+    res(ctx.status(401), ctx.json({}))
   ),
 
   rest.delete(/\/articles\/\w+$/, (req, res, ctx) =>

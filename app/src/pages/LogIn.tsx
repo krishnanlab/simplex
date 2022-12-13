@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/account";
 import Button from "@/components/Button";
+import Checkbox from "@/components/Checkbox";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
@@ -12,11 +13,10 @@ import Meta from "@/components/Meta";
 import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
-import Checkbox from "@/components/Checkbox";
 
 /** login page */
 const LogIn = () => {
-  const { loggedIn, setLoggedIn } = useContext(State);
+  const { loggedIn, logIn } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
@@ -30,7 +30,7 @@ const LogIn = () => {
   } = useMutation({
     mutationFn: login,
     onSuccess: async (data) => {
-      setLoggedIn(data);
+      logIn(data);
       await navigate("/");
     },
   });

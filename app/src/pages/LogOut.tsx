@@ -7,7 +7,7 @@ import { State } from "@/global/state";
 
 /** logout page */
 const LogOut = () => {
-  const { setLoggedIn } = useContext(State);
+  const { logOut } = useContext(State);
   const navigate = useNavigate();
 
   /** mutation to logout */
@@ -18,7 +18,7 @@ const LogOut = () => {
   } = useMutation({
     mutationFn: logout,
     onSuccess: async () => {
-      setLoggedIn(null);
+      logOut();
       await navigate("/");
     },
   });

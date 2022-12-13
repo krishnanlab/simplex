@@ -16,7 +16,7 @@ import { State } from "@/global/state";
 
 /** signup page */
 const SignUp = () => {
-  const { loggedIn, setLoggedIn } = useContext(State);
+  const { loggedIn, logIn } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
@@ -32,7 +32,7 @@ const SignUp = () => {
   } = useMutation({
     mutationFn: signup,
     onSuccess: async (data) => {
-      setLoggedIn(data);
+      logIn(data);
       await navigate("/");
     },
   });
