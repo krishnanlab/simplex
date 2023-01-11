@@ -9,6 +9,9 @@ export const request = async <T>(
   const headers = new Headers();
   headers.append("Content-Type", "application/json");
 
+  /** set extra options */
+  options.credentials = "include";
+
   /** make request with options */
   const response = await fetch(api + url, { ...options, headers });
 
