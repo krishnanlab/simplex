@@ -1,5 +1,6 @@
 import { useContext, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
+import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { css } from "@stitches/react";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
@@ -7,7 +8,6 @@ import { fast, gray, pale, plus, rounded } from "@/global/palette";
 import { State } from "@/global/state";
 import { restartAnimations } from "@/util/dom";
 import { classNames } from "@/util/string";
-import { useLocation } from "react-router";
 
 const headerStyle = css({
   display: "flex",

@@ -3,13 +3,13 @@ import { Analysis, Audience, Simplify } from "@/global/types";
 
 /** main analysis of complexity */
 export const analyze = (
-  words: Array<string>,
+  text: string,
   audience: Audience["value"],
   ignoreWords: Array<string>
 ) =>
   request<Analysis>("/analyze", {
     method: "POST",
-    body: JSON.stringify({ words, audience, ignoreWords }),
+    body: JSON.stringify({ text, audience, ignoreWords }),
   });
 
 /** get synonyms, definition, etc. */

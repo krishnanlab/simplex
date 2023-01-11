@@ -3,7 +3,7 @@ import articles from "./articles.json";
 import authors from "./authors.json";
 import collections from "./collections.json";
 import revisions from "./revisions.json";
-import { isWord } from "@/util/string";
+import { isWord, splitWords } from "@/util/string";
 
 /** dummy cache store of word scores */
 const scoreStore: Record<string, number> = {};
@@ -56,7 +56,7 @@ export const handlers = [
     const body = await req.json();
 
     const scores: Record<string, number> = {};
-    for (const word of body.words)
+    for (const word of splitWords(body.text))
       if (isWord(word))
         scores[word] = body.ignoreWords.includes(word) ? 0 : getWordScore(word);
 

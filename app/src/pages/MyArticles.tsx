@@ -1,5 +1,7 @@
 import { useContext } from "react";
 import { FaPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { useLocalStorage } from "react-use";
 import { useQuery } from "@tanstack/react-query";
 import { getUserArticles } from "@/api/article";
 import { getUserCollections } from "@/api/collection";
@@ -11,8 +13,6 @@ import Meta from "@/components/Meta";
 import Notification from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
-import { useLocalStorage } from "react-use";
-import { Link } from "react-router-dom";
 
 /** logged-in user's page of articles and collections */
 const MyArticles = () => {

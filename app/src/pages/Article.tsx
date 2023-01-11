@@ -278,9 +278,6 @@ const ArticlePage = () => {
   /** whether controls are editable */
   const editable = mode !== "view" && revision === 0;
 
-  /** array of words in editor */
-  const words = useMemo(() => splitWords(article.text || ""), [article.text]);
-
   /** initialize editable article from latest revision */
   useEffect(() => {
     if (latestArticle) setEditableArticle(latestArticle);
@@ -307,12 +304,12 @@ const ArticlePage = () => {
 
     /** run analysis */
     (async () => {
-      if (!words.length) return;
+      if (!article.text.trim()) return;
       await sleep(500); // debounce
       if (!latest) return;
       setAnalyzing(true);
       const analysis = await analyze(
-        words,
+        article.text,
         audience.value,
         article.ignoreWords || []
       );
@@ -324,7 +321,7 @@ const ArticlePage = () => {
     return () => {
       latest = false;
     };
-  }, [words, audience, article.ignoreWords]);
+  }, [article.text, audience, article.ignoreWords]);
 
   /** overall loading */
   if (articleLoading || latestLoading || authorLoading || revisionsLoading)
