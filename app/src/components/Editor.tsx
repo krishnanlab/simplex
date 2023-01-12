@@ -20,7 +20,7 @@ import {
 } from "@/global/palette";
 import { splitWords } from "@/util/string";
 
-interface Props {
+type Props = {
   value: string;
   onChange: (value: string) => void;
   /** whether to show highlights */
@@ -31,7 +31,7 @@ interface Props {
   editable?: boolean;
   /** tooltip element to show on word click */
   tooltip?: (word: string) => ReactElement;
-}
+};
 
 const wrapperStyle = css({
   position: "relative",

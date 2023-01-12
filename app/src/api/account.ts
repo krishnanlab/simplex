@@ -1,55 +1,82 @@
 import { request } from "./";
-import { PublicReadAuthor, ReadAuthor, WriteAuthor } from "@/global/types";
+import { Author, AuthorPublic, AuthorWrite, Id } from "@/global/types";
 
-type Signup = WriteAuthor & {
+/** check if user logged in */
+export const checkLogin = async () => {
+  try {
+    await request("/check-login");
+    return true;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
+type Signup = AuthorWrite & {
   password: string;
 };
 
+/** sign up for account */
 export const signup = (params: Signup) =>
-  request<ReadAuthor>("/signup", {
+  request<Author>("/signup", {
     method: "POST",
     body: JSON.stringify(params),
   });
 
-interface Login {
+type Login = {
   email: string;
   password: string;
-}
+  remember: boolean;
+};
 
+/** log in to existing account */
 export const login = (params: Login) =>
-  request<ReadAuthor>("/login", {
+  request<Author>("/login", {
     method: "POST",
     body: JSON.stringify(params),
   });
 
-export const logout = () => request("/logout", { method: "POST" });
+/** log out of account */
+export const logout = () => request<undefined>("/logout", { method: "POST" });
 
-/** lookup public info of author */
-export const getAuthor = (id: string) =>
-  request<PublicReadAuthor>(`/author/${id}`);
-
-type SaveInfo = WriteAuthor;
+/** lookup public info of third-party author */
+export const getAuthor = (id: Id) => request<AuthorPublic>(`/authors/${id}`);
 
 /** save user's account info */
-export const saveInfo = (props: SaveInfo) =>
-  request<ReadAuthor>("/save-info", {
+export const saveInfo = (props: AuthorWrite) =>
+  request<Author>("/save-info", {
     method: "POST",
     body: JSON.stringify(props),
   });
 
-interface ChangePassword {
+type ChangePassword = {
   current: string;
   fresh: string;
-}
+};
 
+/** change password of logged in user */
 export const changePassword = (props: ChangePassword) =>
-  request("/change-password", {
+  request<undefined>("/change-password", {
     method: "POST",
     body: JSON.stringify(props),
   });
 
-export const forgotPassword = (props: Pick<ReadAuthor, "email">) =>
-  request("/forgot-password", {
+/** request password reset */
+export const forgotPassword = (props: Pick<Author, "email">) =>
+  request<undefined>("/forgot-password", {
+    method: "POST",
+    body: JSON.stringify(props),
+  });
+
+type ResetPassword = {
+  code: string;
+  email: string;
+  password: string;
+};
+
+/** submit password reset */
+export const resetPassword = (props: ResetPassword) =>
+  request<undefined>("/forgot-password", {
     method: "POST",
     body: JSON.stringify(props),
   });

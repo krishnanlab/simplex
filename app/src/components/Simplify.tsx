@@ -1,19 +1,19 @@
+import { FaExternalLinkAlt, FaPlus, FaTimes } from "react-icons/fa";
 import { css } from "@stitches/react";
 import { useQuery } from "@tanstack/react-query";
 import { simplify } from "@/api/tool";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
 import Notification from "@/components/Notification";
 
-interface Props {
+type Props = {
   /** word to simplified */
   word: string;
   /** whether word is in ignore list */
   ignored: boolean;
   /** on click of ignore button */
   setIgnored: () => unknown;
-}
+};
 
 const contentStyle = css({
   maxHeight: "250px",
@@ -44,7 +44,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
         <h4>Simplify &quot;{word}&quot;</h4>
         <Button
           text={ignored ? "Remove from ignore list" : "Add to ignore list"}
-          icon={ignored ? "times" : "plus"}
+          icon={ignored ? <FaTimes /> : <FaPlus />}
           fill={false}
           onClick={() => setIgnored?.()}
         />
@@ -59,7 +59,7 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
             <strong>Definition:</strong>
             <p>{simplification.definition}</p>
             <a href={simplification.link} target="_blank" rel="noreferrer">
-              See more <Icon icon="arrow-up-right-from-square" />
+              See more <FaExternalLinkAlt />
             </a>
             <img src={simplification.image} className={imageStyle()} alt="" />
           </Flex>

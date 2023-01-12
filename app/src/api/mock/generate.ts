@@ -1,5 +1,5 @@
 import { exampleText } from "@/assets/example.json";
-import { ReadArticle, ReadAuthor, ReadCollection } from "@/global/types";
+import { Article, Author, Collection } from "@/global/types";
 
 /** code used to generate mock data */
 
@@ -23,7 +23,6 @@ const id = () =>
     )
     .join("");
 
-let denom = 0;
 const date = () =>
   new Date(
     new Date().valueOf() -
@@ -31,12 +30,12 @@ const date = () =>
         5 *
           Math.random() *
           [1000, 60, 60, 24, 30, 12]
-            .slice(0, 1 + (denom++ % 6))
+            .slice(0, rand([1, 2, 3, 4, 5, 6]))
             .reduce((product, value) => product * value, 1)
       )
   ).toISOString();
 
-const complexWords = [
+const words = [
   "coronavirus",
   "zoonotic",
   "respiratory",
@@ -44,24 +43,24 @@ const complexWords = [
   "pandemic",
   "epidemiology",
 ];
-const complexText = () =>
+const text = () =>
   Array(20)
     .fill("")
-    .map(() => rand(complexWords))
+    .map(() => rand(words))
     .join(" ");
 
-const simpleWords = ["apple", "blue", "cat", "dog", "elephant", "fig"];
-const simpleText = () =>
-  Array(20)
-    .fill("")
-    .map(() => rand(simpleWords))
-    .join(" ");
-
-export let authors: Array<ReadAuthor> = [];
-export let articles: Array<ReadArticle> = [];
-export let collections: Array<ReadCollection> = [];
+export let authors: Array<Author> = [];
+export let articles: Array<Article> = [];
+export let collections: Array<Collection> = [];
 
 authors = [
+  {
+    id: id(),
+    name: "Anonymous",
+    email: "",
+    institution: "",
+    newsletter: false,
+  },
   {
     id: id(),
     name: "Dummy McGee",
@@ -82,6 +81,7 @@ articles = Array(10)
   .fill({})
   .map(() => ({
     id: id(),
+    revision: rand([1, 2, 3, 4, 5]),
     author: rand(authors).id,
     date: date(),
     title: rand(
@@ -105,14 +105,12 @@ articles = Array(10)
         "article-source"
       ) +
       ".com/",
-    originalText: complexText(),
-    simplifiedText: simpleText(),
-    ignoreWords: [rand(complexWords), rand(complexWords), rand(simpleWords)],
+    text: text(),
+    ignoreWords: [rand(words), rand(words), rand(words)],
     collections: [],
   }));
 
-articles[0].originalText = exampleText;
-articles[0].simplifiedText = exampleText.replaceAll(/[a-zA-Z]{7,}/g, "cat");
+articles[0].text = exampleText;
 
 collections = Array(5)
   .fill({})
@@ -155,6 +153,24 @@ for (const collection of collections) {
   }
 }
 
+articles = articles.map((article) => ({
+  ...article,
+  textTruncated: article.text.slice(0, 100) + "...",
+  collectionCount: article.collections.length,
+}));
+
+collections = collections.map((collection) => ({
+  ...collection,
+  articleCount: collection.articles.length,
+}));
+
+const revisions = Array(10)
+  .fill("")
+  .map(date)
+  .sort()
+  .map((date, index) => ({ revision: index, date }));
+
 console.info(authors);
 console.info(articles);
 console.info(collections);
+console.info(revisions);

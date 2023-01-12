@@ -1,6 +1,7 @@
 import { useCallback, useContext, useEffect } from "react";
+import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
 import Checkbox from "@/components/Checkbox";
@@ -15,8 +16,9 @@ import { State } from "@/global/state";
 
 /** logged-in user's account page */
 const Account = () => {
-  const { loggedIn, setLoggedIn } = useContext(State);
+  const { loggedIn, logIn } = useContext(State);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   /** redirect if not logged in */
   useEffect(() => {
@@ -31,8 +33,12 @@ const Account = () => {
   } = useMutation({
     mutationFn: saveInfo,
     onSuccess: async (data) => {
-      setLoggedIn(data);
+      logIn(data);
       notification("success", "Saved info");
+      if (loggedIn?.id)
+        await queryClient.removeQueries({
+          queryKey: ["getAuthor", loggedIn.id],
+        });
     },
   });
 
@@ -71,101 +77,109 @@ const Account = () => {
   );
 
   return (
-    <Section>
-      <Meta title="Account" />
-      <h2>Account</h2>
+    <>
+      <Section>
+        <Meta title="Account" />
+        <h2>Account</h2>
+      </Section>
 
       {/* form */}
-      <h3>Personal Info</h3>
-      <Grid>
-        <Field
-          label="Name"
-          name="name"
-          placeholder="Jane Smith"
-          defaultValue={loggedIn?.name || ""}
-          form="save-info"
-        />
-        <Field
-          label="Email"
-          name="email"
-          placeholder="jane.smith@email.com"
-          defaultValue={loggedIn?.email || ""}
-          form="save-info"
-        />
-        <Field
-          label="Institution"
-          name="institution"
-          optional={true}
-          placeholder="University of Colorado"
-          defaultValue={loggedIn?.institution || ""}
-          form="save-info"
-        />
-      </Grid>
-      <Flex dir="col">
-        <Checkbox
-          label="Subscribe to our newsletter"
-          name="newsletter"
-          defaultChecked={loggedIn?.newsletter}
-          form="save-info"
-        />
-        <Button
-          text="Save Info"
-          icon="floppy-disk"
-          disabled={saveInfoLoading}
-          form="save-info"
-        />
-      </Flex>
+      <Section fill="offWhite">
+        <h3>Personal Info</h3>
+        <Grid>
+          <Field
+            label="Name"
+            name="name"
+            placeholder="Jane Smith"
+            defaultValue={loggedIn?.name || ""}
+            form="save-info"
+          />
+          <Field
+            label="Email"
+            name="email"
+            placeholder="jane.smith@email.com"
+            defaultValue={loggedIn?.email || ""}
+            form="save-info"
+          />
+          <Field
+            label="Institution"
+            name="institution"
+            optional={true}
+            placeholder="University of Colorado"
+            defaultValue={loggedIn?.institution || ""}
+            form="save-info"
+          />
+        </Grid>
+        <Flex dir="col">
+          <Checkbox
+            label="Subscribe to our newsletter"
+            name="newsletter"
+            defaultChecked={loggedIn?.newsletter}
+            form="save-info"
+          />
+          <Button
+            text="Save Info"
+            icon={<FaRegSave />}
+            disabled={saveInfoLoading}
+            form="save-info"
+          />
+        </Flex>
 
-      {/* statuses */}
-      {saveInfoLoading && <Notification type="loading" text="Saving info" />}
-      {saveInfoError && <Notification type="error" text="Error saving info" />}
+        {/* statuses */}
+        {saveInfoLoading && <Notification type="loading" text="Saving info" />}
+        {saveInfoError && (
+          <Notification type="error" text="Error saving info" />
+        )}
 
-      <Form id="save-info" onSubmit={onSaveInfo} />
+        <Form id="save-info" onSubmit={onSaveInfo} />
+      </Section>
 
       {/* form */}
-      <h3>Change Password</h3>
-      <Grid>
-        <Field
-          label="Current Password"
-          name="current"
-          type="password"
-          placeholder="**********"
-          form="change-password"
-        />
-        <Field
-          label="New Password"
-          name="fresh"
-          type="password"
-          placeholder="**********"
-          form="change-password"
-        />
-        <Field
-          label="Confirm New Password"
-          name="confirm"
-          type="password"
-          placeholder="**********"
-          form="change-password"
-        />
-      </Grid>
-      <Flex>
-        <Button
-          text="Change Password"
-          icon="lock"
-          form="change-password"
-          disabled={changePasswordLoading}
-        />
-      </Flex>
+      <Section>
+        <h3>Change Password</h3>
+        <Grid>
+          <Field
+            label="Current Password"
+            name="current"
+            type="password"
+            placeholder="**********"
+            form="change-password"
+          />
+          <Field
+            label="New Password"
+            name="fresh"
+            type="password"
+            placeholder="**********"
+            form="change-password"
+          />
+          <Field
+            label="Confirm New Password"
+            name="confirm"
+            type="password"
+            placeholder="**********"
+            form="change-password"
+          />
+        </Grid>
+        <Flex>
+          <Button
+            text="Change Password"
+            icon={<FaLock />}
+            form="change-password"
+            disabled={changePasswordLoading}
+          />
+        </Flex>
 
-      {/* statuses */}
-      {changePasswordLoading && (
-        <Notification type="loading" text="Changing password" />
-      )}
-      {changePasswordError && (
-        <Notification type="error" text="Error changing password" />
-      )}
+        {/* statuses */}
+        {changePasswordLoading && (
+          <Notification type="loading" text="Changing password" />
+        )}
+        {changePasswordError && (
+          <Notification type="error" text="Error changing password" />
+        )}
 
-      <Form id="change-password" onSubmit={onChangePassword} />
-    </Section>
+        <Form id="change-password" onSubmit={onChangePassword} />
+      </Section>
+    </>
   );
 };
 

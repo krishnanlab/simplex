@@ -1,11 +1,11 @@
+import { FaRegQuestionCircle } from "react-icons/fa";
 import { css } from "@stitches/react";
-import Icon from "@/components/Icon";
 import Tooltip from "@/components/Tooltip";
 
-interface Props {
+type Props = {
   /** text on hover */
   tooltip: string;
-}
+};
 
 const helpStyle = css({
   padding: "0",
@@ -18,7 +18,7 @@ const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={
       <button className={helpStyle()} aria-label="Help">
-        <Icon icon="question-circle" />
+        <FaRegQuestionCircle />
       </button>
     }
     content={tooltip}

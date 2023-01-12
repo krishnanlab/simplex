@@ -19,25 +19,22 @@ const Home = () => {
   /** handle 404 redirect */
   useEffect(() => {
     const redirect = window.sessionStorage.redirect as string;
-    if (!redirect) return;
-    console.info("Redirecting to:", redirect);
-    window.sessionStorage.removeItem("redirect");
-    navigate(redirect);
-  }, [navigate]);
+    if (redirect) {
+      console.info("Redirecting to:", redirect);
+      window.sessionStorage.removeItem("redirect");
+      navigate(redirect);
+    }
+  });
 
   return (
     <>
       <Meta title="" />
 
       <Section fill="deep">
-        <p className={heroStyle()}>
-          Scientific and medical writing is often hard for non-experts to
-          understand because it&apos;s full of jargon. Simplex helps you
-          identify complexity in your writing and simplify it.
-        </p>
+        <p className={heroStyle()}>{import.meta.env.VITE_DESCRIPTION}</p>
       </Section>
 
-      <Article fresh={true} />
+      <Article />
 
       <Section fill="dark">
         <Citation />

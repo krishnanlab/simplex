@@ -1,11 +1,18 @@
 import { HTMLAttributes } from "react";
 import { css } from "@stitches/react";
-import { dark, deep, pale } from "@/global/palette";
+import { dark, deep, offWhite, pale } from "@/global/palette";
 import { classNames } from "@/util/string";
+
+const fills = {
+  none: { bg: "", color: "" },
+  offWhite: { bg: offWhite, color: "" },
+  deep: { bg: deep, color: pale },
+  dark: { bg: dark, color: pale },
+};
 
 type Props = {
   /** background */
-  fill?: "none" | "deep" | "dark";
+  fill?: keyof typeof fills;
   className?: string;
 } & Partial<HTMLAttributes<HTMLElement>>;
 
@@ -21,19 +28,13 @@ const sectionStyle = css({
   },
 });
 
-const fills = {
-  none: "",
-  deep: deep,
-  dark: dark,
-};
-
 /** util section wrapper */
 const Section = ({ fill = "none", className, ...props }: Props) => (
   <section
     className={classNames([sectionStyle(), className])}
     style={{
-      background: fills[fill],
-      color: fills[fill] ? pale : "",
+      background: fills[fill].bg,
+      color: fills[fill].color,
     }}
     {...props}
   />

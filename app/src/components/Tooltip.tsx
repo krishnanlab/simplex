@@ -10,6 +10,7 @@ import {
   shift,
   useDismiss,
   useFloating,
+  useFocus,
   useHover,
   useInteractions,
   useRole,
@@ -17,7 +18,7 @@ import {
 import { css } from "@stitches/react";
 import { rounded, shadow, white } from "@/global/palette";
 
-interface Props {
+type Props = {
   /** element that triggers tooltip */
   reference: ReactElement;
   /** content in opened tooltip */
@@ -26,7 +27,7 @@ interface Props {
   open?: boolean;
   /** func called on close */
   onClose?: () => unknown;
-}
+};
 
 const tooltipStyle = css({
   display: "flex",
@@ -108,9 +109,11 @@ const Tooltip = ({
     useHover(context, {
       enabled: !passedOpen,
       handleClose: safePolygon(),
+      move: false,
       delay: { open: 200, close: 100 },
     }),
-    useRole(context),
+    useFocus(context),
+    useRole(context, { role: "tooltip" }),
     useDismiss(context),
   ]);
 
@@ -122,38 +125,38 @@ const Tooltip = ({
       {/* tooltip */}
       <FloatingPortal>
         {open && (
-          <>
-            <FloatingFocusManager
-              context={context}
-              modal={false}
-              order={["reference", "content"]}
+          <FloatingFocusManager
+            context={context}
+            modal={false}
+            order={["reference", "content"]}
+            returnFocus={false}
+            initialFocus={-1}
+          >
+            <div
+              ref={floating}
+              className={tooltipStyle()}
+              style={{
+                position,
+                top: top ?? "",
+                left: left ?? "",
+              }}
+              {...getFloatingProps()}
             >
-              <div
-                ref={floating}
-                className={tooltipStyle()}
-                style={{
-                  position,
-                  top: top ?? "",
-                  left: left ?? "",
-                }}
-                {...getFloatingProps()}
-              >
-                {content}
+              {content}
 
-                {/* arrow/caret */}
-                <div
-                  ref={arrowRef}
-                  data-placement={placement}
-                  style={{
-                    left: arrowX,
-                    top: placement === "top" ? "100%" : "",
-                    bottom: placement === "bottom" ? "100%" : "",
-                  }}
-                  className={arrowStyle()}
-                />
-              </div>
-            </FloatingFocusManager>
-          </>
+              {/* arrow/caret */}
+              <div
+                ref={arrowRef}
+                data-placement={placement}
+                style={{
+                  left: arrowX,
+                  top: placement === "top" ? "100%" : "",
+                  bottom: placement === "bottom" ? "100%" : "",
+                }}
+                className={arrowStyle()}
+              />
+            </div>
+          </FloatingFocusManager>
         )}
       </FloatingPortal>
     </>

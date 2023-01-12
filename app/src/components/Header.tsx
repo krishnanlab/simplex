@@ -1,8 +1,9 @@
 import { useContext, useState } from "react";
+import { FaBars, FaTimes } from "react-icons/fa";
+import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
 import { css } from "@stitches/react";
 import { ReactComponent as Logo } from "@/assets/logo.svg";
-import Icon from "@/components/Icon";
 import { fast, gray, pale, plus, rounded } from "@/global/palette";
 import { State } from "@/global/state";
 import { restartAnimations } from "@/util/dom";
@@ -21,6 +22,7 @@ const titleStyle = css({
   display: "flex",
   alignItems: "center",
   gap: "15px",
+  fontSize: "min(10vw, 1.4rem)",
 });
 
 const navStyle = css({
@@ -35,10 +37,13 @@ const navStyle = css({
 
 const homeStyle = css({
   textDecoration: "none",
+  h1: {
+    fontSize: "inherit",
+  },
 });
 
 const logoStyle = css({
-  width: "50px",
+  width: "2.5em",
 });
 
 const buttonStyle = css({
@@ -57,10 +62,14 @@ const buttonStyle = css({
 
 /** section at top of every page, with logo and nav bar */
 const Header = () => {
-  /** use global state */
+  const location = useLocation();
   const { loggedIn } = useContext(State);
+
   /** whether nav bar expanded */
   const [open, setOpen] = useState(false);
+
+  /** is homepage of site */
+  const homepage = location.pathname === "/";
 
   /** point where header collapses into menu */
   const menuBreakpoint = loggedIn ? "920px" : "640px";
@@ -95,28 +104,26 @@ const Header = () => {
         </Link>
 
         {/* expand/collapse button */}
-        <div style={{ width: 0 }}>
-          <button
-            className={classNames([buttonStyle(), hideButton()])}
-            onClick={() => setOpen(!open)}
-            aria-expanded={open}
-            aria-label={open ? "Collapse nav menu" : "Expand nav menu"}
-          >
-            <Icon icon={open ? "times" : "bars"} />
-          </button>
-        </div>
+        <button
+          className={classNames([buttonStyle(), hideButton()])}
+          onClick={() => setOpen(!open)}
+          aria-expanded={open}
+          aria-controls="nav"
+        >
+          {open ? <FaTimes /> : <FaBars />}
+        </button>
       </div>
 
       {/* nav bar */}
-      <nav className={classNames([navStyle(), hideNav()])}>
-        <Link to="/">Editor</Link>
+      <nav id="nav" className={classNames([navStyle(), hideNav()])}>
+        {!homepage && <Link to="/">Editor</Link>}
         <Link to="about">About</Link>
         {loggedIn && (
           <>
             <Link to="my-articles">My Articles</Link>
             <Link to="account">Account</Link>
             <Link to="logout">Log Out</Link>
-            <strong>{loggedIn.name}</strong>
+            <strong title={loggedIn.id}>{loggedIn.name}</strong>
           </>
         )}
         {!loggedIn && (

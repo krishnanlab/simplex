@@ -1,18 +1,33 @@
 import { request } from "./";
-import { Id, ReadCollection } from "@/global/types";
+import {
+  Collection,
+  CollectionSummary,
+  CollectionWrite,
+  Id,
+} from "@/global/types";
 
 /** lookup collection details by id */
-export const getCollection = (id: string) =>
-  request<ReadCollection>(`/collection/${id}`);
+export const getCollection = (id: Id) =>
+  request<Collection>(`/collections/${id}`);
 
 /** get user's collections */
-export const getCollections = () =>
-  request<Array<ReadCollection>>("/collections");
+export const getUserCollections = () =>
+  request<Array<CollectionSummary>>("/collections");
 
-export const saveCollection = (id?: string) =>
-  request<{ id: Id }>("/collection" + (id ? "/" + id : ""), {
-    method: id ? "PUT" : "POST",
+/** save new collection */
+export const saveNewCollection = (collection: CollectionWrite) =>
+  request<{ id: Id }>("/collections", {
+    method: "POST",
+    body: JSON.stringify(collection),
   });
 
-export const deleteCollection = (id: string) =>
-  request(`/collection/${id}`, { method: "DELETE" });
+/** update existing collection */
+export const saveCollection = (collection: CollectionWrite, id: Id) =>
+  request<undefined>(`/collections/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(collection),
+  });
+
+/** delete collection */
+export const deleteCollection = (id: Id) =>
+  request<undefined>(`/collections/${id}`, { method: "DELETE" });

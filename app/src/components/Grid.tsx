@@ -2,11 +2,11 @@ import { ReactNode } from "react";
 import { css } from "@stitches/react";
 import { classNames } from "@/util/string";
 
-interface Props {
+type Props = {
   /** max number of columns */
   cols?: number;
   children: ReactNode;
-}
+};
 
 const gridStyle = css({
   display: "grid",

@@ -1,10 +1,10 @@
-import { InputHTMLAttributes } from "react";
+import { InputHTMLAttributes, ReactNode } from "react";
 import { css } from "@stitches/react";
 import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
 
-export type Props = {
+type Props = {
   /** text above input */
   label: string;
   /** question mark text on hover */
@@ -12,6 +12,7 @@ export type Props = {
   /** whether field is optional for form */
   optional?: boolean;
   onChange?: (value: string) => unknown;
+  children?: ReactNode;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
 
 const wrapperStyle = css({
@@ -43,27 +44,40 @@ const inputStyle = css({
   },
 });
 
+const childStyle = css({
+  display: "flex",
+  alignItems: "center",
+  minHeight: "40px",
+});
+
 /** text input with label */
 const Field = ({
   label,
   help,
+  disabled,
   optional = false,
   onChange,
+  children,
   ...props
 }: Props) => (
   <label className={wrapperStyle()}>
     <Flex hAlign="left" gap="tiny" className={labelStyle()}>
       {help && <Help tooltip={help} />}
       <span>
-        {label}: {optional ? "" : "*"}
+        {label}: {optional || disabled ? "" : "*"}
       </span>
     </Flex>
-    <input
-      required={!optional}
-      className={inputStyle()}
-      {...props}
-      onChange={(event) => onChange?.(event.target.value as string)}
-    />
+    {children ? (
+      <div className={childStyle()}>{children}</div>
+    ) : (
+      <input
+        required={!optional}
+        disabled={disabled}
+        className={inputStyle()}
+        {...props}
+        onChange={(event) => onChange?.(event.target.value as string)}
+      />
+    )}
   </label>
 );
 

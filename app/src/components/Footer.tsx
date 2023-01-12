@@ -1,6 +1,6 @@
+import { FaGithub, FaRegEnvelope } from "react-icons/fa";
 import { css } from "@stitches/react";
 import Flex from "@/components/Flex";
-import Icon from "@/components/Icon";
 import { pale } from "@/global/palette";
 
 const footerStyle = css({
@@ -21,10 +21,10 @@ const Footer = () => (
   <footer className={footerStyle()}>
     <Flex gap="small">
       <a href="https://github.com/krishnanlab">
-        <Icon className={iconStyle().toString()} icon="envelope" />
+        <FaRegEnvelope className={iconStyle().toString()} />
       </a>
       <a href="mailto:arjun.krishnan@cuanschutz.edu">
-        <Icon className={iconStyle().toString()} icon="github" />
+        <FaGithub className={iconStyle().toString()} />
       </a>
     </Flex>
     <div>

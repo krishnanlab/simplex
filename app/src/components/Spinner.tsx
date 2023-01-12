@@ -1,9 +1,9 @@
 import { css, keyframes } from "@stitches/react";
 import { classNames } from "@/util/string";
 
-interface Props {
+type Props = {
   className?: string;
-}
+};
 
 const radius = 10;
 const thickness = 3;

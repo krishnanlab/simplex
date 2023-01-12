@@ -1,74 +1,145 @@
-/** types of versions to track for saved article */
-export const versions = ["original", "simplified"] as const;
-
-/** version to track for saved article */
-export type Version = typeof versions[number];
-
 /** types of audiences to analyze for */
 export const audiences = [
-  "general",
-  "biology",
-  "chemistry",
-  "physics",
-  "computer science",
-  "mathematics",
+  { label: "General", value: "general" },
+  { label: "Biology", value: "biology" },
+  { label: "Chemistry", value: "chemistry" },
+  { label: "Physics", value: "physics" },
+  { label: "Computer Science", value: "cs" },
+  { label: "Mathematics", value: "math" },
 ] as const;
 
 /** audience to analyze for */
 export type Audience = typeof audiences[number];
 
+/** result of complexity analysis */
+export type Analysis = {
+  scores: Record<string, number>;
+  complexity: number;
+  gradeLevel: number;
+  gradeLevelText: string;
+  sentences: number;
+  syllables: number;
+  words: number;
+  chars: number;
+};
+
+/** initial/fallback analysis results */
+export const blankAnalysis: Analysis = {
+  scores: {},
+  complexity: 0,
+  gradeLevel: 0,
+  gradeLevelText: "",
+  sentences: 0,
+  syllables: 0,
+  words: 0,
+  chars: 0,
+};
+
+/** result of simplification suggestion */
+export type Simplify = {
+  definition: string;
+  image: string;
+  synonyms: Array<string>;
+  link: string;
+};
+
 /** id for author/article/collection */
 export type Id = string;
+
+/** article revision, int starting at 1 */
+export type Revision = number;
 
 /** iso date string */
 export type DateString = string;
 
 /** author (when reading details) */
-export interface ReadAuthor {
+export type Author = {
   id: Id;
   name: string;
   email: string;
   institution: string;
   newsletter: boolean;
-}
+};
 
 /** author (when reading details, as a third party) */
-export type PublicReadAuthor = Pick<ReadAuthor, "id" | "name" | "institution">;
+export type AuthorPublic = Pick<Author, "id" | "name" | "institution">;
 
 /** author (when writing details) */
-export type WriteAuthor = Omit<ReadAuthor, "id">;
+export type AuthorWrite = Omit<Author, "id">;
+
+/** initial/fallback article */
+export const blankAuthor: AuthorPublic = {
+  id: "",
+  name: "",
+  institution: "",
+};
 
 /** article (when reading details) */
-export interface ReadArticle {
+export type Article = {
   id: Id;
-  author: PublicReadAuthor["id"];
+  revision: Revision;
+  author: AuthorPublic["id"];
   date: DateString;
   title: string;
   source: string;
-  originalText: string;
-  simplifiedText: string;
+  text: string;
   ignoreWords: Array<string>;
-  collections: Array<ReadCollection["id"]>;
-}
+  collections: Array<Collection["id"]>;
+};
+
+/** article (when reading long lists) */
+export type ArticleSummary = Pick<Article, "id" | "date" | "title"> & {
+  textTruncated: string;
+  collectionCount: string;
+};
 
 /** article (when writing details) */
-export type WriteArticle = Pick<
-  ReadArticle,
-  "title" | "source" | "ignoreWords" | "originalText" | "simplifiedText"
+export type ArticleWrite = Pick<
+  Article,
+  "title" | "source" | "ignoreWords" | "text"
 >;
 
+/** initial/fallback article */
+export const blankArticle: Article = {
+  id: "",
+  revision: 1,
+  author: "",
+  date: "",
+  title: "",
+  source: "",
+  text: "",
+  ignoreWords: [],
+  collections: [],
+};
+
 /** collection (when reading details) */
-export interface ReadCollection {
+export type Collection = {
   id: Id;
-  author: PublicReadAuthor["id"];
+  author: AuthorPublic["id"];
   date: DateString;
   title: string;
   description: string;
-  articles: Array<ReadArticle["id"]>;
-}
+  articles: Array<Article["id"]>;
+};
+
+/** collection (when reading long lists) */
+export type CollectionSummary = Pick<
+  Collection,
+  "id" | "date" | "title" | "description"
+> & { articleCount: number };
 
 /** collection (when writing details) */
-export type WriteCollection = Pick<
-  ReadCollection,
+export type CollectionWrite = Pick<
+  Collection,
   "title" | "description" | "articles"
 >;
+
+/** initial/fallback collection */
+export const blankCollection: Collection = {
+  id: "",
+  author: "",
+  date: "",
+  title: "",
+  description: "",
+  articles: [],
+};
