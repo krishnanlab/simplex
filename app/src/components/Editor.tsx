@@ -152,14 +152,16 @@ const Editor = ({
   }, [words, highlights, matchScroll]);
   useResizeObserver(input, matchScroll);
 
-  /** when text area clicked */
-  const onClick: ReactEventHandler<HTMLTextAreaElement> = (event) => {
-    /** cursor caret location */
+  /** when text area text selected */
+  const onSelect: ReactEventHandler<HTMLTextAreaElement> = (event) => {
+    /** selection range */
     const start = (event.target as HTMLTextAreaElement).selectionStart;
+    const end = (event.target as HTMLTextAreaElement).selectionEnd;
+    if (end - start <= 0) return;
     /** determine corresponding word number */
     let total = 0;
     for (const [index, word] of Object.entries(words)) {
-      if (start >= total && start < total + word.length) {
+      if (start >= total && end <= total + word.length) {
         setSelected(Number(index));
         break;
       }
@@ -173,8 +175,8 @@ const Editor = ({
         <div ref={mark} className={markStyle()}>
           {words.map((word, index, array) => {
             /** if word is highlight-able */
-            if (scores[word] !== undefined) {
-              const background = getColor(scores[word]);
+            if (scores[word.toLowerCase()] !== undefined) {
+              const background = getColor(scores[word.toLowerCase()]);
 
               if (index === selected && tooltip)
                 /** if selected, show tooltip */
@@ -215,7 +217,7 @@ const Editor = ({
         required={true}
         disabled={!editable}
         value={value}
-        onClick={onClick}
+        onSelect={onSelect}
         onChange={(event) => onChange(event.target.value)}
       />
     </div>

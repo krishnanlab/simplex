@@ -24,6 +24,7 @@ import {
 } from "@/api/article";
 import { analyze } from "@/api/tool";
 import { exampleText } from "@/assets/example.json";
+import { ReactComponent as SelectAnimation } from "@/assets/select-word.svg";
 import Ago from "@/components/Ago";
 import ArrayField from "@/components/ArrayField";
 import Button from "@/components/Button";
@@ -245,7 +246,7 @@ const ArticlePage = () => {
     (text: Article["ignoreWords"][0]) =>
       setEditableArticle((editableArticle) => ({
         ...editableArticle,
-        ignoreWords: [...editableArticle.ignoreWords, text],
+        ignoreWords: [...editableArticle.ignoreWords, text.toLowerCase()],
       })),
     []
   );
@@ -256,7 +257,7 @@ const ArticlePage = () => {
       setEditableArticle((editableArticle) => ({
         ...editableArticle,
         ignoreWords: editableArticle.ignoreWords.filter(
-          (word) => word !== text
+          (word) => word.toLowerCase() !== text.toLowerCase()
         ),
       })),
     []
@@ -313,14 +314,18 @@ const ArticlePage = () => {
       await sleep(500); // debounce
       if (!latest) return;
       setAnalyzing(true);
-      const analysis = await analyze(
-        article.text,
-        audience.value,
-        article.ignoreWords || []
-      );
-      if (!latest) return;
-      setAnalysis(analysis);
-      setAnalyzing(false);
+      try {
+        const analysis = await analyze(
+          article.text,
+          audience.value,
+          article.ignoreWords || []
+        );
+        if (!latest) return;
+        setAnalysis(analysis);
+        setAnalyzing(false);
+      } catch (error) {
+        console.error(error);
+      }
     })();
 
     return () => {
@@ -436,9 +441,9 @@ const ArticlePage = () => {
         tooltip={(word) => (
           <Simplify
             word={word}
-            ignored={article.ignoreWords.includes(word)}
+            ignored={article.ignoreWords.includes(word.toLowerCase())}
             setIgnored={() =>
-              article.ignoreWords.includes(word)
+              article.ignoreWords.includes(word.toLowerCase())
                 ? removeIgnore(word)
                 : addIgnore(word)
             }
@@ -453,7 +458,13 @@ const ArticlePage = () => {
           <Flex display="inline" gap="small">
             <Stat
               label="Complex"
-              help="Click a word to show synonyms, find simpler definitions on wikipedia, or exclude it from penalty in the whole document."
+              help={
+                <>
+                  <SelectAnimation />
+                  Select a word to show synonyms, find simpler definitions on
+                  wikipedia, or exclude it from penalty in the whole document.
+                </>
+              }
             />
             <svg viewBox="0 0 30 10" width="60px">
               <g fill={light}>
@@ -464,9 +475,10 @@ const ArticlePage = () => {
             </svg>
             <Stat label="Simpler" />
           </Flex>
+
           <Stat
             label="Overall Complexity"
-            value={analysis.complexity}
+            value={analysis.complexity.toFixed(1)}
             help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
           />
           <Stat

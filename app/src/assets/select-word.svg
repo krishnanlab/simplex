@@ -1,0 +1,91 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="-500 -100 1000 200"
+  height="2em"
+>
+  <style>
+    .text {
+      font-size: 100px;
+      text-anchor: middle;
+      dominant-baseline: middle;
+      transform: translateY(8px);
+    }
+
+    .highlight {
+      fill: #1e88e5;
+      opacity: 0.2;
+    }
+
+    .grow {
+      animation: grow 3s ease-in-out infinite both;
+    }
+
+    @keyframes grow {
+      0% {
+        clip-path: inset(0 0 0 100%);
+      }
+      30% {
+        clip-path: inset(0 0 0 0);
+      }
+    }
+
+    .slide {
+      animation: slide 3s ease-in-out infinite both;
+    }
+
+    @keyframes slide {
+      0% {
+        transform: translateX(460px);
+      }
+      30% {
+        transform: none;
+      }
+    }
+
+    .bubble {
+      fill: #ffffff;
+      stroke: black;
+      stroke-width: 10;
+      stroke-linejoin: round;
+    }
+
+    .fade {
+      animation: fade 3s ease-in-out infinite both;
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 0;
+      }
+      30% {
+        opacity: 0;
+      }
+      50% {
+        opacity: 1;
+      }
+    }
+  </style>
+  <text class="text" x="-230" y="0">complex</text>
+  <rect class="highlight grow" x="-460" y="-70" width="460" height="140" />
+  <g class="cursor slide">
+    <path
+      transform="translate(-460, 0) scale(0.25)"
+      d="M-127.9 -226.7C-129.4 -209 -116.3 -193.6 -98.7 -192.1L-70.7 -191.4C-57.5 -188.7 -32 -161 -32 -127.7V-32H-64C-81.7 -32 -96 -17.7 -96 0S-81.7 32 -64 32H-32V127.7C-32 161 -57.5 188.7 -90.7 191.5L-98.7 192.2C-116.3 193.6 -129.4 209 -127.9 226.7S-111 257.4 -93.4 255.9L-85.4 255.2C-51.3 252.4 -21.2 236.3 0 212.3C21.2 236.3 51.2 252.4 85.4 255.2L93.4 255.9C111 257.4 126.5 244.3 127.9 226.7S116.3 193.6 98.7 192.2L90.7 191.5C57.5 188.7 32 161 32 127.7V32H64C81.7 32 96 17.7 96 0S81.7 -32 64 -32H32V-127.7C32 -161 57.5 -188.7 90.7 -191.5L98.7 -192.2C116.3 -193.7 129.4 -209.1 127.9 -226.7S111 -257.4 93.3 -255.9L85.3 -255.2C51.2 -252.4 21.2 -236.3 0 -212.3C-21.2 -236.3 -51.2 -252.3 -85.4 -255.2L-93.4 -255.9C-111 -257.4 -126.4 -244.3 -127.9 -226.7Z"
+    />
+  </g>
+  <path
+    class="bubble fade"
+    transform="translate(30, 0)"
+    d="
+      M 0 0
+      L 30 -30
+      L 30 -70
+      L 440 -70
+      L 440 70
+      L 30 70
+      L 30 30
+      z
+    "
+  />
+  <text class="text fade" x="260" y="0">hard</text>
+</svg>

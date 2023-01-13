@@ -1,4 +1,5 @@
 import { FaExternalLinkAlt, FaPlus, FaTimes } from "react-icons/fa";
+import parse from "html-react-parser";
 import { css } from "@stitches/react";
 import { useQuery } from "@tanstack/react-query";
 import { simplify } from "@/api/tool";
@@ -24,8 +25,12 @@ const imageStyle = css({
   width: "100%",
 });
 
+const iconStyle = css({
+  marginLeft: "0.5em",
+});
+
 /** synonyms, definitions, etc. of provided word HOC  */
-const Simplification = ({ word, ignored, setIgnored }: Props) => {
+const Simplify = ({ word, ignored, setIgnored }: Props) => {
   /** query for simplification */
   const {
     data: simplification,
@@ -57,9 +62,10 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
             <strong>Synonyms:</strong>
             <div>{simplification.synonyms.join(", ")}</div>
             <strong>Definition:</strong>
-            <p>{simplification.definition}</p>
+            {parse(String(simplification.definition))}
             <a href={simplification.link} target="_blank" rel="noreferrer">
-              See more <FaExternalLinkAlt />
+              See more
+              <FaExternalLinkAlt className={iconStyle()} />
             </a>
             <img src={simplification.image} className={imageStyle()} alt="" />
           </Flex>
@@ -80,4 +86,4 @@ const Simplification = ({ word, ignored, setIgnored }: Props) => {
   );
 };
 
-export default Simplification;
+export default Simplify;

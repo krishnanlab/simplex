@@ -1,4 +1,4 @@
-import { cloneElement, ReactElement, useRef, useState } from "react";
+import { cloneElement, ReactElement, ReactNode, useRef, useState } from "react";
 import {
   arrow,
   autoUpdate,
@@ -22,7 +22,7 @@ type Props = {
   /** element that triggers tooltip */
   reference: ReactElement;
   /** content in opened tooltip */
-  content: string | ReactElement;
+  content: ReactNode;
   /** whether to force open on render */
   open?: boolean;
   /** func called on close */

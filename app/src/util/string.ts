@@ -1,5 +1,3 @@
-import { flatten } from "flat";
-import { capitalize } from "lodash";
 import { AuthorPublic } from "@/global/types";
 
 /** is word */
@@ -55,19 +53,14 @@ export const authorString = (author: AuthorPublic, you: boolean) =>
     .filter(Boolean)
     .join(" | ");
 
-/** generic json data type */
-type Json = string | number | boolean | { [x: string]: Json } | Array<Json>;
-
-/** convert json to pretty string */
-export const prettyJson = (data: Json): string =>
-  Object.entries(flatten<Json, Json>(data, { delimiter: " " }))
-    .map(
-      ([key, value]) =>
-        capitalize(key).replace(/\s+\d+$/, "") +
-        ": " +
-        [value]
-          .flat()
-          .map((value) => capitalize(value))
-          .join("\n")
-    )
+/** get user-friendly error message from DRF errors object */
+export const prettyError = (errors: unknown) =>
+  [errors]
+    .flat()
+    .map((error: unknown) => {
+      if (typeof error === "object" && error !== null)
+        // @ts-expect-error TS not smart enough to realize error props will be safely filtered out
+        return [error.attr, error.detail].filter(Boolean).join(": ");
+      else return error;
+    })
     .join("\n");

@@ -1,4 +1,4 @@
-import { prettyJson } from "@/util/string";
+import { prettyError } from "@/util/string";
 
 const api = import.meta.env.VITE_API;
 
@@ -14,11 +14,24 @@ export const request = async <T>(
   /** set extra options */
   options.credentials = "include";
 
-  /** make request with options */
-  const response = await fetch(api + url, { ...options, headers });
+  console.info();
+
+  /** construct request with options */
+  const request = new Request(api + url, { ...options, headers });
+
+  console.groupCollapsed("Request", url);
+  console.info(request);
+  console.groupEnd();
+
+  /** perform request */
+  const response = await fetch(request);
 
   /** try to parse as json */
   const parsed = await response.json();
+
+  console.groupCollapsed("Response", url);
+  console.info(parsed);
+  console.groupEnd();
 
   /** on auth expired error, dispatch event */
   if (response.status === 401 && !url.includes("current-user"))
@@ -26,10 +39,8 @@ export const request = async <T>(
 
   /** on any request error, throw error with detailed error message */
   if (!response.ok) {
-    let message = parsed.errors || parsed.detail || "";
-    if (message) message = prettyJson(message);
-    console.error(message);
-    throw message;
+    console.error(parsed);
+    throw parsed.errors ? prettyError(parsed.errors) : "";
   }
 
   return parsed;

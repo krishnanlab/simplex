@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FaExclamationCircle, FaRegCheckCircle, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router";
 import { useEvent } from "react-use";
@@ -38,20 +38,29 @@ const notificationStyle = css({
 });
 
 /** notification for status with icon and text */
-const Notification = ({ type, text, children }: Props) => (
-  <Flex
-    className={notificationStyle()}
-    gap="small"
-    wrap={false}
-    data-type={type}
-  >
-    {type === "loading" && <Spinner />}
-    {type === "error" && <FaExclamationCircle />}
-    {type === "success" && <FaRegCheckCircle />}
-    {text && <span>{[text].flat().filter(Boolean).join("\n")}</span>}
-    {children}
-  </Flex>
-);
+const Notification = ({ type, text, children }: Props) => {
+  const ref = useRef<HTMLDivElement>();
+
+  useEffect(() => {
+    ref.current?.scrollIntoView();
+  });
+
+  return (
+    <Flex
+      ref={ref}
+      className={notificationStyle()}
+      gap="small"
+      wrap={false}
+      data-type={type}
+    >
+      {type === "loading" && <Spinner />}
+      {type === "error" && <FaExclamationCircle />}
+      {type === "success" && <FaRegCheckCircle />}
+      {text && <span>{[text].flat().filter(Boolean).join("\n")}</span>}
+      {children}
+    </Flex>
+  );
+};
 
 export default Notification;
 
