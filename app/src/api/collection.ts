@@ -16,7 +16,7 @@ export const getUserCollections = () =>
 
 /** save new collection */
 export const saveNewCollection = (collection: CollectionWrite) =>
-  request<{ id: Id }>("/collections", {
+  request<Collection>("/collections", {
     method: "POST",
     body: JSON.stringify(collection),
   });

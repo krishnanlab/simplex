@@ -31,7 +31,7 @@ import { authorString } from "@/util/string";
 const CollectionPage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
   const queryClient = useQueryClient();
 
   /** main editable collection state */
@@ -41,13 +41,13 @@ const CollectionPage = () => {
   let mode: "new" | "anon" | "edit" | "view" = "view";
 
   /** determine mode */
-  if (!id && !!loggedIn) {
+  if (!id && !!currentUser) {
     /** logged in user creating new collection */
     mode = "new";
-  } else if (!id && !loggedIn) {
+  } else if (!id && !currentUser) {
     /** anonymous user creating new collection */
     mode = "anon";
-  } else if (!!loggedIn && editableCollection?.author === loggedIn.id) {
+  } else if (!!currentUser && editableCollection?.author === currentUser.id) {
     /** logged in user editing collection belonging to them */
     mode = "edit";
   } else {
@@ -92,7 +92,7 @@ const CollectionPage = () => {
     isInitialLoading: userArticlesLoading,
     isError: userArticlesError,
   } = useQuery({
-    queryKey: ["getUserArticles", "user", loggedIn?.id],
+    queryKey: ["getUserArticles", "user", currentUser?.id],
     queryFn: getUserArticles,
   });
 
@@ -112,6 +112,7 @@ const CollectionPage = () => {
     mutate: save,
     isLoading: saveLoading,
     isError: saveError,
+    error: saveErrorMessage,
   } = useMutation({
     mutationFn: () =>
       id
@@ -129,6 +130,7 @@ const CollectionPage = () => {
     mutate: trash,
     isLoading: trashLoading,
     isError: trashError,
+    error: trashErrorMessage,
   } = useMutation({
     mutationFn: async () => {
       if (!window.confirm("Are you sure you want to delete this collection?"))
@@ -337,13 +339,19 @@ const CollectionPage = () => {
       {/* action statuses */}
       {saveLoading && <Notification type="loading" text="Saving collection" />}
       {saveError && (
-        <Notification type="error" text="Error saving collection" />
+        <Notification
+          type="error"
+          text={["Error saving collection", saveErrorMessage]}
+        />
       )}
       {trashLoading && (
         <Notification type="loading" text="Deleting collection" />
       )}
       {trashError && (
-        <Notification type="error" text="Error deleting collection" />
+        <Notification
+          type="error"
+          text={["Error deleting collection", trashErrorMessage]}
+        />
       )}
 
       {/* associated form */}

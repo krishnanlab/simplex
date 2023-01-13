@@ -1,8 +1,11 @@
+import { flatten } from "flat";
+import { capitalize } from "lodash";
 import { AuthorPublic } from "@/global/types";
 
 /** is word */
 export const isWord = (value: string) => value.match(/[\p{L}|\p{N}|-]+/u);
 
+/** MAKE SURE THIS SPLITS WORDS EXACTLY SAME WAY AS ON BACKEND */
 /** split string into words */
 export const splitWords = (value: string) =>
   value.split(/([\p{L}|\p{N}|-]+)/u).filter(Boolean);
@@ -51,3 +54,20 @@ export const authorString = (author: AuthorPublic, you: boolean) =>
   [author.name, you ? "(You)" : "", author.institution]
     .filter(Boolean)
     .join(" | ");
+
+/** generic json data type */
+type Json = string | number | boolean | { [x: string]: Json } | Array<Json>;
+
+/** convert json to pretty string */
+export const prettyJson = (data: Json): string =>
+  Object.entries(flatten<Json, Json>(data, { delimiter: " " }))
+    .map(
+      ([key, value]) =>
+        capitalize(key).replace(/\s+\d+$/, "") +
+        ": " +
+        [value]
+          .flat()
+          .map((value) => capitalize(value))
+          .join("\n")
+    )
+    .join("\n");

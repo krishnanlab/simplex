@@ -1,23 +1,21 @@
-import { createContext, ReactNode, useEffect } from "react";
-import { useEvent, useLocalStorage } from "react-use";
-import { checkLogin } from "@/api/account";
+import { createContext, ReactNode, useEffect, useState } from "react";
+import { useEvent } from "react-use";
+import { getCurrentUser } from "@/api/account";
 import { notification } from "@/components/Notification";
 import { Author } from "@/global/types";
 
 export type StateType = {
-  /** logged-in user/author  */
-  loggedIn: Author | null;
-  /** set logged-in user/author */
-  logIn: (author: Author) => void;
-  /** clear logged-in user/author */
-  logOut: () => void;
+  /** current (logged-in) user/author  */
+  currentUser: Author | null;
+  setCurrentUser: (author: Author) => void;
+  clearCurrentUser: () => void;
 };
 
 /** global app-wide state */
 export const State = createContext<StateType>({
-  loggedIn: null,
-  logIn: () => null,
-  logOut: () => null,
+  currentUser: null,
+  setCurrentUser: () => null,
+  clearCurrentUser: () => null,
 });
 
 type Props = {
@@ -26,28 +24,27 @@ type Props = {
 
 /** provider for global state */
 const StateProvider = ({ children }: Props) => {
-  const [loggedIn = null, setLoggedIn] = useLocalStorage<StateType["loggedIn"]>(
-    "logged-in",
-    null
-  );
-  const logIn = (author: Author) => setLoggedIn(author);
-  const logOut = () => setLoggedIn(null);
+  const [currentUser = null, setLoggedIn] =
+    useState<StateType["currentUser"]>(null);
+  const setCurrentUser = (author: Author) => setLoggedIn(author);
+  const clearCurrentUser = () => setLoggedIn(null);
 
-  /** check if auth expired on app load */
+  /** check if user logged in on app load */
   useEffect(() => {
     (async () => {
-      if (!(await checkLogin())) logOut();
+      const user = await getCurrentUser();
+      if (user) setLoggedIn(user);
     })();
-  });
+  }, []);
 
   /** on auth expired event, logout */
   useEvent("auth-expired", () => {
-    logOut();
+    clearCurrentUser();
     notification("error", "User login expired");
   });
 
   return (
-    <State.Provider value={{ loggedIn, logIn, logOut }}>
+    <State.Provider value={{ currentUser, setCurrentUser, clearCurrentUser }}>
       {children}
     </State.Provider>
   );

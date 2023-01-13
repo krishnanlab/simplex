@@ -7,7 +7,7 @@ import { State } from "@/global/state";
 
 /** logout page */
 const LogOut = () => {
-  const { logOut } = useContext(State);
+  const { clearCurrentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** mutation to logout */
@@ -15,10 +15,11 @@ const LogOut = () => {
     mutate: logoutMutate,
     isLoading: logoutLoading,
     isError: logoutError,
+    error: logoutErrorMessage,
   } = useMutation({
     mutationFn: logout,
     onSuccess: async () => {
-      logOut();
+      clearCurrentUser();
       await navigate("/");
     },
   });
@@ -31,7 +32,12 @@ const LogOut = () => {
   return (
     <>
       {logoutLoading && <Notification type="loading" text="Logging out" />}
-      {logoutError && <Notification type="error" text="Error logging out" />}
+      {logoutError && (
+        <Notification
+          type="error"
+          text={["Error logging out", logoutErrorMessage]}
+        />
+      )}
     </>
   );
 };

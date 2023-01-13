@@ -14,17 +14,18 @@ import { State } from "@/global/state";
 
 /** forgot password page */
 const ForgotPassword = () => {
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  if (loggedIn) navigate("/");
+  if (currentUser) navigate("/");
 
   /** mutation for requesting reset */
   const {
     mutate: resetMutate,
     isLoading: resetLoading,
     isError: resetError,
+    error: resetErrorMessage,
   } = useMutation({
     mutationFn: forgotPassword,
     onSuccess: async () => {
@@ -62,7 +63,12 @@ const ForgotPassword = () => {
         <Notification type="loading" text="Requesting password reset" />
       )}
       {resetError && (
-        <Notification type="error" text="Error requesting password reset" />
+        <Notification
+          type="error"
+          text={["Error requesting password reset", resetErrorMessage]
+            .filter(Boolean)
+            .join("\n")}
+        />
       )}
 
       <Form id="forgot" onSubmit={onReset} />

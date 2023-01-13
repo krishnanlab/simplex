@@ -9,7 +9,7 @@ export const audiences = [
 ] as const;
 
 /** audience to analyze for */
-export type Audience = typeof audiences[number];
+export type Audience = (typeof audiences)[number];
 
 /** result of complexity analysis */
 export type Analysis = {
@@ -78,7 +78,7 @@ export const blankAuthor: AuthorPublic = {
 export type Article = {
   id: Id;
   revision: Revision;
-  author: AuthorPublic["id"];
+  author: AuthorPublic["id"] | null;
   date: DateString;
   title: string;
   source: string;

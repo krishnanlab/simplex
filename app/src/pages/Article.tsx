@@ -95,7 +95,7 @@ const ArticlePage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
   const queryClient = useQueryClient();
 
   /** whether to show loading spinner */
@@ -127,13 +127,13 @@ const ArticlePage = () => {
   let mode: "new" | "anon" | "edit" | "view" = "view";
 
   /** determine mode */
-  if (!id && !!loggedIn) {
+  if (!id && !!currentUser) {
     /** logged in user creating new collection */
     mode = "new";
-  } else if (!id && !loggedIn) {
+  } else if (!id && !currentUser) {
     /** anonymous user creating new collection */
     mode = "anon";
-  } else if (!!loggedIn && editableArticle.author === loggedIn.id) {
+  } else if (!!currentUser && editableArticle.author === currentUser.id) {
     /** logged in user editing collection belonging to them */
     mode = "edit";
   } else {
@@ -172,12 +172,15 @@ const ArticlePage = () => {
 
   /** query for getting author details from just id */
   const {
-    data: author = mode === "edit" ? loggedIn || blankAuthor : blankAuthor,
+    data: author = mode === "edit" ? currentUser || blankAuthor : blankAuthor,
     isInitialLoading: authorLoading,
     isError: authorError,
   } = useQuery({
     queryKey: ["getAuthor", loadedArticle.author],
-    queryFn: () => getAuthor(loadedArticle.author),
+    queryFn: () =>
+      loadedArticle.author
+        ? getAuthor(loadedArticle.author)
+        : { ...blankAuthor, name: "Anonymous" },
     enabled: !!loadedArticle.author,
   });
 
@@ -197,6 +200,7 @@ const ArticlePage = () => {
     mutate: save,
     isLoading: saveLoading,
     isError: saveError,
+    error: saveErrorMessage,
   } = useMutation({
     mutationFn: () =>
       id ? saveArticle(editableArticle, id) : saveNewArticle(editableArticle),
@@ -212,6 +216,7 @@ const ArticlePage = () => {
     mutate: trash,
     isLoading: trashLoading,
     isError: trashError,
+    error: trashErrorMessage,
   } = useMutation({
     mutationFn: async () => {
       if (!window.confirm("Are you sure you want to delete this article?"))
@@ -542,10 +547,18 @@ const ArticlePage = () => {
 
       {/* action statuses */}
       {saveLoading && <Notification type="loading" text="Saving article" />}
-      {saveError && <Notification type="error" text="Error saving article" />}
+      {saveError && (
+        <Notification
+          type="error"
+          text={["Error saving article", saveErrorMessage]}
+        />
+      )}
       {trashLoading && <Notification type="loading" text="Deleting article" />}
       {trashError && (
-        <Notification type="error" text="Error deleting article" />
+        <Notification
+          type="error"
+          text={["Error deleting article", trashErrorMessage]}
+        />
       )}
 
       {/* associated form */}

@@ -9,6 +9,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
+import Help from "@/components/Help";
 import Meta from "@/components/Meta";
 import Notification from "@/components/Notification";
 import Section from "@/components/Section";
@@ -16,12 +17,12 @@ import { State } from "@/global/state";
 
 /** signup page */
 const SignUp = () => {
-  const { loggedIn, logIn } = useContext(State);
+  const { currentUser, setCurrentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
   useEffect(() => {
-    if (loggedIn) navigate("/");
+    if (currentUser) navigate("/");
   });
 
   /** mutation to signup */
@@ -29,10 +30,11 @@ const SignUp = () => {
     mutate: signupMutate,
     isLoading: signupLoading,
     isError: signupError,
+    error: signupErrorMessage,
   } = useMutation({
     mutationFn: signup,
     onSuccess: async (data) => {
-      logIn(data);
+      setCurrentUser(data);
       await navigate("/");
     },
   });
@@ -113,18 +115,26 @@ const SignUp = () => {
           />
         </Grid>
         <Flex dir="col">
-          <Checkbox
-            name="newsletter"
-            label="Subscribe to our newsletter"
-            defaultChecked={true}
-            form="signup"
-          />
+          <Flex gap="small">
+            <Checkbox
+              name="newsletter"
+              label="Subscribe to our newsletter"
+              defaultChecked={false}
+              form="signup"
+            />
+            <Help tooltip="We promise only infrequent, meaningful updates!" />
+          </Flex>
           <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
         </Flex>
 
         {/* statuses */}
         {signupLoading && <Notification type="loading" text="Signing up" />}
-        {signupError && <Notification type="error" text="Error signing up" />}
+        {signupError && (
+          <Notification
+            type="error"
+            text={["Error signing up", signupErrorMessage]}
+          />
+        )}
 
         <Form id="signup" onSubmit={onSignup} />
       </Section>

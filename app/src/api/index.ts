@@ -1,3 +1,5 @@
+import { prettyJson } from "@/util/string";
+
 const api = import.meta.env.VITE_API;
 
 /** high level request method */
@@ -19,11 +21,16 @@ export const request = async <T>(
   const parsed = await response.json();
 
   /** on auth expired error, dispatch event */
-  if (response.status === 401) window.dispatchEvent(new Event("auth-expired"));
+  if (response.status === 401 && !url.includes("current-user"))
+    window.dispatchEvent(new Event("auth-expired"));
 
   /** on any request error, throw error with detailed error message */
-  if (!response.ok)
-    throw Error(parsed.errors || parsed.detail || "Response not OK");
+  if (!response.ok) {
+    let message = parsed.errors || parsed.detail || "";
+    if (message) message = prettyJson(message);
+    console.error(message);
+    throw message;
+  }
 
   return parsed;
 };

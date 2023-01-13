@@ -14,7 +14,7 @@ type Props = {
   /** determins icon and color */
   type: "loading" | "error" | "success";
   /** text to show */
-  text: string;
+  text: string | Array<unknown>;
   children?: ReactNode;
 };
 
@@ -24,6 +24,10 @@ const notificationStyle = css({
   color: dark,
   svg: {
     height: "25px",
+    flexShrink: 0,
+  },
+  span: {
+    whiteSpace: "pre",
   },
   "&[data-type='error'] svg": {
     color: accent,
@@ -44,7 +48,7 @@ const Notification = ({ type, text, children }: Props) => (
     {type === "loading" && <Spinner />}
     {type === "error" && <FaExclamationCircle />}
     {type === "success" && <FaRegCheckCircle />}
-    {text && <span>{text}</span>}
+    {text && <span>{[text].flat().filter(Boolean).join("\n")}</span>}
     {children}
   </Flex>
 );

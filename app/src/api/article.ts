@@ -8,22 +8,18 @@ import {
 } from "@/global/types";
 import { setStorage } from "@/util/storage";
 
+/** lookup latest revision of article */
+export const getLatestArticle = (id: Id) => request<Article>(`/articles/${id}`);
+
 /** get revisions of article */
 export const getRevisions = (id: Id) =>
   request<Array<Pick<Article, "revision" | "date">>>(
     `/articles/${id}/revisions`
   );
 
-/** lookup latest revision of article */
-export const getLatestArticle = (id: Id) => request<Article>(`/articles/${id}`);
-
 /** lookup article by id and revision */
 export const getArticle = (id: Id, revision: Revision) =>
   request<Article>(`/articles/${id}/revisions/${revision}`);
-
-/** get user's articles*/
-export const getUserArticles = () =>
-  request<Array<ArticleSummary>>("/articles");
 
 /** batch lookup articles by id */
 export const getArticles = (ids: Array<Id>) =>
@@ -32,15 +28,19 @@ export const getArticles = (ids: Array<Id>) =>
     body: JSON.stringify({ ids }),
   });
 
+/** get user's articles*/
+export const getUserArticles = () =>
+  request<Array<ArticleSummary>>("/articles");
+
 /** save new article */
 export const saveNewArticle = async (article: ArticleWrite) => {
-  const response = await request<{ id: Id; anonymous: boolean }>("/articles", {
+  const response = await request<Article>("/articles", {
     method: "POST",
     body: JSON.stringify(article),
   });
 
   /** save anonymously created articles locally so they aren't lost */
-  if (response.anonymous)
+  if (response.author === null)
     setStorage("anonymous-articles", (value) => value + "," + response.id);
 
   return response;

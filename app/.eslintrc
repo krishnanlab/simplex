@@ -32,7 +32,6 @@
     }
   },
   "rules": {
-    "prettier/prettier": "error",
-    "react/no-unknown-property": ["error", { "ignore": ["css"] }]
+    "prettier/prettier": "error"
   }
 }

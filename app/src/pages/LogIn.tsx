@@ -16,21 +16,22 @@ import { State } from "@/global/state";
 
 /** login page */
 const LogIn = () => {
-  const { loggedIn, logIn } = useContext(State);
+  const { currentUser, setCurrentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  if (loggedIn) navigate("/");
+  if (currentUser) navigate("/");
 
   /** mutation for logging in */
   const {
     mutate: loginMutate,
     isLoading: loginLoading,
     isError: loginError,
+    error: loginErrorMessage,
   } = useMutation({
     mutationFn: login,
     onSuccess: async (data) => {
-      logIn(data);
+      setCurrentUser(data);
       await navigate("/");
     },
   });
@@ -68,7 +69,7 @@ const LogIn = () => {
         <Checkbox
           name="remember"
           label="Keep me logged in"
-          defaultChecked={true}
+          defaultChecked={false}
           form="login"
         />
         <Button text="Log In" icon={<FaSignInAlt />} form="login" />
@@ -77,7 +78,12 @@ const LogIn = () => {
 
       {/* statuses */}
       {loginLoading && <Notification type="loading" text="Logging in" />}
-      {loginError && <Notification type="error" text="Error logging in" />}
+      {loginError && (
+        <Notification
+          type="error"
+          text={["Error logging in", loginErrorMessage]}
+        />
+      )}
 
       <Form id="login" onSubmit={onLogin} />
     </Section>

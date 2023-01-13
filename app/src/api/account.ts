@@ -1,11 +1,10 @@
 import { request } from "./";
 import { Author, AuthorPublic, AuthorWrite, Id } from "@/global/types";
 
-/** check if user logged in */
-export const checkLogin = async () => {
+/** get current logged in user */
+export const getCurrentUser = async () => {
   try {
-    await request("/check-login");
-    return true;
+    return await request<Author>("/current-user");
   } catch (error) {
     console.error(error);
     return false;
@@ -45,7 +44,7 @@ export const getAuthor = (id: Id) => request<AuthorPublic>(`/authors/${id}`);
 /** save user's account info */
 export const saveInfo = (props: AuthorWrite) =>
   request<Author>("/save-info", {
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(props),
   });
 

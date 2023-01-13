@@ -63,7 +63,7 @@ const buttonStyle = css({
 /** section at top of every page, with logo and nav bar */
 const Header = () => {
   const location = useLocation();
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
 
   /** whether nav bar expanded */
   const [open, setOpen] = useState(false);
@@ -72,7 +72,7 @@ const Header = () => {
   const homepage = location.pathname === "/";
 
   /** point where header collapses into menu */
-  const menuBreakpoint = loggedIn ? "920px" : "640px";
+  const menuBreakpoint = currentUser ? "920px" : "640px";
 
   /** styles from breakpoint */
   const wrapHeader = css({
@@ -118,15 +118,15 @@ const Header = () => {
       <nav id="nav" className={classNames([navStyle(), hideNav()])}>
         {!homepage && <Link to="/">Editor</Link>}
         <Link to="about">About</Link>
-        {loggedIn && (
+        {currentUser && (
           <>
             <Link to="my-articles">My Articles</Link>
             <Link to="account">Account</Link>
             <Link to="logout">Log Out</Link>
-            <strong title={loggedIn.id}>{loggedIn.name}</strong>
+            <strong title={currentUser.id}>{currentUser.name}</strong>
           </>
         )}
-        {!loggedIn && (
+        {!currentUser && (
           <>
             <Link to="login">Log In</Link>
             <Link to="signup">Sign Up</Link>

@@ -16,20 +16,30 @@ import { State } from "@/global/state";
 
 /** logged-in user's page of articles and collections */
 const MyArticles = () => {
-  const { loggedIn } = useContext(State);
-  console.log(localStorage["anonymous-articles"]);
+  const { currentUser } = useContext(State);
+
   const [anonymousArticles] =
     useLocalStorage<Array<string>>("anonymous-articles");
 
   /** query for user's articles */
-  const articles = useQuery({
-    queryKey: ["getArticles", loggedIn?.id],
+  const {
+    data: articles,
+    isLoading: articlesLoading,
+    isError: articlesError,
+    error: articlesErrorMessage,
+  } = useQuery({
+    queryKey: ["getArticles", currentUser?.id],
     queryFn: () => getUserArticles(),
   });
 
   /** query for user's collection */
-  const collections = useQuery({
-    queryKey: ["getCollections", loggedIn?.id],
+  const {
+    data: collections,
+    isLoading: collectionsLoading,
+    isError: collectionsError,
+    error: collectionsErrorMessage,
+  } = useQuery({
+    queryKey: ["getCollections", currentUser?.id],
     queryFn: () => getUserCollections(),
   });
 
@@ -40,16 +50,19 @@ const MyArticles = () => {
         <h2>My Articles</h2>
 
         {/* statuses */}
-        {articles.isLoading && (
+        {articlesLoading && (
           <Notification type="loading" text="Loading your articles" />
         )}
-        {articles.isError && (
-          <Notification type="error" text="Error loading your articles" />
+        {articlesError && (
+          <Notification
+            type="error"
+            text={["Error loading your articles", articlesErrorMessage]}
+          />
         )}
 
-        {articles.data && (
+        {articles && (
           <Grid>
-            {articles.data.map((article, index) => (
+            {articles.map((article, index) => (
               <Card key={index} article={article} editable={true} />
             ))}
           </Grid>
@@ -65,16 +78,19 @@ const MyArticles = () => {
         <h2>My Collections</h2>
 
         {/* statuses */}
-        {collections.isLoading && (
+        {collectionsLoading && (
           <Notification type="loading" text="Loading your collections" />
         )}
-        {collections.isError && (
-          <Notification type="error" text="Error loading your collections" />
+        {collectionsError && (
+          <Notification
+            type="error"
+            text={["Error loading your collections", collectionsErrorMessage]}
+          />
         )}
 
-        {collections.data && (
+        {collections && (
           <Grid>
-            {collections.data.map((collection, index) => (
+            {collections.map((collection, index) => (
               <Card key={index} collection={collection} editable={true} />
             ))}
           </Grid>
