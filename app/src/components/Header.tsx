@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { MouseEventHandler, useContext, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -63,7 +63,7 @@ const buttonStyle = css({
 /** section at top of every page, with logo and nav bar */
 const Header = () => {
   const location = useLocation();
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
 
   /** whether nav bar expanded */
   const [open, setOpen] = useState(false);
@@ -72,7 +72,7 @@ const Header = () => {
   const homepage = location.pathname === "/";
 
   /** point where header collapses into menu */
-  const menuBreakpoint = loggedIn ? "920px" : "640px";
+  const menuBreakpoint = currentUser ? "920px" : "640px";
 
   /** styles from breakpoint */
   const wrapHeader = css({
@@ -91,14 +91,14 @@ const Header = () => {
     },
   });
 
+  const onHover: MouseEventHandler<SVGSVGElement> = (event) =>
+    restartAnimations(event.target as Element);
+
   return (
     <header className={classNames([headerStyle(), wrapHeader()])}>
       <div className={titleStyle()}>
         {/* title/logo */}
-        <Logo
-          className={logoStyle()}
-          onMouseEnter={(event) => restartAnimations(event.target as Element)}
-        />
+        <Logo className={logoStyle()} onMouseEnter={onHover} />
         <Link className={homeStyle()} to="/">
           <h1>Simplex</h1>
         </Link>
@@ -118,15 +118,15 @@ const Header = () => {
       <nav id="nav" className={classNames([navStyle(), hideNav()])}>
         {!homepage && <Link to="/">Editor</Link>}
         <Link to="about">About</Link>
-        {loggedIn && (
+        {currentUser && (
           <>
             <Link to="my-articles">My Articles</Link>
             <Link to="account">Account</Link>
             <Link to="logout">Log Out</Link>
-            <strong title={loggedIn.id}>{loggedIn.name}</strong>
+            <strong title={currentUser.id}>{currentUser.name}</strong>
           </>
         )}
-        {!loggedIn && (
+        {!currentUser && (
           <>
             <Link to="login">Log In</Link>
             <Link to="signup">Sign Up</Link>

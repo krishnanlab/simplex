@@ -93,6 +93,9 @@ const globalStyles = globalCss({
     border: "none",
     background: gray,
   },
+  b: {
+    fontWeight: "400",
+  },
   strong: {
     fontWeight: "400",
   },
@@ -103,6 +106,9 @@ const globalStyles = globalCss({
   },
   ".react-icons": {
     verticalAlign: "middle",
+  },
+  ".center": {
+    textAlign: "center",
   },
 });
 

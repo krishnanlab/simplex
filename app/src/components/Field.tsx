@@ -1,5 +1,6 @@
 import { InputHTMLAttributes, ReactNode } from "react";
 import { css } from "@stitches/react";
+import PasswordMeter from "./PasswordMeter";
 import Flex from "@/components/Flex";
 import Help from "@/components/Help";
 import { dark, rounded, shadow } from "@/global/palette";
@@ -11,6 +12,8 @@ type Props = {
   help?: string;
   /** whether field is optional for form */
   optional?: boolean;
+  /** whether to check and show password strength */
+  strength?: boolean;
   onChange?: (value: string) => unknown;
   children?: ReactNode;
 } & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
@@ -56,6 +59,7 @@ const Field = ({
   help,
   disabled,
   optional = false,
+  strength = false,
   onChange,
   children,
   ...props
@@ -70,13 +74,16 @@ const Field = ({
     {children ? (
       <div className={childStyle()}>{children}</div>
     ) : (
-      <input
-        required={!optional}
-        disabled={disabled}
-        className={inputStyle()}
-        {...props}
-        onChange={(event) => onChange?.(event.target.value as string)}
-      />
+      <>
+        <input
+          required={!optional}
+          disabled={disabled}
+          className={inputStyle()}
+          {...props}
+          onChange={(event) => onChange?.(event.target.value as string)}
+        />
+        {strength && <PasswordMeter />}
+      </>
     )}
   </label>
 );

@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
 import { FaExclamationCircle, FaRegCheckCircle, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router";
 import { useEvent } from "react-use";
@@ -14,7 +14,7 @@ type Props = {
   /** determins icon and color */
   type: "loading" | "error" | "success";
   /** text to show */
-  text: string;
+  text: string | Array<unknown>;
   children?: ReactNode;
 };
 
@@ -24,6 +24,10 @@ const notificationStyle = css({
   color: dark,
   svg: {
     height: "25px",
+    flexShrink: 0,
+  },
+  span: {
+    whiteSpace: "pre",
   },
   "&[data-type='error'] svg": {
     color: accent,
@@ -34,20 +38,29 @@ const notificationStyle = css({
 });
 
 /** notification for status with icon and text */
-const Notification = ({ type, text, children }: Props) => (
-  <Flex
-    className={notificationStyle()}
-    gap="small"
-    wrap={false}
-    data-type={type}
-  >
-    {type === "loading" && <Spinner />}
-    {type === "error" && <FaExclamationCircle />}
-    {type === "success" && <FaRegCheckCircle />}
-    {text && <span>{text}</span>}
-    {children}
-  </Flex>
-);
+const Notification = ({ type, text, children }: Props) => {
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    ref.current?.scrollIntoView();
+  });
+
+  return (
+    <Flex
+      ref={ref}
+      className={notificationStyle()}
+      gap="small"
+      wrap={false}
+      data-type={type}
+    >
+      {type === "loading" && <Spinner />}
+      {type === "error" && <FaExclamationCircle />}
+      {type === "success" && <FaRegCheckCircle />}
+      {text && <span>{[text].flat().filter(Boolean).join("\n")}</span>}
+      {children}
+    </Flex>
+  );
+};
 
 export default Notification;
 
@@ -60,6 +73,7 @@ export const notification = async (
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
+  await sleep(100);
   window.scrollTo(0, 0);
 };
 

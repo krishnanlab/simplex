@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { FaPlus, FaRegSave, FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { capitalize } from "lodash";
@@ -31,7 +31,7 @@ import { authorString } from "@/util/string";
 const CollectionPage = () => {
   const { id = "" } = useParams();
   const navigate = useNavigate();
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
   const queryClient = useQueryClient();
 
   /** main editable collection state */
@@ -41,13 +41,13 @@ const CollectionPage = () => {
   let mode: "new" | "anon" | "edit" | "view" = "view";
 
   /** determine mode */
-  if (!id && !!loggedIn) {
+  if (!id && !!currentUser) {
     /** logged in user creating new collection */
     mode = "new";
-  } else if (!id && !loggedIn) {
+  } else if (!id && !currentUser) {
     /** anonymous user creating new collection */
     mode = "anon";
-  } else if (!!loggedIn && editableCollection?.author === loggedIn.id) {
+  } else if (!!currentUser && editableCollection.author === currentUser.id) {
     /** logged in user editing collection belonging to them */
     mode = "edit";
   } else {
@@ -57,7 +57,7 @@ const CollectionPage = () => {
 
   /** anonymous collections not supported, so redirect */
   useEffect(() => {
-    if (mode === "anon") navigate("/login");
+    if (mode === "anon") navigate("/");
   });
 
   /** heading and title text */
@@ -71,7 +71,6 @@ const CollectionPage = () => {
   } = useQuery({
     queryKey: ["getCollection", id],
     queryFn: () => getCollection(id),
-    onSuccess: (data) => setEditableCollection(data),
     enabled: !!id,
   });
 
@@ -92,7 +91,7 @@ const CollectionPage = () => {
     isInitialLoading: userArticlesLoading,
     isError: userArticlesError,
   } = useQuery({
-    queryKey: ["getUserArticles", "user", loggedIn?.id],
+    queryKey: ["getUserArticles", currentUser?.id],
     queryFn: getUserArticles,
   });
 
@@ -102,16 +101,29 @@ const CollectionPage = () => {
     isInitialLoading: collectionArticlesLoading,
     isError: collectionArticlesError,
   } = useQuery({
-    queryKey: ["getArticles", "collection", loadedCollection.articles],
+    queryKey: ["getArticles", loadedCollection.articles],
     queryFn: () => getArticles(loadedCollection.articles),
     enabled: !!loadedCollection.articles,
   });
+
+  /** clear query cache */
+  const clearQueries = () => {
+    queryClient.removeQueries({ queryKey: ["getCollection", id] });
+    queryClient.removeQueries({ queryKey: ["getArticles"] });
+    queryClient.removeQueries({
+      queryKey: ["getUserArticles", currentUser?.id],
+    });
+    queryClient.removeQueries({
+      queryKey: ["getUserCollections", currentUser?.id],
+    });
+  };
 
   /** mutation for saving collection */
   const {
     mutate: save,
     isLoading: saveLoading,
     isError: saveError,
+    error: saveErrorMessage,
   } = useMutation({
     mutationFn: () =>
       id
@@ -120,7 +132,7 @@ const CollectionPage = () => {
     onSuccess: async (data) => {
       if (data?.id) await navigate("/collection/" + data.id);
       notification("success", `Saved collection "${editableCollection.title}"`);
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      clearQueries();
     },
   });
 
@@ -129,6 +141,7 @@ const CollectionPage = () => {
     mutate: trash,
     isLoading: trashLoading,
     isError: trashError,
+    error: trashErrorMessage,
   } = useMutation({
     mutationFn: async () => {
       if (!window.confirm("Are you sure you want to delete this collection?"))
@@ -141,7 +154,7 @@ const CollectionPage = () => {
         "success",
         `Deleted collection "${editableCollection.title}"`
       );
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      clearQueries();
     },
   });
 
@@ -178,23 +191,19 @@ const CollectionPage = () => {
   );
 
   /** user's articles that are selected */
-  const selected = useMemo(
-    () =>
-      userArticles.filter((article) =>
-        editableCollection.articles.find((id) => article.id === id)
-      ),
-    [editableCollection.articles, userArticles]
+  const selected = userArticles.filter((article) =>
+    editableCollection.articles.find((id) => article.id === id)
   );
 
   /** user's articles that are not selected */
-  const unselected = useMemo(
-    () =>
-      userArticles.filter(
-        (article) =>
-          !editableCollection.articles.find((id) => article.id === id)
-      ),
-    [editableCollection.articles, userArticles]
+  const unselected = userArticles.filter(
+    (article) => !editableCollection.articles.find((id) => article.id === id)
   );
+
+  /** initialize editable collection from loaded */
+  useEffect(() => {
+    if (loadedCollection.id) setEditableCollection(loadedCollection);
+  }, [setEditableCollection, loadedCollection]);
 
   /** overall loading */
   if (
@@ -337,13 +346,19 @@ const CollectionPage = () => {
       {/* action statuses */}
       {saveLoading && <Notification type="loading" text="Saving collection" />}
       {saveError && (
-        <Notification type="error" text="Error saving collection" />
+        <Notification
+          type="error"
+          text={["Error saving collection", saveErrorMessage]}
+        />
       )}
       {trashLoading && (
         <Notification type="loading" text="Deleting collection" />
       )}
       {trashError && (
-        <Notification type="error" text="Error deleting collection" />
+        <Notification
+          type="error"
+          text={["Error deleting collection", trashErrorMessage]}
+        />
       )}
 
       {/* associated form */}

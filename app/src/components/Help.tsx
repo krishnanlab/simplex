@@ -1,10 +1,11 @@
+import { ReactNode } from "react";
 import { FaRegQuestionCircle } from "react-icons/fa";
 import { css } from "@stitches/react";
 import Tooltip from "@/components/Tooltip";
 
 type Props = {
   /** text on hover */
-  tooltip: string;
+  tooltip: ReactNode;
 };
 
 const helpStyle = css({

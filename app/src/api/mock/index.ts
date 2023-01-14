@@ -3,7 +3,7 @@ import articles from "./articles.json";
 import authors from "./authors.json";
 import collections from "./collections.json";
 import revisions from "./revisions.json";
-import { isWord, splitWords } from "@/util/string";
+import { isWord, tokenize } from "@/util/string";
 
 /** dummy cache store of word scores */
 const scoreStore: Record<string, number> = {};
@@ -56,7 +56,7 @@ export const handlers = [
     const body = await req.json();
 
     const scores: Record<string, number> = {};
-    for (const word of splitWords(body.text))
+    for (const word of tokenize(body.text))
       if (isWord(word))
         scores[word] = body.ignoreWords.includes(word) ? 0 : getWordScore(word);
 
@@ -119,7 +119,7 @@ export const handlers = [
     let match = articles.find((article) => article.id === id);
     if (match) {
       match = { ...match };
-      match.revision = Number(revision);
+      match.revision = String(revision);
       const date = revisions.find((r) => r.revision === Number(revision))?.date;
       if (date) match.date = date;
       match.text = match.text.slice(0, Number(revision) * 10);

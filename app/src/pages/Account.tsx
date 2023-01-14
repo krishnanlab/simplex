@@ -1,6 +1,7 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useEvent } from "react-use";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
@@ -9,6 +10,7 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
+import Help from "@/components/Help";
 import Meta from "@/components/Meta";
 import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
@@ -16,13 +18,13 @@ import { State } from "@/global/state";
 
 /** logged-in user's account page */
 const Account = () => {
-  const { loggedIn, logIn } = useContext(State);
+  const { currentUser, setCurrentUser } = useContext(State);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   /** redirect if not logged in */
-  useEffect(() => {
-    if (!loggedIn) navigate("/login");
+  useEvent("current-user", () => {
+    if (!currentUser) navigate("/login");
   });
 
   /** mutation for saving info */
@@ -30,15 +32,15 @@ const Account = () => {
     mutate: saveInfoMutate,
     isLoading: saveInfoLoading,
     isError: saveInfoError,
+    error: saveInfoErrorMessage,
   } = useMutation({
     mutationFn: saveInfo,
     onSuccess: async (data) => {
-      logIn(data);
+      setCurrentUser(data);
       notification("success", "Saved info");
-      if (loggedIn?.id)
-        await queryClient.removeQueries({
-          queryKey: ["getAuthor", loggedIn.id],
-        });
+      queryClient.removeQueries({
+        queryKey: ["getAuthor", currentUser?.id],
+      });
     },
   });
 
@@ -56,6 +58,7 @@ const Account = () => {
     mutate: changePasswordMutate,
     isLoading: changePasswordLoading,
     isError: changePasswordError,
+    error: changePasswordErrorMessage,
   } = useMutation({
     mutationFn: changePassword,
     onSuccess: async () => {
@@ -91,14 +94,14 @@ const Account = () => {
             label="Name"
             name="name"
             placeholder="Jane Smith"
-            defaultValue={loggedIn?.name || ""}
+            defaultValue={currentUser?.name || ""}
             form="save-info"
           />
           <Field
             label="Email"
             name="email"
             placeholder="jane.smith@email.com"
-            defaultValue={loggedIn?.email || ""}
+            defaultValue={currentUser?.email || ""}
             form="save-info"
           />
           <Field
@@ -106,17 +109,20 @@ const Account = () => {
             name="institution"
             optional={true}
             placeholder="University of Colorado"
-            defaultValue={loggedIn?.institution || ""}
+            defaultValue={currentUser?.institution || ""}
             form="save-info"
           />
         </Grid>
         <Flex dir="col">
-          <Checkbox
-            label="Subscribe to our newsletter"
-            name="newsletter"
-            defaultChecked={loggedIn?.newsletter}
-            form="save-info"
-          />
+          <Flex gap="small">
+            <Checkbox
+              name="newsletter"
+              label="Subscribe to our newsletter"
+              defaultChecked={currentUser?.newsletter}
+              form="signup"
+            />
+            <Help tooltip="We promise only infrequent, meaningful updates!" />
+          </Flex>
           <Button
             text="Save Info"
             icon={<FaRegSave />}
@@ -128,7 +134,10 @@ const Account = () => {
         {/* statuses */}
         {saveInfoLoading && <Notification type="loading" text="Saving info" />}
         {saveInfoError && (
-          <Notification type="error" text="Error saving info" />
+          <Notification
+            type="error"
+            text={["Error saving info", saveInfoErrorMessage]}
+          />
         )}
 
         <Form id="save-info" onSubmit={onSaveInfo} />
@@ -151,6 +160,7 @@ const Account = () => {
             type="password"
             placeholder="**********"
             form="change-password"
+            strength={true}
           />
           <Field
             label="Confirm New Password"
@@ -174,7 +184,10 @@ const Account = () => {
           <Notification type="loading" text="Changing password" />
         )}
         {changePasswordError && (
-          <Notification type="error" text="Error changing password" />
+          <Notification
+            type="error"
+            text={["Error changing password", changePasswordErrorMessage]}
+          />
         )}
 
         <Form id="change-password" onSubmit={onChangePassword} />

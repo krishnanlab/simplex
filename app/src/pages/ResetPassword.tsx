@@ -22,6 +22,7 @@ const ResetPassword = () => {
     mutate: resetMutate,
     isLoading: resetLoading,
     isError: resetError,
+    error: resetErrorMessage,
   } = useMutation({
     mutationFn: resetPassword,
     onSuccess: async () => {
@@ -87,7 +88,10 @@ const ResetPassword = () => {
         <Notification type="loading" text="Resetting password" />
       )}
       {resetError && (
-        <Notification type="error" text="Error resetting password" />
+        <Notification
+          type="error"
+          text={["Error resetting password", resetErrorMessage]}
+        />
       )}
 
       <Form id="reset" onSubmit={onReset} />

@@ -1,6 +1,7 @@
 import { useCallback, useContext } from "react";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { forgotPassword } from "@/api/account";
 import Button from "@/components/Button";
@@ -14,17 +15,20 @@ import { State } from "@/global/state";
 
 /** forgot password page */
 const ForgotPassword = () => {
-  const { loggedIn } = useContext(State);
+  const { currentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  if (loggedIn) navigate("/");
+  useEvent("current-user", () => {
+    if (currentUser) navigate("/");
+  });
 
   /** mutation for requesting reset */
   const {
     mutate: resetMutate,
     isLoading: resetLoading,
     isError: resetError,
+    error: resetErrorMessage,
   } = useMutation({
     mutationFn: forgotPassword,
     onSuccess: async () => {
@@ -62,7 +66,12 @@ const ForgotPassword = () => {
         <Notification type="loading" text="Requesting password reset" />
       )}
       {resetError && (
-        <Notification type="error" text="Error requesting password reset" />
+        <Notification
+          type="error"
+          text={["Error requesting password reset", resetErrorMessage]
+            .filter(Boolean)
+            .join("\n")}
+        />
       )}
 
       <Form id="forgot" onSubmit={onReset} />

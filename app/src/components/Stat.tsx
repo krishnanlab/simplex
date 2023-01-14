@@ -6,7 +6,7 @@ import { dark, deep } from "@/global/palette";
 
 type Props = {
   /** question mark text on hover */
-  help?: string;
+  help?: ReactNode;
   /** left text (key) */
   label?: string;
   /** right text (value) */

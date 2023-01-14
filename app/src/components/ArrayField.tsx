@@ -10,8 +10,8 @@ type Props = Omit<ComponentProps<typeof Field>, "value" | "onChange"> & {
 /** helper funcs */
 const changed = (value: Array<string>, raw: string) =>
   JSON.stringify(value) !== JSON.stringify(rawToValue(raw));
-const valueToRaw = (value: Array<string>) => value.join(", ");
-const rawToValue = (raw: string) => splitComma(raw);
+const valueToRaw = (value: Array<string>) => value.join(", ").toLowerCase();
+const rawToValue = (raw: string) => splitComma(raw.toLowerCase());
 
 /** variation of field component with comma-separated array */
 const ArrayField = ({ value, onChange, ...props }: Props) => {

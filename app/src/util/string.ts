@@ -1,11 +1,17 @@
+import { capitalize } from "lodash";
 import { AuthorPublic } from "@/global/types";
 
-/** is word */
-export const isWord = (value: string) => value.match(/[\p{L}|\p{N}|-]+/u);
+/** MAKE SURE THIS MATCHES BACKEND EXACTLY FOR CONSISTENCY */
+/** characters that are considered part of a word */
+const token = /\p{L}|\p{N}|-/;
 
-/** split string into words */
-export const splitWords = (value: string) =>
-  value.split(/([\p{L}|\p{N}|-]+)/u).filter(Boolean);
+/** split string into words in particular way for analysis */
+export const tokenize = (value: string) =>
+  value.split(new RegExp("([" + token.source + "]+)", "u")).filter(Boolean);
+
+/** is word */
+export const isWord = (value: string) =>
+  value.match(new RegExp("[" + token.source + "+", "u"));
 
 /** split comma-separated list */
 export const splitComma = (value: string) =>
@@ -48,6 +54,24 @@ export const parseDate = (date: string | Date) => {
 
 /** make "by" string from author object */
 export const authorString = (author: AuthorPublic, you: boolean) =>
-  [author.name, you ? "(You)" : "", author.institution]
+  [
+    [author.name, you ? "(You)" : ""].filter(Boolean).join(" "),
+    author.institution,
+  ]
     .filter(Boolean)
     .join(" | ");
+
+/** get user-friendly error message from DRF errors object */
+export const prettyError = (errors: unknown) =>
+  [errors]
+    .flat()
+    .map((error: unknown) => {
+      if (typeof error === "object" && error !== null)
+        // @ts-expect-error TS not smart enough to realize error props will be safely filtered out
+        return [error.attr, error.detail]
+          .map(capitalize)
+          .filter(Boolean)
+          .join(": ");
+      else return error;
+    })
+    .join("\n");

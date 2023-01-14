@@ -7,7 +7,7 @@ type Props<Option> = {
   label: string;
   value?: string;
   options?: readonly Option[];
-  onChange?: (value: Option) => unknown;
+  onChange?: (value: Option, index: number) => unknown;
 } & Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
   "value" | "options" | "onChange"
@@ -49,7 +49,7 @@ const Select = <Option extends { label: string; value: string }>({
       onChange={(event) => {
         const { value, selectedIndex, options } = event.target;
         const label = options[selectedIndex].innerHTML;
-        onChange?.({ value, label } as Option);
+        onChange?.({ value, label } as Option, selectedIndex);
       }}
       {...props}
     >

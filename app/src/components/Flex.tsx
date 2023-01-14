@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { forwardRef, ReactNode, Ref } from "react";
 import { css } from "@stitches/react";
 
 type Props = {
@@ -42,33 +42,40 @@ const gaps = {
 };
 
 /** util flex wrapper */
-const Flex = ({
-  display = "block",
-  dir = "row",
-  gap = "medium",
-  hAlign = "center",
-  vAlign = "center",
-  wrap = true,
-  children,
-  ...props
-}: Props) => (
-  <div
-    className={flexStyle()}
-    style={{
-      /** computed style */
-      display: display === "inline" ? "inline-flex" : "flex",
-      width: display === "block" ? "100%" : "",
-      flexDirection: dir === "col" ? "column" : "row",
-      justifyContent: dir === "col" ? aligns[vAlign] : aligns[hAlign],
-      alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
-      gap: gaps[gap],
-      flexWrap: wrap ? "wrap" : "nowrap",
-    }}
-    {...props}
-  >
-    {children}
-  </div>
+const Flex = forwardRef(
+  (
+    {
+      display = "block",
+      dir = "row",
+      gap = "medium",
+      hAlign = "center",
+      vAlign = "center",
+      wrap = true,
+      children,
+      ...props
+    }: Props,
+    ref
+  ) => (
+    <div
+      ref={ref as Ref<HTMLDivElement>}
+      className={flexStyle()}
+      style={{
+        /** computed style */
+        display: display === "inline" ? "inline-flex" : "flex",
+        width: display === "block" ? "100%" : "",
+        flexDirection: dir === "col" ? "column" : "row",
+        justifyContent: dir === "col" ? aligns[vAlign] : aligns[hAlign],
+        alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
+        gap: gaps[gap],
+        flexWrap: wrap ? "wrap" : "nowrap",
+      }}
+      {...props}
+    >
+      {children}
+    </div>
+  )
 );
+Flex.displayName = "Flex";
 
 export default Flex;
 

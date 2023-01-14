@@ -9,7 +9,7 @@ export const audiences = [
 ] as const;
 
 /** audience to analyze for */
-export type Audience = typeof audiences[number];
+export type Audience = (typeof audiences)[number];
 
 /** result of complexity analysis */
 export type Analysis = {
@@ -37,17 +37,14 @@ export const blankAnalysis: Analysis = {
 
 /** result of simplification suggestion */
 export type Simplify = {
-  definition: string;
-  image: string;
-  synonyms: Array<string>;
-  link: string;
+  definition?: string;
+  image?: string;
+  synonyms?: Array<string>;
+  link?: string;
 };
 
 /** id for author/article/collection */
 export type Id = string;
-
-/** article revision, int starting at 1 */
-export type Revision = number;
 
 /** iso date string */
 export type DateString = string;
@@ -77,8 +74,8 @@ export const blankAuthor: AuthorPublic = {
 /** article (when reading details) */
 export type Article = {
   id: Id;
-  revision: Revision;
-  author: AuthorPublic["id"];
+  revision: Id;
+  author: AuthorPublic["id"] | null;
   date: DateString;
   title: string;
   source: string;
@@ -102,7 +99,7 @@ export type ArticleWrite = Pick<
 /** initial/fallback article */
 export const blankArticle: Article = {
   id: "",
-  revision: 1,
+  revision: "",
   author: "",
   date: "",
   title: "",
@@ -143,3 +140,11 @@ export const blankCollection: Collection = {
   description: "",
   articles: [],
 };
+
+/** generic json data */
+export type JSON =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSON }
+  | Array<JSON>;
