@@ -5,7 +5,6 @@ import {
   useCallback,
   useContext,
   useEffect,
-  useMemo,
   useState,
 } from "react";
 import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
@@ -286,16 +285,12 @@ const ArticlePage = () => {
   );
 
   /** options to show in revisions dropdown select */
-  const revisionOptions: ComponentProps<typeof Select>["options"] = useMemo(
-    () =>
-      revisions
-        .map((revision, index) => ({
-          label: `${index + 1}: ${dateString(revision.date)}`,
-          value: String(revision.revision),
-        }))
-        .concat(mode === "edit" ? { label: "new", value: "0" } : []),
-    [revisions, mode]
-  );
+  const revisionOptions: ComponentProps<typeof Select>["options"] = revisions
+    .map((revision, index) => ({
+      label: `${index + 1}: ${dateString(revision.date)}`,
+      value: String(revision.revision),
+    }))
+    .concat(mode === "edit" ? { label: "new", value: "0" } : []);
 
   /** main article state to render */
   const article = revision === 0 ? editableArticle : loadedArticle;

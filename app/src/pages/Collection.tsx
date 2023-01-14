@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { FaPlus, FaRegSave, FaRegTrashAlt, FaTimes } from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { capitalize } from "lodash";
@@ -47,7 +47,7 @@ const CollectionPage = () => {
   } else if (!id && !currentUser) {
     /** anonymous user creating new collection */
     mode = "anon";
-  } else if (!!currentUser && editableCollection?.author === currentUser.id) {
+  } else if (!!currentUser && editableCollection.author === currentUser.id) {
     /** logged in user editing collection belonging to them */
     mode = "edit";
   } else {
@@ -71,7 +71,6 @@ const CollectionPage = () => {
   } = useQuery({
     queryKey: ["getCollection", id],
     queryFn: () => getCollection(id),
-    onSuccess: (data) => setEditableCollection(data),
     enabled: !!id,
   });
 
@@ -192,23 +191,19 @@ const CollectionPage = () => {
   );
 
   /** user's articles that are selected */
-  const selected = useMemo(
-    () =>
-      userArticles.filter((article) =>
-        editableCollection.articles.find((id) => article.id === id)
-      ),
-    [editableCollection.articles, userArticles]
+  const selected = userArticles.filter((article) =>
+    editableCollection.articles.find((id) => article.id === id)
   );
 
   /** user's articles that are not selected */
-  const unselected = useMemo(
-    () =>
-      userArticles.filter(
-        (article) =>
-          !editableCollection.articles.find((id) => article.id === id)
-      ),
-    [editableCollection.articles, userArticles]
+  const unselected = userArticles.filter(
+    (article) => !editableCollection.articles.find((id) => article.id === id)
   );
+
+  /** initialize editable collection from loaded */
+  useEffect(() => {
+    if (loadedCollection.id) setEditableCollection(loadedCollection);
+  }, [setEditableCollection, loadedCollection]);
 
   /** overall loading */
   if (
