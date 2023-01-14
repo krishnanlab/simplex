@@ -31,7 +31,7 @@ const MyArticles = () => {
     isError: articlesError,
     error: articlesErrorMessage,
   } = useQuery({
-    queryKey: ["getArticles", currentUser?.id],
+    queryKey: ["getUserArticles", currentUser?.id],
     queryFn: () => getUserArticles(),
   });
 
@@ -42,7 +42,7 @@ const MyArticles = () => {
     isError: collectionsError,
     error: collectionsErrorMessage,
   } = useQuery({
-    queryKey: ["getCollections", currentUser?.id],
+    queryKey: ["getUserCollections", currentUser?.id],
     queryFn: () => getUserCollections(),
   });
 

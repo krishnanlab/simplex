@@ -38,10 +38,9 @@ const Account = () => {
     onSuccess: async (data) => {
       setCurrentUser(data);
       notification("success", "Saved info");
-      if (currentUser?.id)
-        await queryClient.removeQueries({
-          queryKey: ["getAuthor", currentUser.id],
-        });
+      queryClient.removeQueries({
+        queryKey: ["getAuthor", currentUser?.id],
+      });
     },
   });
 

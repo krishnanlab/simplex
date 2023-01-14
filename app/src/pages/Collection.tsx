@@ -92,7 +92,7 @@ const CollectionPage = () => {
     isInitialLoading: userArticlesLoading,
     isError: userArticlesError,
   } = useQuery({
-    queryKey: ["getUserArticles", "user", currentUser?.id],
+    queryKey: ["getUserArticles", currentUser?.id],
     queryFn: getUserArticles,
   });
 
@@ -102,10 +102,22 @@ const CollectionPage = () => {
     isInitialLoading: collectionArticlesLoading,
     isError: collectionArticlesError,
   } = useQuery({
-    queryKey: ["getArticles", "collection", loadedCollection.articles],
+    queryKey: ["getArticles", loadedCollection.articles],
     queryFn: () => getArticles(loadedCollection.articles),
     enabled: !!loadedCollection.articles,
   });
+
+  /** clear query cache */
+  const clearQueries = () => {
+    queryClient.removeQueries({ queryKey: ["getCollection", id] });
+    queryClient.removeQueries({ queryKey: ["getArticles"] });
+    queryClient.removeQueries({
+      queryKey: ["getUserArticles", currentUser?.id],
+    });
+    queryClient.removeQueries({
+      queryKey: ["getUserCollections", currentUser?.id],
+    });
+  };
 
   /** mutation for saving collection */
   const {
@@ -121,7 +133,7 @@ const CollectionPage = () => {
     onSuccess: async (data) => {
       if (data?.id) await navigate("/collection/" + data.id);
       notification("success", `Saved collection "${editableCollection.title}"`);
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      clearQueries();
     },
   });
 
@@ -143,7 +155,7 @@ const CollectionPage = () => {
         "success",
         `Deleted collection "${editableCollection.title}"`
       );
-      await queryClient.removeQueries({ queryKey: ["getCollection", id] });
+      clearQueries();
     },
   });
 

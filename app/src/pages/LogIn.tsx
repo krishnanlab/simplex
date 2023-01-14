@@ -68,7 +68,7 @@ const LogIn = () => {
           form="login"
         />
       </Grid>
-      <Flex dir="col" gap="small">
+      <Flex dir="col">
         <Checkbox
           name="remember"
           label="Keep me logged in"

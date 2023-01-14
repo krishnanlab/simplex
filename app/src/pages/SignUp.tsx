@@ -75,18 +75,6 @@ const SignUp = () => {
         <h2>Sign Up</h2>
       </Section>
 
-      {/* pitch */}
-      <Section fill="offWhite">
-        <p>
-          <strong>Why sign up?</strong>
-        </p>
-        <ul>
-          <li>Track revisions to your articles.</li>
-          <li>Organize your articles into collections and share them.</li>
-          <li>Get important updates via our newsletter.</li>
-        </ul>
-      </Section>
-
       {/* form */}
       <Section>
         <Grid>
@@ -125,7 +113,7 @@ const SignUp = () => {
             form="signup"
           />
         </Grid>
-        <Flex dir="col" gap="small">
+        <Flex dir="col">
           <Flex gap="small">
             <Checkbox
               name="newsletter"
@@ -154,6 +142,18 @@ const SignUp = () => {
         )}
 
         <Form id="signup" onSubmit={onSignup} />
+      </Section>
+
+      {/* pitch */}
+      <Section fill="offWhite">
+        <p>
+          <strong>Why sign up?</strong>
+        </p>
+        <ul>
+          <li>Track revisions to your articles.</li>
+          <li>Organize your articles into collections and share them.</li>
+          <li>Get important updates via our newsletter.</li>
+        </ul>
       </Section>
     </>
   );

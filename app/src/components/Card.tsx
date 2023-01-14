@@ -4,7 +4,7 @@ import { css } from "@stitches/react";
 import Ago from "@/components/Ago";
 import Button from "@/components/Button";
 import Flex, { Spacer } from "@/components/Flex";
-import { dark, gray, rounded, shadow } from "@/global/palette";
+import { dark, gray, rounded, shadow, white } from "@/global/palette";
 import { ArticleSummary, CollectionSummary } from "@/global/types";
 
 type Props = {
@@ -23,6 +23,7 @@ type Props = {
 
 const cardStyle = css({
   padding: "15px 20px",
+  background: white,
   borderRadius: rounded,
   "&[data-editable='true']": {
     boxShadow: shadow,

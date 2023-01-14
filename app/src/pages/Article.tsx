@@ -203,6 +203,20 @@ const ArticlePage = () => {
     enabled: !!latestArticle.author || latestArticle.author === null,
   });
 
+  /** clear query cache */
+  const clearQueries = () => {
+    queryClient.removeQueries({ queryKey: ["getRevisions", id] });
+    queryClient.removeQueries({ queryKey: ["getArticle", id] });
+    queryClient.removeQueries({ queryKey: ["getLatestArticle", id] });
+    queryClient.removeQueries({ queryKey: ["getArticles"] });
+    queryClient.removeQueries({
+      queryKey: ["getUserArticles", currentUser?.id],
+    });
+    queryClient.removeQueries({
+      queryKey: ["getUserCollections", currentUser?.id],
+    });
+  };
+
   /** mutation for saving article details */
   const {
     mutate: save,
@@ -216,9 +230,7 @@ const ArticlePage = () => {
       removeArticleStorage();
       if (data?.id) await navigate("/article/" + data.id);
       notification("success", `Saved article "${editableArticle.title}"`);
-      await queryClient.removeQueries({ queryKey: ["getRevisions", id] });
-      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
-      await queryClient.removeQueries({ queryKey: ["getLatestArticle", id] });
+      clearQueries();
     },
   });
 
@@ -237,7 +249,7 @@ const ArticlePage = () => {
     onSuccess: async () => {
       await navigate("/my-articles");
       notification("success", `Deleted article "${editableArticle.title}"`);
-      await queryClient.removeQueries({ queryKey: ["getArticle", id] });
+      clearQueries();
     },
   });
 
