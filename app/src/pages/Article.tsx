@@ -586,8 +586,8 @@ const ArticlePage = () => {
 
       {/* note */}
       <Flex>
-        {mode === "new" ||
-          (mode === "anon" && <strong>Save this article to share it!</strong>)}
+        {(mode === "new" || mode === "anon") &&
+          "Save this article to share it!"}
       </Flex>
 
       {/* action statuses */}
