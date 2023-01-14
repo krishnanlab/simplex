@@ -81,7 +81,7 @@ articles = Array(10)
   .fill({})
   .map(() => ({
     id: id(),
-    revision: rand([1, 2, 3, 4, 5]),
+    revision: id(),
     author: rand(authors).id,
     date: date(),
     title: rand(

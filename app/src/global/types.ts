@@ -46,9 +46,6 @@ export type Simplify = {
 /** id for author/article/collection */
 export type Id = string;
 
-/** article revision, int starting at 1 */
-export type Revision = number;
-
 /** iso date string */
 export type DateString = string;
 
@@ -77,7 +74,7 @@ export const blankAuthor: AuthorPublic = {
 /** article (when reading details) */
 export type Article = {
   id: Id;
-  revision: Revision;
+  revision: Id;
   author: AuthorPublic["id"] | null;
   date: DateString;
   title: string;
@@ -102,7 +99,7 @@ export type ArticleWrite = Pick<
 /** initial/fallback article */
 export const blankArticle: Article = {
   id: "",
-  revision: 1,
+  revision: "",
   author: "",
   date: "",
   title: "",
@@ -143,3 +140,11 @@ export const blankCollection: Collection = {
   description: "",
   articles: [],
 };
+
+/** generic json data */
+export type JSON =
+  | string
+  | number
+  | boolean
+  | { [x: string]: JSON }
+  | Array<JSON>;

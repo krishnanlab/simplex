@@ -18,7 +18,7 @@ import {
   shadow,
   spacing,
 } from "@/global/palette";
-import { splitWords } from "@/util/string";
+import { tokenize } from "@/util/string";
 
 type Props = {
   value: string;
@@ -137,7 +137,7 @@ const Editor = ({
   const input = useRef<HTMLTextAreaElement>(null);
 
   /** split words */
-  const words = useMemo(() => splitWords(value), [value]);
+  const words = useMemo(() => tokenize(value), [value]);
 
   /** index of selected word in split words */
   const [selected, setSelected] = useState(-1);

@@ -1,6 +1,7 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useEvent } from "react-use";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
@@ -22,7 +23,7 @@ const Account = () => {
   const queryClient = useQueryClient();
 
   /** redirect if not logged in */
-  useEffect(() => {
+  useEvent("current-user", () => {
     if (!currentUser) navigate("/login");
   });
 
@@ -160,6 +161,7 @@ const Account = () => {
             type="password"
             placeholder="**********"
             form="change-password"
+            strength={true}
           />
           <Field
             label="Confirm New Password"

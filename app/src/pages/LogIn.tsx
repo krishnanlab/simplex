@@ -1,6 +1,7 @@
 import { useCallback, useContext } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
+import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/account";
 import Button from "@/components/Button";
@@ -20,7 +21,9 @@ const LogIn = () => {
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  if (currentUser) navigate("/");
+  useEvent("current-user", () => {
+    if (currentUser) navigate("/");
+  });
 
   /** mutation for logging in */
   const {

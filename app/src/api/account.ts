@@ -7,7 +7,7 @@ export const getCurrentUser = async () => {
     return await request<Author>("/current-user");
   } catch (error) {
     console.error(error);
-    return false;
+    return null;
   }
 };
 
@@ -56,7 +56,7 @@ type ChangePassword = {
 /** change password of logged in user */
 export const changePassword = (props: ChangePassword) =>
   request<undefined>("/change-password", {
-    method: "POST",
+    method: "PUT",
     body: JSON.stringify(props),
   });
 

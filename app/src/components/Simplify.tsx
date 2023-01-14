@@ -17,6 +17,7 @@ type Props = {
 };
 
 const contentStyle = css({
+  width: "100%",
   maxHeight: "250px",
   overflowY: "auto",
 });
@@ -60,13 +61,19 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
         {simplification && (
           <Flex dir="col" hAlign="left" gap="small">
             <strong>Synonyms:</strong>
-            <div>{simplification.synonyms.join(", ")}</div>
+            <div>
+              {simplification.synonyms.join(", ") || "No synonyms found"}
+            </div>
             <strong>Definition:</strong>
-            {parse(String(simplification.definition))}
-            <a href={simplification.link} target="_blank" rel="noreferrer">
-              See more
-              <FaExternalLinkAlt className={iconStyle()} />
-            </a>
+            {simplification.definition
+              ? parse(String(simplification.definition))
+              : "Definition not found"}
+            {simplification.link && (
+              <a href={simplification.link} target="_blank" rel="noreferrer">
+                See more
+                <FaExternalLinkAlt className={iconStyle()} />
+              </a>
+            )}
             <img src={simplification.image} className={imageStyle()} alt="" />
           </Flex>
         )}

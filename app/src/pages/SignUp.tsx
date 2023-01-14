@@ -1,6 +1,7 @@
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import { FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/api/account";
 import Button from "@/components/Button";
@@ -21,7 +22,7 @@ const SignUp = () => {
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEffect(() => {
+  useEvent("current-user", () => {
     if (currentUser) navigate("/");
   });
 
@@ -105,6 +106,7 @@ const SignUp = () => {
             type="password"
             placeholder="**********"
             form="signup"
+            strength={true}
           />
           <Field
             label="Confirm Password"

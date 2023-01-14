@@ -97,7 +97,9 @@ const Header = () => {
         {/* title/logo */}
         <Logo
           className={logoStyle()}
-          onMouseEnter={(event) => restartAnimations(event.target as Element)}
+          onMouseEnter={(event: Event) =>
+            restartAnimations(event.target as Element)
+          }
         />
         <Link className={homeStyle()} to="/">
           <h1>Simplex</h1>

@@ -1,7 +1,9 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { useLocalStorage } from "react-use";
 import { css } from "@stitches/react";
 import Citation from "@/components/Citation";
+import Flex from "@/components/Flex";
 import Meta from "@/components/Meta";
 import Section from "@/components/Section";
 import { big } from "@/global/palette";
@@ -15,6 +17,9 @@ const heroStyle = css({
 /** homepage of app */
 const Home = () => {
   const navigate = useNavigate();
+
+  const [anonymousArticles] =
+    useLocalStorage<Array<string>>("anonymous-articles");
 
   /** handle 404 redirect */
   useEffect(() => {
@@ -35,6 +40,24 @@ const Home = () => {
       </Section>
 
       <Article />
+
+      {anonymousArticles?.length && (
+        <Section fill="offWhite">
+          <h2>Anonymous Articles</h2>
+
+          <p className="center">
+            Articles created on this device while not logged in.
+          </p>
+
+          <Flex gap="small">
+            {anonymousArticles.map((article, index) => (
+              <Link key={index} to={`/article/${article}`}>
+                {String(article)}
+              </Link>
+            ))}
+          </Flex>
+        </Section>
+      )}
 
       <Section fill="dark">
         <Citation />

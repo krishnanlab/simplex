@@ -39,7 +39,7 @@ const notificationStyle = css({
 
 /** notification for status with icon and text */
 const Notification = ({ type, text, children }: Props) => {
-  const ref = useRef<HTMLDivElement>();
+  const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     ref.current?.scrollIntoView();
@@ -73,6 +73,7 @@ export const notification = async (
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
+  await sleep();
   window.scrollTo(0, 0);
 };
 

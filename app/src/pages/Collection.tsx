@@ -57,7 +57,7 @@ const CollectionPage = () => {
 
   /** anonymous collections not supported, so redirect */
   useEffect(() => {
-    if (mode === "anon") navigate("/login");
+    if (mode === "anon") navigate("/");
   });
 
   /** heading and title text */

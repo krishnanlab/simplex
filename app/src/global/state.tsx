@@ -24,18 +24,28 @@ type Props = {
 
 /** provider for global state */
 const StateProvider = ({ children }: Props) => {
-  const [currentUser = null, setLoggedIn] =
-    useState<StateType["currentUser"]>(null);
-  const setCurrentUser = (author: Author) => setLoggedIn(author);
-  const clearCurrentUser = () => setLoggedIn(null);
+  /** flag to ensure current user event only dispatched once */
+  const [dispatch, setDispatch] = useState(false);
+
+  const [currentUser, setCurrentUser] = useState<
+    StateType["currentUser"] | null
+  >(null);
+  const clearCurrentUser = () => setCurrentUser(null);
 
   /** check if user logged in on app load */
   useEffect(() => {
-    (async () => {
-      const user = await getCurrentUser();
-      if (user) setLoggedIn(user);
-    })();
+    getCurrentUser()
+      .then(setCurrentUser)
+      .then(() => setDispatch(true));
   }, []);
+
+  /** dispatch global event that current user has been checked */
+  useEffect(() => {
+    if (dispatch) {
+      window.dispatchEvent(new Event("current-user"));
+      setDispatch(false);
+    }
+  }, [dispatch]);
 
   /** on auth expired event, logout */
   useEvent("auth-expired", () => {

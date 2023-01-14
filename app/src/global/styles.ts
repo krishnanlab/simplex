@@ -107,6 +107,9 @@ const globalStyles = globalCss({
   ".react-icons": {
     verticalAlign: "middle",
   },
+  ".center": {
+    textAlign: "center",
+  },
 });
 
 export default globalStyles;

@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { FaPlus } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { useLocalStorage } from "react-use";
+import { useNavigate } from "react-router";
+import { useEvent } from "react-use";
 import { useQuery } from "@tanstack/react-query";
 import { getUserArticles } from "@/api/article";
 import { getUserCollections } from "@/api/collection";
@@ -17,9 +17,12 @@ import { State } from "@/global/state";
 /** logged-in user's page of articles and collections */
 const MyArticles = () => {
   const { currentUser } = useContext(State);
+  const navigate = useNavigate();
 
-  const [anonymousArticles] =
-    useLocalStorage<Array<string>>("anonymous-articles");
+  /** redirect if not logged in */
+  useEvent("current-user", () => {
+    if (!currentUser) navigate("/login");
+  });
 
   /** query for user's articles */
   const {
@@ -101,24 +104,6 @@ const MyArticles = () => {
           <Button to="/collection" text="New Collection" icon={<FaPlus />} />
         </Flex>
       </Section>
-
-      {anonymousArticles?.length && (
-        <Section>
-          <h2>Anonymous Articles</h2>
-
-          <p style={{ textAlign: "center" }}>
-            Articles created anonymously (not logged-in) on this device.
-          </p>
-
-          <Flex>
-            {anonymousArticles.map((article, index) => (
-              <Link key={index} to={`/article/${article}`}>
-                {String(article)}
-              </Link>
-            ))}
-          </Flex>
-        </Section>
-      )}
     </>
   );
 };

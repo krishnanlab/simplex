@@ -1,5 +1,7 @@
 import {
   ComponentProps,
+  Dispatch,
+  SetStateAction,
   useCallback,
   useContext,
   useEffect,
@@ -9,6 +11,7 @@ import {
 import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
+import { useLocalStorage } from "react-use";
 import { capitalize } from "lodash";
 import { QueryParamConfig, useQueryParam } from "use-query-params";
 import { css } from "@stitches/react";
@@ -52,15 +55,9 @@ import {
   blankAnalysis,
   blankArticle,
   blankAuthor,
-  Revision,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
-import {
-  authorString,
-  dateString,
-  shortenUrl,
-  splitWords,
-} from "@/util/string";
+import { authorString, dateString, shortenUrl } from "@/util/string";
 
 const spinnerStyle = css({
   position: "fixed",
@@ -71,15 +68,15 @@ const spinnerStyle = css({
 });
 
 /** methods for syncing revision with url param */
-const RevisionParam: QueryParamConfig<Revision> = {
-  encode: (value: Revision) => (value ? String(value) : undefined),
-  decode: (value): Revision => Number(value) || 0,
+const RevisionParam: QueryParamConfig<number> = {
+  encode: (value) => (value ? String(value) : undefined),
+  decode: (value) => Number(value) || 0,
 };
 
 /** methods for syncing audience with url param */
 const AudienceParam: QueryParamConfig<Audience> = {
-  encode: (value: Audience) => value.value,
-  decode: (value): Audience => {
+  encode: (value) => value.value,
+  decode: (value) => {
     const decoded = audiences.find((audience) => audience.value === value);
     return decoded || audiences[0];
   },
@@ -87,8 +84,8 @@ const AudienceParam: QueryParamConfig<Audience> = {
 
 /** methods for syncing highlights with url param */
 const HighlightsParam: QueryParamConfig<boolean> = {
-  encode: (value: boolean) => String(value),
-  decode: (value): boolean => (value === "false" ? false : true),
+  encode: (value) => String(value),
+  decode: (value) => (value === "false" ? false : true),
 };
 
 /** new/edit/view page for article, and homepage content */
@@ -106,10 +103,15 @@ const ArticlePage = () => {
   const [analysis, setAnalysis] = useState<Analysis>(blankAnalysis);
 
   /** editable article state */
-  const [editableArticle, setEditableArticle] = useState(blankArticle);
+  const [editableArticle, setEditableArticle, removeArticleStorage] =
+    useLocalStorage<Article>("article-" + location.pathname, blankArticle) as [
+      Article,
+      Dispatch<SetStateAction<Article>>,
+      () => void
+    ];
 
   /** selected revision of article */
-  const [revision, setRevision] = useQueryParam<Revision>(
+  const [revision, setRevision] = useQueryParam<number>(
     "revision",
     RevisionParam
   );
@@ -148,23 +150,38 @@ const ArticlePage = () => {
   /** heading and title text */
   const heading = homepage ? "" : capitalize(mode) + " Article";
 
+  /** query for loading article revisions (if loading existing article) */
+  const {
+    data: revisions = [],
+    isInitialLoading: revisionsLoading,
+    isError: revisionsError,
+    error: revisionsErrorMessage,
+  } = useQuery({
+    queryKey: ["getRevisions", id],
+    queryFn: () => getRevisions(id),
+    enabled: !!id,
+  });
+
   /** query for loading revision of article data */
   const {
     data: loadedArticle = blankArticle,
     isInitialLoading: articleLoading,
     isError: articleError,
+    error: articleErrorMessage,
   } = useQuery({
     queryKey: ["getArticle", id, revision],
-    queryFn: () => getArticle(id, revision),
-    enabled: !!id && !!revision,
+    queryFn: () =>
+      getArticle(id, (revisions[revision - 1] || revisions.at(-1)).revision),
+    enabled: !!id && !!revision && !!revisions && !!revisions.length,
     keepPreviousData: true,
   });
 
   /** query for loading latest revision of article data */
   const {
-    data: latestArticle,
+    data: latestArticle = blankArticle,
     isInitialLoading: latestLoading,
     isError: latestError,
+    error: latestErrorMessage,
   } = useQuery({
     queryKey: ["getLatestArticle", id],
     queryFn: () => getLatestArticle(id),
@@ -176,24 +193,14 @@ const ArticlePage = () => {
     data: author = mode === "edit" ? currentUser || blankAuthor : blankAuthor,
     isInitialLoading: authorLoading,
     isError: authorError,
+    error: authorErrorMessage,
   } = useQuery({
-    queryKey: ["getAuthor", loadedArticle.author],
+    queryKey: ["getAuthor", latestArticle.author],
     queryFn: () =>
-      loadedArticle.author
-        ? getAuthor(loadedArticle.author)
+      latestArticle.author
+        ? getAuthor(latestArticle.author)
         : { ...blankAuthor, name: "Anonymous" },
-    enabled: !!loadedArticle.author,
-  });
-
-  /** query for loading article revisions (if loading existing article) */
-  const {
-    data: revisions = [],
-    isInitialLoading: revisionsLoading,
-    isError: revisionsError,
-  } = useQuery({
-    queryKey: ["getRevisions", id],
-    queryFn: () => getRevisions(id),
-    enabled: !!id,
+    enabled: !!latestArticle.author || latestArticle.author === null,
   });
 
   /** mutation for saving article details */
@@ -206,9 +213,12 @@ const ArticlePage = () => {
     mutationFn: () =>
       id ? saveArticle(editableArticle, id) : saveNewArticle(editableArticle),
     onSuccess: async (data) => {
+      removeArticleStorage();
       if (data?.id) await navigate("/article/" + data.id);
       notification("success", `Saved article "${editableArticle.title}"`);
+      await queryClient.removeQueries({ queryKey: ["getRevisions", id] });
       await queryClient.removeQueries({ queryKey: ["getArticle", id] });
+      await queryClient.removeQueries({ queryKey: ["getLatestArticle", id] });
     },
   });
 
@@ -238,7 +248,7 @@ const ArticlePage = () => {
         ...editableArticle,
         [key]: value,
       })),
-    []
+    [setEditableArticle]
   );
 
   /** helper func to add word to ignore list in article data */
@@ -248,7 +258,7 @@ const ArticlePage = () => {
         ...editableArticle,
         ignoreWords: [...editableArticle.ignoreWords, text.toLowerCase()],
       })),
-    []
+    [setEditableArticle]
   );
 
   /** helper func to remove word from ignore list in article data */
@@ -260,23 +270,20 @@ const ArticlePage = () => {
           (word) => word.toLowerCase() !== text.toLowerCase()
         ),
       })),
-    []
+    [setEditableArticle]
   );
 
   /** options to show in revisions dropdown select */
   const revisionOptions: ComponentProps<typeof Select>["options"] = useMemo(
     () =>
       revisions
-        .map((revision) => ({
-          label: `${revision.revision}: ${dateString(revision.date)}`,
+        .map((revision, index) => ({
+          label: `${index + 1}: ${dateString(revision.date)}`,
           value: String(revision.revision),
         }))
         .concat(mode === "edit" ? { label: "new", value: "0" } : []),
     [revisions, mode]
   );
-
-  /** latest revision */
-  const latest = revisions?.at(-1)?.revision;
 
   /** main article state to render */
   const article = revision === 0 ? editableArticle : loadedArticle;
@@ -286,8 +293,8 @@ const ArticlePage = () => {
 
   /** initialize editable article from latest revision */
   useEffect(() => {
-    if (latestArticle) setEditableArticle(latestArticle);
-  }, [latestArticle]);
+    if (latestArticle.id) setEditableArticle(latestArticle);
+  }, [setEditableArticle, latestArticle]);
 
   /** auto select latest revision when appropriate */
   useEffect(() => {
@@ -299,32 +306,48 @@ const ArticlePage = () => {
       /** no revision already selected or specified in url */
       revision === 0 &&
       /** latest revision defined */
-      latest
+      revisions.length
     )
-      setRevision(latest);
+      setRevision(revisions.length - 1);
   });
 
   /** when params that would affect the analysis change */
+  /** if we did this w/ react-query, we'd need debounced duplicates of every param */
   useEffect(() => {
     let latest = true;
 
     /** run analysis */
     (async () => {
+      /** if blank, exit */
       if (!article.text.trim()) return;
-      await sleep(500); // debounce
+
+      /** debounce all analysis params simultaneously */
+
+      await sleep(500);
+
+      /** if more recent query, exit */
       if (!latest) return;
-      setAnalyzing(true);
+
       try {
+        /** set status */
+        setAnalyzing(true);
+
+        /** perform analysis */
         const analysis = await analyze(
           article.text,
           audience.value,
           article.ignoreWords || []
         );
+
+        /** if more recent query, exit */
         if (!latest) return;
+
+        /** finish */
         setAnalysis(analysis);
         setAnalyzing(false);
       } catch (error) {
         console.error(error);
+        setAnalyzing(false);
       }
     })();
 
@@ -345,7 +368,16 @@ const ArticlePage = () => {
   if (articleError || latestError || authorError || revisionsError)
     return (
       <Section>
-        <Notification type="error" text="Error loading article" />
+        <Notification
+          type="error"
+          text={[
+            "Error loading article",
+            articleErrorMessage,
+            latestErrorMessage,
+            authorErrorMessage,
+            revisionsErrorMessage,
+          ]}
+        />
       </Section>
     );
 
@@ -412,8 +444,15 @@ const ArticlePage = () => {
           <Select
             label="Revision"
             options={revisionOptions}
-            value={String(revision)}
-            onChange={(value) => setRevision(Number(value.value) || 0)}
+            value={
+              (revision === 0
+                ? revisionOptions.at(-1)
+                : revisionOptions[revision - 1]
+              )?.value || ""
+            }
+            onChange={(value, index) =>
+              setRevision(index === revisionOptions.length - 1 ? 0 : index + 1)
+            }
           />
         )}
         <Flex display="inline" hAlign="left">
@@ -478,7 +517,7 @@ const ArticlePage = () => {
 
           <Stat
             label="Overall Complexity"
-            value={analysis.complexity.toFixed(1)}
+            value={analysis.complexity.toFixed(0) + "%"}
             help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
           />
           <Stat
@@ -491,10 +530,7 @@ const ArticlePage = () => {
       <Flex>
         <Stat label="Sentences" value={analysis.sentences} />
         <Stat label="Syllables" value={analysis.syllables} />
-        <Stat
-          label="Words"
-          value={splitWords(article.text).filter(Boolean).length}
-        />
+        <Stat label="Words" value={analysis.words} />
         <Stat label="Chars" value={article.text.length} />
       </Flex>
 

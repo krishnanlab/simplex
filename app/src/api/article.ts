@@ -1,24 +1,22 @@
+import { sortBy } from "lodash";
 import { request } from "./";
-import {
-  Article,
-  ArticleSummary,
-  ArticleWrite,
-  Id,
-  Revision,
-} from "@/global/types";
+import { Article, ArticleSummary, ArticleWrite, Id } from "@/global/types";
 import { setStorage } from "@/util/storage";
 
 /** lookup latest revision of article */
 export const getLatestArticle = (id: Id) => request<Article>(`/articles/${id}`);
 
 /** get revisions of article */
-export const getRevisions = (id: Id) =>
-  request<Array<Pick<Article, "revision" | "date">>>(
-    `/articles/${id}/revisions`
+export const getRevisions = async (id: Id) =>
+  sortBy(
+    await request<Array<Pick<Article, "revision" | "date">>>(
+      `/articles/${id}/revisions`
+    ),
+    "date"
   );
 
 /** lookup article by id and revision */
-export const getArticle = (id: Id, revision: Revision) =>
+export const getArticle = (id: Id, revision: Id) =>
   request<Article>(`/articles/${id}/revisions/${revision}`);
 
 /** batch lookup articles by id */
