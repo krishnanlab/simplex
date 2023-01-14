@@ -20,10 +20,10 @@ const iconStyle = css({
 const Footer = () => (
   <footer className={footerStyle()}>
     <Flex gap="small">
-      <a href="https://github.com/krishnanlab">
+      <a href="mailto:arjun.krishnan@cuanschutz.edu">
         <FaRegEnvelope className={iconStyle().toString()} />
       </a>
-      <a href="mailto:arjun.krishnan@cuanschutz.edu">
+      <a href="https://github.com/krishnanlab">
         <FaGithub className={iconStyle().toString()} />
       </a>
     </Flex>
