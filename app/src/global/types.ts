@@ -37,10 +37,10 @@ export const blankAnalysis: Analysis = {
 
 /** result of simplification suggestion */
 export type Simplify = {
-  definition: string;
-  image: string;
-  synonyms: Array<string>;
-  link: string;
+  definition?: string;
+  image?: string;
+  synonyms?: Array<string>;
+  link?: string;
 };
 
 /** id for author/article/collection */

@@ -6,6 +6,7 @@ import { simplify } from "@/api/tool";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
 import Notification from "@/components/Notification";
+import { dark } from "@/global/palette";
 
 type Props = {
   /** word to simplified */
@@ -20,6 +21,11 @@ const contentStyle = css({
   width: "100%",
   maxHeight: "250px",
   overflowY: "auto",
+});
+
+const emptyStyle = css({
+  color: dark,
+  fontStyle: "italic",
 });
 
 const imageStyle = css({
@@ -43,15 +49,16 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
     enabled: !!word,
   });
 
+  const { synonyms, definition, link, image } = simplification || {};
+
   return (
     <Flex dir="col" gap="small">
       {/* top */}
-      <Flex hAlign="space" wrap={false}>
+      <Flex hAlign="space" gap="small">
         <h4>Simplify &quot;{word}&quot;</h4>
         <Button
           text={ignored ? "Remove from ignore list" : "Add to ignore list"}
           icon={ignored ? <FaTimes /> : <FaPlus />}
-          fill={false}
           onClick={() => setIgnored?.()}
         />
       </Flex>
@@ -61,20 +68,24 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
         {simplification && (
           <Flex dir="col" hAlign="left" gap="small">
             <strong>Synonyms:</strong>
-            <div>
-              {simplification.synonyms.join(", ") || "No synonyms found"}
-            </div>
+            {synonyms?.length ? (
+              <div>{synonyms.join(", ")}</div>
+            ) : (
+              <div className={emptyStyle()}>No synonyms found</div>
+            )}
             <strong>Definition:</strong>
-            {simplification.definition
-              ? parse(String(simplification.definition))
-              : "Definition not found"}
-            {simplification.link && (
-              <a href={simplification.link} target="_blank" rel="noreferrer">
+            {definition ? (
+              parse(String(definition))
+            ) : (
+              <div className={emptyStyle()}>Definition not found</div>
+            )}
+            {link && (
+              <a href={link} target="_blank" rel="noreferrer">
                 See more
                 <FaExternalLinkAlt className={iconStyle()} />
               </a>
             )}
-            <img src={simplification.image} className={imageStyle()} alt="" />
+            {image && <img src={image} className={imageStyle()} alt="" />}
           </Flex>
         )}
 

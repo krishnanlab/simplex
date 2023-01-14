@@ -2,7 +2,6 @@ import {
   ComponentProps,
   Dispatch,
   SetStateAction,
-  useCallback,
   useContext,
   useEffect,
   useState,
@@ -253,36 +252,27 @@ const ArticlePage = () => {
   });
 
   /** helper func to edit article data state */
-  const editField = useCallback(
-    <T extends keyof Article>(key: T, value: Article[T]) =>
-      setEditableArticle((editableArticle) => ({
-        ...editableArticle,
-        [key]: value,
-      })),
-    [setEditableArticle]
-  );
+  const editField = <T extends keyof Article>(key: T, value: Article[T]) =>
+    setEditableArticle(() => ({
+      ...editableArticle,
+      [key]: value,
+    }));
 
   /** helper func to add word to ignore list in article data */
-  const addIgnore = useCallback(
-    (text: Article["ignoreWords"][0]) =>
-      setEditableArticle((editableArticle) => ({
-        ...editableArticle,
-        ignoreWords: [...editableArticle.ignoreWords, text.toLowerCase()],
-      })),
-    [setEditableArticle]
-  );
+  const addIgnore = (text: Article["ignoreWords"][0]) =>
+    setEditableArticle(() => ({
+      ...editableArticle,
+      ignoreWords: [...editableArticle.ignoreWords, text.toLowerCase()],
+    }));
 
   /** helper func to remove word from ignore list in article data */
-  const removeIgnore = useCallback(
-    (text: Article["ignoreWords"][0]) =>
-      setEditableArticle((editableArticle) => ({
-        ...editableArticle,
-        ignoreWords: editableArticle.ignoreWords.filter(
-          (word) => word.toLowerCase() !== text.toLowerCase()
-        ),
-      })),
-    [setEditableArticle]
-  );
+  const removeIgnore = (text: Article["ignoreWords"][0]) =>
+    setEditableArticle(() => ({
+      ...editableArticle,
+      ignoreWords: editableArticle.ignoreWords.filter(
+        (word) => word.toLowerCase() !== text.toLowerCase()
+      ),
+    }));
 
   /** options to show in revisions dropdown select */
   const revisionOptions: ComponentProps<typeof Select>["options"] = revisions

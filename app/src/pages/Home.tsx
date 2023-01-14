@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "react-use";
+import Balancer from "react-wrap-balancer";
 import { css } from "@stitches/react";
 import Citation from "@/components/Citation";
 import Flex from "@/components/Flex";
@@ -10,8 +11,10 @@ import { big } from "@/global/palette";
 import Article from "@/pages/Article";
 
 const heroStyle = css({
-  ...big,
+  display: "block !important",
+  margin: "0 auto",
   textAlign: "center",
+  ...big,
 });
 
 /** homepage of app */
@@ -36,7 +39,9 @@ const Home = () => {
       <Meta title="" />
 
       <Section fill="deep">
-        <p className={heroStyle()}>{import.meta.env.VITE_DESCRIPTION}</p>
+        <Balancer className={heroStyle()}>
+          {import.meta.env.VITE_DESCRIPTION}
+        </Balancer>
       </Section>
 
       <Article />
