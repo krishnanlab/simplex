@@ -19,6 +19,7 @@ export const request = async <T>(
 
   console.groupCollapsed("📞 Request", url);
   console.info(request);
+  console.info(options.body);
   console.groupEnd();
 
   /** perform request */

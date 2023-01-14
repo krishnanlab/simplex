@@ -13,6 +13,7 @@ export const getCurrentUser = async () => {
 
 type Signup = AuthorWrite & {
   password: string;
+  remember: boolean;
 };
 
 /** sign up for account */

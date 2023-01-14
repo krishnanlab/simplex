@@ -87,7 +87,7 @@ const setOptions = async (userInputs: Array<string>) => {
       ...zxcvbnEnPackage.default.dictionary,
       userInputs,
     },
-    graphs: zxcvbnCommonPackage.adjacencyGraphs,
+    graphs: zxcvbnCommonPackage.default.adjacencyGraphs,
     translations: zxcvbnEnPackage.default.translations,
   };
 

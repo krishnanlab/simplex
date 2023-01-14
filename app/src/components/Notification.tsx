@@ -73,7 +73,7 @@ export const notification = async (
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
-  await sleep();
+  await sleep(100);
   window.scrollTo(0, 0);
 };
 

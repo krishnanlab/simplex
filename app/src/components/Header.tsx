@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { MouseEventHandler, useContext, useState } from "react";
 import { FaBars, FaTimes } from "react-icons/fa";
 import { useLocation } from "react-router";
 import { Link } from "react-router-dom";
@@ -91,16 +91,14 @@ const Header = () => {
     },
   });
 
+  const onHover: MouseEventHandler<SVGSVGElement> = (event) =>
+    restartAnimations(event.target as Element);
+
   return (
     <header className={classNames([headerStyle(), wrapHeader()])}>
       <div className={titleStyle()}>
         {/* title/logo */}
-        <Logo
-          className={logoStyle()}
-          onMouseEnter={(event: Event) =>
-            restartAnimations(event.target as Element)
-          }
-        />
+        <Logo className={logoStyle()} onMouseEnter={onHover} />
         <Link className={homeStyle()} to="/">
           <h1>Simplex</h1>
         </Link>

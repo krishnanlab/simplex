@@ -1,3 +1,4 @@
+import { capitalize } from "lodash";
 import { AuthorPublic } from "@/global/types";
 
 /** MAKE SURE THIS MATCHES BACKEND EXACTLY FOR CONSISTENCY */
@@ -67,7 +68,10 @@ export const prettyError = (errors: unknown) =>
     .map((error: unknown) => {
       if (typeof error === "object" && error !== null)
         // @ts-expect-error TS not smart enough to realize error props will be safely filtered out
-        return [error.attr, error.detail].filter(Boolean).join(": ");
+        return [error.attr, error.detail]
+          .map(capitalize)
+          .filter(Boolean)
+          .join(": ");
       else return error;
     })
     .join("\n");

@@ -119,7 +119,7 @@ export const handlers = [
     let match = articles.find((article) => article.id === id);
     if (match) {
       match = { ...match };
-      match.revision = Number(revision);
+      match.revision = String(revision);
       const date = revisions.find((r) => r.revision === Number(revision))?.date;
       if (date) match.date = date;
       match.text = match.text.slice(0, Number(revision) * 10);

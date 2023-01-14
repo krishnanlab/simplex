@@ -43,7 +43,15 @@ const SignUp = () => {
   /** when signup form submitted */
   const onSignup = useCallback(
     async (data: FormValues) => {
-      const { name, email, institution, password, confirm, newsletter } = data;
+      const {
+        name,
+        email,
+        institution,
+        password,
+        confirm,
+        newsletter,
+        remember,
+      } = data;
       if (confirm !== password) {
         window.alert("Passwords do not match.");
         return;
@@ -54,6 +62,7 @@ const SignUp = () => {
         institution,
         newsletter: !!newsletter,
         password,
+        remember: Boolean(remember),
       });
     },
     [signupMutate]
@@ -116,7 +125,7 @@ const SignUp = () => {
             form="signup"
           />
         </Grid>
-        <Flex dir="col">
+        <Flex dir="col" gap="small">
           <Flex gap="small">
             <Checkbox
               name="newsletter"
@@ -126,6 +135,12 @@ const SignUp = () => {
             />
             <Help tooltip="We promise only infrequent, meaningful updates!" />
           </Flex>
+          <Checkbox
+            name="remember"
+            label="Keep me logged in"
+            defaultChecked={false}
+            form="signup"
+          />
           <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
         </Flex>
 
