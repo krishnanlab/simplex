@@ -344,20 +344,24 @@ const CollectionPage = () => {
       </Flex>
 
       {/* action statuses */}
-      {saveLoading && <Notification type="loading" text="Saving collection" />}
+      {saveLoading && (
+        <Notification type="loading" text="Saving collection" scroll={true} />
+      )}
       {saveError && (
         <Notification
           type="error"
           text={["Error saving collection", saveErrorMessage]}
+          scroll={true}
         />
       )}
       {trashLoading && (
-        <Notification type="loading" text="Deleting collection" />
+        <Notification type="loading" text="Deleting collection" scroll={true} />
       )}
       {trashError && (
         <Notification
           type="error"
           text={["Error deleting collection", trashErrorMessage]}
+          scroll={true}
         />
       )}
 

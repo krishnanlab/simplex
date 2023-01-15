@@ -7,6 +7,7 @@ import Button from "@/components/Button";
 import Flex from "@/components/Flex";
 import Notification from "@/components/Notification";
 import { dark } from "@/global/palette";
+import { useScrollMask } from "@/util/hooks";
 
 type Props = {
   /** word to simplified */
@@ -49,6 +50,8 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
     enabled: !!word,
   });
 
+  const { ref, style } = useScrollMask<HTMLDivElement>();
+
   const { synonyms, definition, link, image } = simplification || {};
 
   return (
@@ -63,7 +66,7 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
         />
       </Flex>
 
-      <div className={contentStyle()}>
+      <div ref={ref} className={contentStyle()} style={style}>
         {/* content */}
         {simplification && (
           <Flex dir="col" hAlign="left" gap="small">

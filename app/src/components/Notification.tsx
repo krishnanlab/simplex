@@ -15,6 +15,8 @@ type Props = {
   type: "loading" | "error" | "success";
   /** text to show */
   text: string | Array<unknown>;
+  /** whether to scroll notification into view */
+  scroll?: boolean;
   children?: ReactNode;
 };
 
@@ -38,11 +40,17 @@ const notificationStyle = css({
 });
 
 /** notification for status with icon and text */
-const Notification = ({ type, text, children }: Props) => {
+const Notification = ({ type, text, scroll = false, children }: Props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    ref.current?.scrollIntoView();
+    if (!scroll) return;
+    const timer = window.setTimeout(
+      () =>
+        ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
+      500
+    );
+    return () => window.clearTimeout(timer);
   });
 
   return (
@@ -73,8 +81,8 @@ export const notification = async (
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
-  await sleep(100);
-  window.scrollTo(0, 0);
+  await sleep(500);
+  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
 };
 
 /** global singleton notification at top of page */

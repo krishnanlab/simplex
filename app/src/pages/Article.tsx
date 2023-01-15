@@ -571,7 +571,7 @@ const ArticlePage = () => {
           <Share
             heading="Share Article"
             field="URL to this article"
-            help="With currently selected options (revision, audience, highlights)"
+            help="With currently selected options (revision, audience, highlights)."
           />
         )}
         {mode === "edit" && (
@@ -591,18 +591,24 @@ const ArticlePage = () => {
       </Flex>
 
       {/* action statuses */}
-      {saveLoading && <Notification type="loading" text="Saving article" />}
+      {saveLoading && (
+        <Notification type="loading" text="Saving article" scroll={true} />
+      )}
       {saveError && (
         <Notification
           type="error"
           text={["Error saving article", saveErrorMessage]}
+          scroll={true}
         />
       )}
-      {trashLoading && <Notification type="loading" text="Deleting article" />}
+      {trashLoading && (
+        <Notification type="loading" text="Deleting article" scroll={true} />
+      )}
       {trashError && (
         <Notification
           type="error"
           text={["Error deleting article", trashErrorMessage]}
+          scroll={true}
         />
       )}
 

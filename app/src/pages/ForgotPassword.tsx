@@ -68,9 +68,7 @@ const ForgotPassword = () => {
       {resetError && (
         <Notification
           type="error"
-          text={["Error requesting password reset", resetErrorMessage]
-            .filter(Boolean)
-            .join("\n")}
+          text={["Error requesting password reset", resetErrorMessage]}
         />
       )}
 
