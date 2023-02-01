@@ -69,14 +69,14 @@ const ResetPassword = () => {
           name="password"
           type="password"
           placeholder="**********"
-          form="change-password"
+          form="reset"
         />
         <Field
           label="Confirm New Password"
           name="confirm"
           type="password"
           placeholder="**********"
-          form="change-password"
+          form="reset"
         />
       </Grid>
       <Flex>

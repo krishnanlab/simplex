@@ -76,7 +76,7 @@ type ResetPassword = {
 
 /** submit password reset */
 export const resetPassword = (props: ResetPassword) =>
-  request<undefined>("/forgot-password", {
+  request<undefined>("/reset-password", {
     method: "POST",
     body: JSON.stringify(props),
   });

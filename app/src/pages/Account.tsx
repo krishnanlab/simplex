@@ -119,7 +119,7 @@ const Account = () => {
               name="newsletter"
               label="Subscribe to our newsletter"
               defaultChecked={currentUser?.newsletter}
-              form="signup"
+              form="save-info"
             />
             <Help tooltip="We promise only infrequent, meaningful updates!" />
           </Flex>
