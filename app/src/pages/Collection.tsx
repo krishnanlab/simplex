@@ -107,7 +107,7 @@ const CollectionPage = () => {
   });
 
   /** clear query cache */
-  const clearQueries = () => {
+  const clearCache = () => {
     queryClient.removeQueries({ queryKey: ["getCollection", id] });
     queryClient.removeQueries({ queryKey: ["getArticles"] });
     queryClient.removeQueries({
@@ -130,9 +130,9 @@ const CollectionPage = () => {
         ? saveCollection(editableCollection, id)
         : saveNewCollection(editableCollection),
     onSuccess: async (data) => {
+      clearCache();
       if (data?.id) await navigate("/collection/" + data.id);
       notification("success", `Saved collection "${editableCollection.title}"`);
-      clearQueries();
     },
   });
 
@@ -149,12 +149,12 @@ const CollectionPage = () => {
       await deleteCollection(id);
     },
     onSuccess: async () => {
+      clearCache();
       await navigate("/my-articles");
       notification(
         "success",
         `Deleted collection "${editableCollection.title}"`
       );
-      clearQueries();
     },
   });
 

@@ -101,12 +101,11 @@ const ArticlePage = () => {
   const [analysis, setAnalysis] = useState<Analysis>(blankAnalysis);
 
   /** editable article state */
-  const [editableArticle, setEditableArticle, removeArticleStorage] =
-    useLocalStorage<Article>("article-" + location.pathname, blankArticle) as [
-      Article,
-      Dispatch<SetStateAction<Article>>,
-      () => void
-    ];
+  const [
+    editableArticle = blankArticle,
+    setEditableArticle,
+    removeArticleStorage,
+  ] = useLocalStorage<Article>("article-" + location.pathname, blankArticle);
 
   /** selected revision of article */
   const [revision, setRevision] = useQueryParam<number>(
@@ -202,7 +201,7 @@ const ArticlePage = () => {
   });
 
   /** clear query cache */
-  const clearQueries = () => {
+  const clearCache = () => {
     queryClient.removeQueries({ queryKey: ["getRevisions", id] });
     queryClient.removeQueries({ queryKey: ["getArticle", id] });
     queryClient.removeQueries({ queryKey: ["getLatestArticle", id] });
@@ -225,10 +224,10 @@ const ArticlePage = () => {
     mutationFn: () =>
       id ? saveArticle(editableArticle, id) : saveNewArticle(editableArticle),
     onSuccess: async (data) => {
+      clearCache();
       removeArticleStorage();
       if (data?.id) await navigate("/article/" + data.id);
       notification("success", `Saved article "${editableArticle.title}"`);
-      clearQueries();
     },
   });
 
@@ -245,9 +244,9 @@ const ArticlePage = () => {
       await deleteArticle(id);
     },
     onSuccess: async () => {
+      clearCache();
       await navigate("/my-articles");
       notification("success", `Deleted article "${editableArticle.title}"`);
-      clearQueries();
     },
   });
 
