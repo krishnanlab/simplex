@@ -1,11 +1,4 @@
-import {
-  ComponentProps,
-  Dispatch,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { ComponentProps, useContext, useEffect, useState } from "react";
 import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
