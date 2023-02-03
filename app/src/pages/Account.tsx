@@ -36,11 +36,11 @@ const Account = () => {
   } = useMutation({
     mutationFn: saveInfo,
     onSuccess: async (data) => {
-      setCurrentUser(data);
-      notification("success", "Saved info");
       queryClient.removeQueries({
         queryKey: ["getAuthor", currentUser?.id],
       });
+      setCurrentUser(data);
+      notification("success", "Saved info");
     },
   });
 
