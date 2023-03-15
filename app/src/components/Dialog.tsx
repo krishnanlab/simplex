@@ -57,7 +57,11 @@ const headingStyle = css({
 export const Dialog = ({ trigger, content, heading }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const { reference, floating, context } = useFloating({
+  const {
+    reference: ref,
+    floating,
+    context,
+  } = useFloating({
     open,
     onOpenChange: setOpen,
   });
@@ -73,10 +77,7 @@ export const Dialog = ({ trigger, content, heading }: Props) => {
   return (
     <>
       {/* reference */}
-      {cloneElement(
-        trigger,
-        getReferenceProps({ reference, ...trigger.props })
-      )}
+      {cloneElement(trigger, getReferenceProps({ ref, ...trigger.props }))}
 
       {/* dialog */}
       <FloatingPortal>

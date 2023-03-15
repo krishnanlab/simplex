@@ -12,6 +12,7 @@ import Meta from "@/components/Meta";
 import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 
 /** reset password page */
 const ResetPassword = () => {
@@ -19,13 +20,14 @@ const ResetPassword = () => {
   const [params] = useSearchParams();
 
   /** mutation for resetting password */
-  const { mutate: resetMutate } = useMutation({
+  const { mutate: resetMutate, isLoading: resetLoading } = useMutation({
     mutationFn: resetPassword,
     onMutate: () => notification("loading", "Resetting password"),
     onSuccess: async () => {
       notification("success", "Reset password");
       await sleep(1000);
       await navigate("/login");
+      scrollToTop();
     },
     onError: () => notification("error", "Error resetting password"),
   });
@@ -79,7 +81,12 @@ const ResetPassword = () => {
         />
       </Grid>
       <Flex>
-        <Button text="Reset Password" icon={<FaLock />} form="reset" />
+        <Button
+          text="Reset Password"
+          icon={<FaLock />}
+          disabled={resetLoading}
+          form="reset"
+        />
       </Flex>
 
       <Form id="reset" onSubmit={onReset} />

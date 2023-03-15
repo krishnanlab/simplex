@@ -51,7 +51,7 @@ const Home = () => {
           <h2>Anonymous Articles</h2>
 
           <p className="center">
-            Articles created on this device while not logged in.
+            Articles created on this device while not logged in:
           </p>
 
           <Flex gap="small">

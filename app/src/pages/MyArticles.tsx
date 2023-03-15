@@ -1,7 +1,6 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { FaPlus, FaRegTrashAlt, FaShareAlt } from "react-icons/fa";
 import { useNavigate } from "react-router";
-import { useEvent } from "react-use";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { deleteArticle, getUserArticles } from "@/api/article";
 import { deleteCollection, getUserCollections } from "@/api/collection";
@@ -15,6 +14,7 @@ import Section from "@/components/Section";
 import Share from "@/components/Share";
 import { State } from "@/global/state";
 import { ArticleSummary, CollectionSummary } from "@/global/types";
+import { scrollToTop } from "@/util/dom";
 
 /** logged-in user's page of articles and collections */
 const MyArticles = () => {
@@ -23,8 +23,11 @@ const MyArticles = () => {
   const queryClient = useQueryClient();
 
   /** redirect if not logged in */
-  useEvent("current-user", () => {
-    if (!currentUser) navigate("/login");
+  useEffect(() => {
+    if (currentUser === null) {
+      navigate("/login");
+      scrollToTop();
+    }
   });
 
   /** query for user's articles */
@@ -51,23 +54,27 @@ const MyArticles = () => {
 
   const clearCache = () => {
     queryClient.removeQueries({
+      queryKey: ["getUserArticles", currentUser?.id],
+    });
+    queryClient.removeQueries({
       queryKey: ["getUserCollections", currentUser?.id],
     });
   };
 
   /** mutation for deleting article */
-  const { mutate: trashArticle, isLoading: trashArticleLoading } = useMutation({
-    mutationFn: async (article: ArticleSummary) => deleteArticle(article.id),
-    onMutate: () => notification("loading", "Deleting article"),
-    onSuccess: async (_, article) => {
-      notification("success", `Deleted article "${article.title}"`);
-      clearCache();
-    },
-    onError: () => notification("error", "Error deleting article"),
-  });
+  const { mutate: deleteArticleMutate, isLoading: deleteArticleLoading } =
+    useMutation({
+      mutationFn: async (article: ArticleSummary) => deleteArticle(article.id),
+      onMutate: () => notification("loading", "Deleting article"),
+      onSuccess: async (_, article) => {
+        notification("success", `Deleted article "${article.title}"`);
+        clearCache();
+      },
+      onError: () => notification("error", "Error deleting article"),
+    });
 
   /** mutation for deleting collection */
-  const { mutate: trashCollection, isLoading: trashCollectionLoading } =
+  const { mutate: deleteCollectionMutate, isLoading: deleteCollectionLoading } =
     useMutation({
       mutationFn: async (collection: CollectionSummary) =>
         deleteCollection(collection.id),
@@ -121,14 +128,14 @@ const MyArticles = () => {
                     key={1}
                     icon={<FaRegTrashAlt />}
                     fill={false}
-                    disabled={trashArticleLoading}
+                    disabled={deleteArticleLoading}
                     onClick={() => {
                       if (
                         window.confirm(
                           `Are you sure you want to delete this article?\n\n"${article.title}"`
                         )
                       )
-                        trashArticle(article);
+                        deleteArticleMutate(article);
                     }}
                     tooltip="Delete article"
                   />,
@@ -183,14 +190,14 @@ const MyArticles = () => {
                     key={1}
                     icon={<FaRegTrashAlt />}
                     fill={false}
-                    disabled={trashCollectionLoading}
+                    disabled={deleteCollectionLoading}
                     onClick={() => {
                       if (
                         window.confirm(
                           `Are you sure you want to delete this collection?\n\n"${collection.title}"`
                         )
                       )
-                        trashCollection(collection);
+                        deleteCollectionMutate(collection);
                     }}
                     tooltip="Delete article"
                   />,

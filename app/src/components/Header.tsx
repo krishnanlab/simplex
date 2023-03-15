@@ -72,7 +72,7 @@ const Header = () => {
   const homepage = location.pathname === "/";
 
   /** point where header collapses into menu */
-  const menuBreakpoint = currentUser ? "920px" : "640px";
+  const menuBreakpoint = currentUser ? "1000px" : "640px";
 
   /** styles from breakpoint */
   const wrapHeader = css({

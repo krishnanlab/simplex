@@ -1,7 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { forgotPassword } from "@/api/account";
 import Button from "@/components/Button";
@@ -12,7 +11,7 @@ import Meta from "@/components/Meta";
 import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
-import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 
 /** forgot password page */
 const ForgotPassword = () => {
@@ -20,18 +19,22 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEvent("current-user", () => {
-    if (currentUser) navigate("/");
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+      scrollToTop();
+    }
   });
 
   /** mutation for requesting reset */
-  const { mutate: resetMutate } = useMutation({
+  const { mutate: resetMutate, isLoading: forgotLoading } = useMutation({
     mutationFn: forgotPassword,
     onMutate: () => notification("loading", "Requesting password reset"),
     onSuccess: async () => {
-      notification("success", "Sent password reset email");
-      await sleep(1000);
-      await navigate("/");
+      notification(
+        "success",
+        "If your account is in our system, you should receive a password reset email soon."
+      );
     },
     onError: () => notification("error", "Error requesting password reset"),
   });
@@ -57,7 +60,12 @@ const ForgotPassword = () => {
         form="forgot"
       />
       <Flex>
-        <Button text="Request Reset" icon={<FaLock />} form="forgot" />
+        <Button
+          text="Request Reset"
+          icon={<FaLock />}
+          disabled={forgotLoading}
+          form="forgot"
+        />
       </Flex>
 
       <Form id="forgot" onSubmit={onReset} />

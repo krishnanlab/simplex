@@ -32,6 +32,7 @@ import Stat from "@/components/Stat";
 import { State } from "@/global/state";
 import { blankAuthor, blankCollection, Collection } from "@/global/types";
 import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 import { authorString } from "@/util/string";
 
 /** new/edit/view page for collection */
@@ -64,7 +65,10 @@ const CollectionPage = () => {
 
   /** anonymous collections not supported, so redirect */
   useEffect(() => {
-    if (mode === "anon") navigate("/");
+    if (mode === "anon") {
+      navigate("/");
+      scrollToTop();
+    }
   });
 
   /** heading and title text */
@@ -143,7 +147,7 @@ const CollectionPage = () => {
   });
 
   /** mutation for deleting collection */
-  const { mutate: trash, isLoading: trashLoading } = useMutation({
+  const { mutate: deleteMutate, isLoading: deleteLoading } = useMutation({
     mutationFn: async () => deleteCollection(id),
     onMutate: () => notification("loading", "Deleting collection"),
     onSuccess: async () => {
@@ -154,6 +158,7 @@ const CollectionPage = () => {
       await sleep(1000);
       clearCache();
       await navigate("/my-articles");
+      scrollToTop();
     },
     onError: () => notification("error", "Error deleting collection"),
   });
@@ -336,7 +341,7 @@ const CollectionPage = () => {
           <Button
             text="Save"
             icon={<FaRegSave />}
-            disabled={saveLoading || trashLoading}
+            disabled={saveLoading || deleteLoading}
             type="submit"
             form="collection-form"
           />
@@ -356,7 +361,7 @@ const CollectionPage = () => {
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
-            disabled={saveLoading || trashLoading}
+            disabled={saveLoading || deleteLoading}
             onClick={() => {
               if (
                 window.confirm(
@@ -364,7 +369,7 @@ const CollectionPage = () => {
                 )
               )
                 return;
-              trash();
+              deleteMutate();
             }}
           />
         )}

@@ -1,7 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { FaLock, FaRegSave } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useEvent } from "react-use";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { changePassword, saveInfo } from "@/api/account";
 import Button from "@/components/Button";
@@ -15,16 +14,21 @@ import Meta from "@/components/Meta";
 import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 
 /** logged-in user's account page */
 const Account = () => {
-  const { currentUser, setCurrentUser } = useContext(State);
+  const { currentUser, refreshCurrentUser } = useContext(State);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   /** redirect if not logged in */
-  useEvent("current-user", () => {
-    if (!currentUser) navigate("/login");
+  useEffect(() => {
+    if (currentUser === null) {
+      navigate("/login");
+      scrollToTop();
+    }
   });
 
   /** mutation for saving info */
@@ -33,12 +37,13 @@ const Account = () => {
       notification("loading", "Saving info");
       return saveInfo(...params);
     },
-    onSuccess: async (data) => {
+    onSuccess: async () => {
       queryClient.removeQueries({
         queryKey: ["getAuthor", currentUser?.id],
       });
-      setCurrentUser(data);
       notification("success", "Saved info");
+      await sleep(1000);
+      refreshCurrentUser();
     },
     onError: (error) => notification("error", ["Error saving info", error]),
   });

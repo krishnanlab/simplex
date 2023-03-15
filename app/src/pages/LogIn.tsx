@@ -1,7 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { FaSignInAlt } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { login } from "@/api/account";
 import Button from "@/components/Button";
@@ -14,14 +13,15 @@ import Meta from "@/components/Meta";
 import { clearNotification, notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import { scrollToTop } from "@/util/dom";
 
 /** login page */
 const LogIn = () => {
-  const { currentUser, setCurrentUser } = useContext(State);
+  const { currentUser, refreshCurrentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEvent("current-user", () => {
+  useEffect(() => {
     if (currentUser) navigate("/");
   });
 
@@ -29,12 +29,13 @@ const LogIn = () => {
   const { mutate: loginMutate } = useMutation({
     mutationFn: login,
     onMutate: () => notification("loading", "Logging in"),
-    onSuccess: async (data) => {
-      setCurrentUser(data);
+    onSuccess: async () => {
       clearNotification();
       await navigate("/");
+      scrollToTop();
+      refreshCurrentUser();
     },
-    onError: (error) => notification("loading", ["Error logging in", error]),
+    onError: (error) => notification("error", ["Error logging in", error]),
   });
 
   /** when login form submitted */

@@ -36,10 +36,7 @@ import Form from "@/components/Form";
 import Grid from "@/components/Grid";
 import Help from "@/components/Help";
 import Meta from "@/components/Meta";
-import Status, {
-  clearNotification,
-  notification,
-} from "@/components/Notification";
+import Status, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
 import Share from "@/components/Share";
@@ -56,6 +53,7 @@ import {
   blankAuthor,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 import { setStorage } from "@/util/storage";
 import { authorString, dateString, shortenUrl } from "@/util/string";
 
@@ -218,7 +216,7 @@ const ArticlePage = () => {
   });
 
   /** mutation for deleting article */
-  const { mutate: trash, isLoading: trashLoading } = useMutation({
+  const { mutate: deleteMutate, isLoading: deleteLoading } = useMutation({
     mutationFn: async () => deleteArticle(id),
     onMutate: () => notification("loading", "Deleting article"),
     onSuccess: async () => {
@@ -226,6 +224,7 @@ const ArticlePage = () => {
       await sleep(1000);
       clearCache();
       await navigate("/my-articles");
+      scrollToTop();
     },
     onError: () => notification("error", "Error deleting article"),
   });
@@ -279,16 +278,9 @@ const ArticlePage = () => {
       notification("loading", "Analyzing");
       return analyze(...analysisParams);
     },
-    onSuccess: clearNotification,
-    onError: () => notification("error", "Error analyzing"),
+    enabled: !!analysisParams[0].trim(),
+    /** see global callbacks in QueryCache */
   });
-
-  /** useQuery callbacks won't run if unmounted */
-  useEffect(() => {
-    return () => {
-      clearNotification();
-    };
-  }, []);
 
   /** initialize editable article from latest revision */
   useEffect(() => {
@@ -406,6 +398,7 @@ const ArticlePage = () => {
                 )
               }
             />
+            <Help tooltip="Snapshots of this article's text/title/etc. over time." />
           </Flex>
         )}
         <Flex display="inline" hAlign="left">
@@ -523,7 +516,7 @@ const ArticlePage = () => {
             <Button
               text="Save"
               icon={<FaRegSave />}
-              disabled={saveLoading || trashLoading}
+              disabled={saveLoading || deleteLoading}
               type="submit"
               form="article-form"
             />
@@ -563,12 +556,12 @@ const ArticlePage = () => {
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
-            disabled={saveLoading || trashLoading}
+            disabled={saveLoading || deleteLoading}
             onClick={() => {
               if (
                 window.confirm("Are you sure you want to delete this article?")
               )
-                trash();
+                deleteMutate();
             }}
           />
         )}
@@ -579,13 +572,14 @@ const ArticlePage = () => {
             <Button
               text="Copy to new"
               icon={<FaCopy />}
-              disabled={saveLoading || trashLoading}
-              onClick={() => {
+              disabled={saveLoading || deleteLoading}
+              onClick={async () => {
                 setStorage("article-/", loadedArticle);
-                navigate("/");
+                await navigate("/");
+                scrollToTop();
               }}
             />
-            <Help tooltip="You can't directly edit this article, but you can start a new article from its content." />
+            <Help tooltip="You can't directly edit this article, but you can copy its content into a new article." />
           </Flex>
         )}
       </Flex>

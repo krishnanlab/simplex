@@ -6,6 +6,7 @@ import Notification, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 
 /** logout page */
 const LogOut = () => {
@@ -25,6 +26,7 @@ const LogOut = () => {
       await sleep(1000);
       clearCurrentUser();
       await navigate("/");
+      scrollToTop();
     },
   });
 
