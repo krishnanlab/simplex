@@ -1,5 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { FaPlus, FaRegSave, FaRegTrashAlt, FaTimes } from "react-icons/fa";
+import {
+  FaPlus,
+  FaRegSave,
+  FaRegTrashAlt,
+  FaShareAlt,
+  FaTimes,
+} from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { capitalize } from "lodash";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -138,11 +144,7 @@ const CollectionPage = () => {
 
   /** mutation for deleting collection */
   const { mutate: trash, isLoading: trashLoading } = useMutation({
-    mutationFn: async () => {
-      if (!window.confirm("Are you sure you want to delete this collection?"))
-        return;
-      await deleteCollection(id);
-    },
+    mutationFn: async () => deleteCollection(id),
     onMutate: () => notification("loading", "Deleting collection"),
     onSuccess: async () => {
       notification(
@@ -281,10 +283,15 @@ const CollectionPage = () => {
                 key={index}
                 article={article}
                 editable={true}
-                action={{
-                  icon: <FaTimes />,
-                  onClick: () => removeArticle(article.id),
-                }}
+                actions={[
+                  <Button
+                    key={0}
+                    fill={false}
+                    icon={<FaTimes />}
+                    onClick={() => removeArticle(article.id)}
+                    tooltip="Remove article from collection"
+                  />,
+                ]}
               />
             ))}
           </Grid>
@@ -295,10 +302,15 @@ const CollectionPage = () => {
                 key={index}
                 article={article}
                 editable={true}
-                action={{
-                  icon: <FaPlus />,
-                  onClick: () => addArticle(article.id),
-                }}
+                actions={[
+                  <Button
+                    key={0}
+                    fill={false}
+                    icon={<FaPlus />}
+                    onClick={() => addArticle(article.id)}
+                    tooltip="Add article to collection"
+                  />,
+                ]}
               />
             ))}
           </Grid>
@@ -319,6 +331,7 @@ const CollectionPage = () => {
 
       {/* actions */}
       <Flex>
+        {/* save */}
         {mode !== "view" && (
           <Button
             text="Save"
@@ -328,15 +341,31 @@ const CollectionPage = () => {
             form="collection-form"
           />
         )}
+
+        {/* share */}
         {mode !== "new" && (
-          <Share type="collection" title={loadedCollection.title} />
+          <Share
+            trigger={<Button text="Share" icon={<FaShareAlt />} />}
+            type="collection"
+            title={loadedCollection.title}
+          />
         )}
+
+        {/* delete */}
         {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
             disabled={saveLoading || trashLoading}
-            onClick={() => trash()}
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Are you sure you want to delete this collection?"
+                )
+              )
+                return;
+              trash();
+            }}
           />
         )}
       </Flex>

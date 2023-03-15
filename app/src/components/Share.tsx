@@ -1,25 +1,29 @@
-import { useCallback, useState } from "react";
-import { FaMastodon, FaShareAlt, FaTwitter } from "react-icons/fa";
+import { MouseEventHandler, ReactElement, useCallback } from "react";
+import { FaMastodon, FaTwitter } from "react-icons/fa";
+import { capitalize, truncate } from "lodash";
 import Button from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
-import { capitalize, truncate } from "lodash";
 import { notification } from "@/components/Notification";
 
 type Props = {
+  /** element that triggers dialog */
+  trigger: ReactElement;
   /** article or collection */
   type: string;
   /** title of article or collection */
   title: string;
+  /** link to article or collection */
+  link?: string;
   /** question mark text on hover */
   help?: string;
 };
 
-/** share button with dialog HOC */
+/** share dialog HOC */
 const Share = (props: Props) => (
   <Dialog
-    reference={<Button text="Share" icon={<FaShareAlt />} />}
+    trigger={props.trigger}
     content={<Content {...props} />}
     heading={`Share ${capitalize(props.type)}`}
   />
@@ -28,8 +32,9 @@ const Share = (props: Props) => (
 export default Share;
 
 /** dialog content */
-const Content = ({ type, title, help }: Omit<Props, "heading">) => {
-  const [link, setLink] = useState(window.location.href);
+const Content = ({ type, title, link, help }: Omit<Props, "heading">) => {
+  /** fallback to current tab url */
+  link ??= window.location.href;
 
   const message = `
 ✍️ Check out this ${type} on Simplex, an app for simplifying scientific and medical writing:
@@ -40,17 +45,15 @@ ${link}
 #simplex #simple #writing #${type}
 `.trim();
 
-  /** copy link to clipboard */
-  const copyLink = useCallback(async () => {
-    await window.navigator.clipboard.writeText(link);
-    notification("success", "Copied link to clipboard");
-  }, [link]);
-
-  /** copy message to clipboard */
-  const copyMessage = useCallback(async () => {
-    await window.navigator.clipboard.writeText(message);
-    notification("success", "Copied message to clipboard");
-  }, [message]);
+  /** copy input contents to clipboard */
+  const copy = useCallback<
+    MouseEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  >((event) => {
+    const target = event.target as HTMLInputElement;
+    window.navigator.clipboard
+      .writeText(target.value)
+      .then(() => notification("success", "Copied to clipboard"));
+  }, []);
 
   return (
     <Flex dir="col" hAlign="stretch">
@@ -59,15 +62,14 @@ ${link}
         help={help}
         optional={true}
         value={link}
-        onChange={setLink}
-        onClick={copyLink}
+        onClick={copy}
       />
       <Field
         label={`Message about this ${type}`}
         optional={true}
         multi={true}
         value={message}
-        onClick={copyMessage}
+        onClick={copy}
       />
       <Flex gap="small">
         <Button

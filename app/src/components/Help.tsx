@@ -18,7 +18,7 @@ const helpStyle = css({
 const Help = ({ tooltip }: Props) => (
   <Tooltip
     reference={
-      <button className={helpStyle()} aria-label="Help">
+      <button className={helpStyle()}>
         <FaRegQuestionCircle />
       </button>
     }

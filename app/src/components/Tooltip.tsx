@@ -20,7 +20,7 @@ import { css } from "@stitches/react";
 import { rounded, shadow, white } from "@/global/palette";
 
 type Props = {
-  /** element that triggers tooltip */
+  /** base/anchor element of tooltip */
   reference: ReactElement;
   /** content in opened tooltip */
   content: ReactNode;

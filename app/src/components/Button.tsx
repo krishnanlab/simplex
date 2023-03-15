@@ -1,6 +1,7 @@
 import { ButtonHTMLAttributes, forwardRef, ReactNode, Ref } from "react";
 import { Link, LinkProps, To } from "react-router-dom";
 import { css } from "@stitches/react";
+import Tooltip from "@/components/Tooltip";
 import {
   accent,
   black,
@@ -11,7 +12,6 @@ import {
   white,
 } from "@/global/palette";
 import { classNames } from "@/util/string";
-import { isExternal } from "util/types";
 
 type Props = {
   /** location when link */
@@ -22,6 +22,8 @@ type Props = {
   icon?: ReactNode;
   /** fill design */
   fill?: boolean;
+  /** tooltip content */
+  tooltip?: ReactNode;
 } & Partial<ButtonHTMLAttributes<HTMLButtonElement>> &
   Partial<LinkProps>;
 
@@ -73,7 +75,7 @@ const squareStyle = css({
 
 /** button that links somewhere or does something */
 const Button = forwardRef(
-  ({ to, text, icon, fill = true, ...props }: Props, ref) => {
+  ({ to, text, icon, fill = true, tooltip, ...props }: Props, ref) => {
     /** inner text and icon  */
     const content = (
       <>
@@ -88,9 +90,12 @@ const Button = forwardRef(
       icon && !text ? squareStyle() : "",
     ]);
 
+    let element = <></>;
+
+    /** determine element and attributes */
     if (to) {
       if (String(to).startsWith("http"))
-        return (
+        element = (
           <a
             ref={ref as Ref<HTMLAnchorElement>}
             href={String(to)}
@@ -101,7 +106,7 @@ const Button = forwardRef(
           </a>
         );
       else
-        return (
+        element = (
           <Link
             ref={ref as Ref<HTMLAnchorElement>}
             to={to}
@@ -112,7 +117,7 @@ const Button = forwardRef(
           </Link>
         );
     } else
-      return (
+      element = (
         <button
           ref={ref as Ref<HTMLButtonElement>}
           className={className}
@@ -121,6 +126,10 @@ const Button = forwardRef(
           {content}
         </button>
       );
+
+    /** wrap in tooltip */
+    if (tooltip) return <Tooltip reference={element} content={tooltip} />;
+    else return element;
   }
 );
 Button.displayName = "Button";

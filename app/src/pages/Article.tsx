@@ -4,6 +4,7 @@ import {
   FaRegLightbulb,
   FaRegSave,
   FaRegTrashAlt,
+  FaShareAlt,
 } from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
@@ -55,8 +56,8 @@ import {
   blankAuthor,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
-import { authorString, dateString, shortenUrl } from "@/util/string";
 import { setStorage } from "@/util/storage";
+import { authorString, dateString, shortenUrl } from "@/util/string";
 
 /** methods for syncing revision with url param */
 const RevisionParam: QueryParamConfig<number> = {
@@ -218,11 +219,7 @@ const ArticlePage = () => {
 
   /** mutation for deleting article */
   const { mutate: trash, isLoading: trashLoading } = useMutation({
-    mutationFn: async () => {
-      if (!window.confirm("Are you sure you want to delete this article?"))
-        return;
-      await deleteArticle(id);
-    },
+    mutationFn: async () => deleteArticle(id),
     onMutate: () => notification("loading", "Deleting article"),
     onSuccess: async () => {
       notification("success", `Deleted article "${editableArticle.title}"`);
@@ -554,19 +551,25 @@ const ArticlePage = () => {
         {/* share */}
         {mode !== "new" && mode !== "anon" && (
           <Share
+            trigger={<Button text="Share" icon={<FaShareAlt />} />}
             type="article"
             title={loadedArticle.title}
             help="With currently selected revision, audience, and highlights."
           />
         )}
 
-        {/* edit */}
+        {/* delete */}
         {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
             disabled={saveLoading || trashLoading}
-            onClick={() => trash()}
+            onClick={() => {
+              if (
+                window.confirm("Are you sure you want to delete this article?")
+              )
+                trash();
+            }}
           />
         )}
 

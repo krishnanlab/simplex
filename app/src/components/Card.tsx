@@ -14,11 +14,8 @@ type Props = {
   collection?: CollectionSummary;
   /** change design/icons/etc based on whether editable */
   editable?: boolean;
-  /** extra action button */
-  action?: {
-    icon: ReactNode;
-    onClick: () => void;
-  };
+  /** extra action buttons */
+  actions?: Array<ReactNode>;
 };
 
 const cardStyle = css({
@@ -43,7 +40,7 @@ const countStyle = css({
 });
 
 /** card to display article or collection  */
-const Card = ({ article, collection, editable = false, action }: Props) => (
+const Card = ({ article, collection, editable = false, actions }: Props) => (
   <Flex
     dir="col"
     gap="small"
@@ -67,26 +64,27 @@ const Card = ({ article, collection, editable = false, action }: Props) => (
     </div>
 
     {/* actions */}
-    <Flex gap="tiny">
+    <Flex gap="tiny" wrap={false}>
       {/* view/edit button */}
       <Button
         to={
           "/" +
-          (article ? "article" : "collection") +
+          (collection ? "collection" : "article") +
           "/" +
           (article?.id || collection?.id)
         }
         fill={false}
         icon={editable ? <FaEdit /> : <FaEye />}
+        tooltip={`Go to ${collection ? "collection" : "article"} page and ${
+          editable ? "edit" : "view"
+        }`}
       />
       <Ago date={article?.date || collection?.date || ""} />
 
       <Spacer />
 
-      {/* extra action button */}
-      {editable && action && (
-        <Button fill={false} icon={action.icon} onClick={action.onClick} />
-      )}
+      {/* extra action elements */}
+      {editable && actions}
     </Flex>
   </Flex>
 );
