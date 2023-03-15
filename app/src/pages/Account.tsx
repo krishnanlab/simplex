@@ -12,7 +12,7 @@ import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Help from "@/components/Help";
 import Meta from "@/components/Meta";
-import Notification, { notification } from "@/components/Notification";
+import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -28,13 +28,11 @@ const Account = () => {
   });
 
   /** mutation for saving info */
-  const {
-    mutate: saveInfoMutate,
-    isLoading: saveInfoLoading,
-    isError: saveInfoError,
-    error: saveInfoErrorMessage,
-  } = useMutation({
-    mutationFn: saveInfo,
+  const { mutate: saveInfoMutate, isLoading: saveInfoLoading } = useMutation({
+    mutationFn: (...params: Parameters<typeof saveInfo>) => {
+      notification("loading", "Saving info");
+      return saveInfo(...params);
+    },
     onSuccess: async (data) => {
       queryClient.removeQueries({
         queryKey: ["getAuthor", currentUser?.id],
@@ -42,6 +40,7 @@ const Account = () => {
       setCurrentUser(data);
       notification("success", "Saved info");
     },
+    onError: (error) => notification("error", ["Error saving info", error]),
   });
 
   /** when save info form submitted */
@@ -54,17 +53,18 @@ const Account = () => {
   );
 
   /** mutation for changing password */
-  const {
-    mutate: changePasswordMutate,
-    isLoading: changePasswordLoading,
-    isError: changePasswordError,
-    error: changePasswordErrorMessage,
-  } = useMutation({
-    mutationFn: changePassword,
-    onSuccess: async () => {
-      notification("success", "Changed password");
-    },
-  });
+  const { mutate: changePasswordMutate, isLoading: changePasswordLoading } =
+    useMutation({
+      mutationFn: (...params: Parameters<typeof changePassword>) => {
+        notification("loading", "Changing password");
+        return changePassword(...params);
+      },
+      onSuccess: async () => {
+        notification("success", "Changed password");
+      },
+      onError: (error) =>
+        notification("error", ["Error saving password", error]),
+    });
 
   /** when change password form submitted */
   const onChangePassword = useCallback(
@@ -131,15 +131,6 @@ const Account = () => {
           />
         </Flex>
 
-        {/* statuses */}
-        {saveInfoLoading && <Notification type="loading" text="Saving info" />}
-        {saveInfoError && (
-          <Notification
-            type="error"
-            text={["Error saving info", saveInfoErrorMessage]}
-          />
-        )}
-
         <Form id="save-info" onSubmit={onSaveInfo} />
       </Section>
 
@@ -178,17 +169,6 @@ const Account = () => {
             disabled={changePasswordLoading}
           />
         </Flex>
-
-        {/* statuses */}
-        {changePasswordLoading && (
-          <Notification type="loading" text="Changing password" />
-        )}
-        {changePasswordError && (
-          <Notification
-            type="error"
-            text={["Error changing password", changePasswordErrorMessage]}
-          />
-        )}
 
         <Form id="change-password" onSubmit={onChangePassword} />
       </Section>

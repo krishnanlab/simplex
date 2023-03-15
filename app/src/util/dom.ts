@@ -17,9 +17,9 @@ export const restartAnimations = (element: Element): void => {
 
   /** restart forward */
   const delay = Math.max(...animations.map(getAnimationLength)) / reverseSpeed;
-  type ElementWithTimer = Element & { animationTimer: number };
-  window.clearTimeout((element as ElementWithTimer).animationTimer);
-  (element as ElementWithTimer).animationTimer = window.setTimeout(() => {
+  type ElementWithTimeout = Element & { animationTimeout: number };
+  window.clearTimeout((element as ElementWithTimeout).animationTimeout);
+  (element as ElementWithTimeout).animationTimeout = window.setTimeout(() => {
     animations.forEach((animation) => {
       animation.playbackRate = 1;
       animation.cancel();

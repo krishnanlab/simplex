@@ -6,7 +6,8 @@
 
     <!-- favicons -->
     <link rel="icon" type="image/png" sizes="512x512" href="favicon.png" />
-    <meta property="og:image" content="share-thumbnail.jpg" />
+    <meta property="og:image" content="share.jpg" />
+    <meta property="twitter:image" content="share.jpg" />
 
     <!-- meta -->
     <title><%= VITE_TITLE %></title>
@@ -15,9 +16,13 @@
 
     <meta property="og:type" content="website" />
     <meta property="og:url" content="<%= VITE_URL %>" />
-    <meta property="og:title" content="Simplex" />
+    <meta property="og:title" content="<%= VITE_TITLE %>" />
     <meta property="og:description" content="<%= VITE_DESCRIPTION %>" />
-    <meta property="og:image" content="share-thumbnail.jpg" />
+
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content="<%= VITE_URL %>" />
+    <meta property="twitter:title" content="<%= VITE_TITLE %>" />
+    <meta property="twitter:description" content="<%= VITE_DESCRIPTION %>" />
 
     <!-- extra tags -->
     <link rel="canonical" href="<%= VITE_URL %>" />

@@ -1,12 +1,14 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import Balancer from "react-wrap-balancer";
 import { css } from "@stitches/react";
+import { AnonArticles } from "@/api/article";
+import Ago from "@/components/Ago";
 import Citation from "@/components/Citation";
 import Flex from "@/components/Flex";
 import Meta from "@/components/Meta";
 import Section from "@/components/Section";
+import Tooltip from "@/components/Tooltip";
 import { big } from "@/global/palette";
 import Article from "@/pages/Article";
 
@@ -22,7 +24,7 @@ const Home = () => {
   const navigate = useNavigate();
 
   const [anonymousArticles] =
-    useLocalStorage<Array<string>>("anonymous-articles");
+    useLocalStorage<AnonArticles>("anonymous-articles");
 
   /** handle 404 redirect */
   useEffect(() => {
@@ -38,10 +40,8 @@ const Home = () => {
     <>
       <Meta title="" />
 
-      <Section fill="deep">
-        <Balancer className={heroStyle()}>
-          {import.meta.env.VITE_DESCRIPTION}
-        </Balancer>
+      <Section fill="deep" className={heroStyle()}>
+        {import.meta.env.VITE_DESCRIPTION}
       </Section>
 
       <Article />
@@ -55,10 +55,12 @@ const Home = () => {
           </p>
 
           <Flex gap="small">
-            {anonymousArticles.map((article, index) => (
-              <Link key={index} to={`/article/${article}`}>
-                {String(article)}
-              </Link>
+            {anonymousArticles.map(({ id, title, date }, index) => (
+              <Tooltip
+                key={index}
+                reference={<Link to={`/article/${id}`}>{title || id}</Link>}
+                content={<Ago date={date} />}
+              />
             ))}
           </Flex>
         </Section>

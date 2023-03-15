@@ -11,6 +11,7 @@ import {
   white,
 } from "@/global/palette";
 import { classNames } from "@/util/string";
+import { isExternal } from "util/types";
 
 type Props = {
   /** location when link */
@@ -87,18 +88,30 @@ const Button = forwardRef(
       icon && !text ? squareStyle() : "",
     ]);
 
-    if (to)
-      return (
-        <Link
-          ref={ref as Ref<HTMLAnchorElement>}
-          to={to || ""}
-          className={className}
-          {...props}
-        >
-          {content}
-        </Link>
-      );
-    else
+    if (to) {
+      if (String(to).startsWith("http"))
+        return (
+          <a
+            ref={ref as Ref<HTMLAnchorElement>}
+            href={String(to)}
+            className={className}
+            {...props}
+          >
+            {content}
+          </a>
+        );
+      else
+        return (
+          <Link
+            ref={ref as Ref<HTMLAnchorElement>}
+            to={to}
+            className={className}
+            {...props}
+          >
+            {content}
+          </Link>
+        );
+    } else
       return (
         <button
           ref={ref as Ref<HTMLButtonElement>}

@@ -1,5 +1,6 @@
-import { forwardRef, ReactNode, Ref } from "react";
+import { CSSProperties, forwardRef, ReactNode, Ref } from "react";
 import { css } from "@stitches/react";
+import { classNames } from "@/util/string";
 
 type Props = {
   display?: "inline" | "block";
@@ -8,6 +9,8 @@ type Props = {
   hAlign?: "left" | "center" | "right" | "stretch" | "space";
   vAlign?: "top" | "center" | "bottom" | "stretch" | "space";
   wrap?: boolean;
+  className?: string;
+  style?: CSSProperties;
   children: ReactNode;
   [key: string]: unknown;
 };
@@ -51,6 +54,8 @@ const Flex = forwardRef(
       hAlign = "center",
       vAlign = "center",
       wrap = true,
+      className = "",
+      style = {},
       children,
       ...props
     }: Props,
@@ -58,7 +63,7 @@ const Flex = forwardRef(
   ) => (
     <div
       ref={ref as Ref<HTMLDivElement>}
-      className={flexStyle()}
+      className={classNames([flexStyle(), className])}
       style={{
         /** computed style */
         display: display === "inline" ? "inline-flex" : "flex",
@@ -67,7 +72,8 @@ const Flex = forwardRef(
         justifyContent: dir === "col" ? aligns[vAlign] : aligns[hAlign],
         alignItems: dir === "col" ? aligns[hAlign] : aligns[vAlign],
         gap: gaps[gap],
-        flexWrap: wrap ? "wrap" : "nowrap",
+        flexWrap: dir === "row" && wrap ? "wrap" : "nowrap",
+        ...style,
       }}
       {...props}
     >

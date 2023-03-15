@@ -9,9 +9,10 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
 import Meta from "@/components/Meta";
-import Notification, { notification } from "@/components/Notification";
+import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import { sleep } from "@/util/debug";
 
 /** forgot password page */
 const ForgotPassword = () => {
@@ -24,17 +25,15 @@ const ForgotPassword = () => {
   });
 
   /** mutation for requesting reset */
-  const {
-    mutate: resetMutate,
-    isLoading: resetLoading,
-    isError: resetError,
-    error: resetErrorMessage,
-  } = useMutation({
+  const { mutate: resetMutate } = useMutation({
     mutationFn: forgotPassword,
+    onMutate: () => notification("loading", "Requesting password reset"),
     onSuccess: async () => {
-      await navigate("/");
       notification("success", "Sent password reset email");
+      await sleep(1000);
+      await navigate("/");
     },
+    onError: () => notification("error", "Error requesting password reset"),
   });
 
   /** when forgot form submitted */
@@ -60,17 +59,6 @@ const ForgotPassword = () => {
       <Flex>
         <Button text="Request Reset" icon={<FaLock />} form="forgot" />
       </Flex>
-
-      {/* statuses */}
-      {resetLoading && (
-        <Notification type="loading" text="Requesting password reset" />
-      )}
-      {resetError && (
-        <Notification
-          type="error"
-          text={["Error requesting password reset", resetErrorMessage]}
-        />
-      )}
 
       <Form id="forgot" onSubmit={onReset} />
     </Section>

@@ -5,7 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { simplify } from "@/api/tool";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
-import Notification from "@/components/Notification";
+import Status from "@/components/Notification";
 import { dark } from "@/global/palette";
 import { useScrollMask } from "@/util/hooks";
 
@@ -18,9 +18,12 @@ type Props = {
   setIgnored: () => unknown;
 };
 
+const containerStyle = css({
+  maxHeight: "calc(min(var(--available-height), 50vh) - 40px)",
+});
+
 const contentStyle = css({
   width: "100%",
-  maxHeight: "250px",
   overflowY: "auto",
 });
 
@@ -55,7 +58,7 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
   const { synonyms, definition, link, image } = simplification || {};
 
   return (
-    <Flex dir="col" gap="small">
+    <Flex dir="col" gap="small" vAlign="top" className={containerStyle()}>
       {/* top */}
       <Flex hAlign="space" gap="small">
         <h4>Simplify &quot;{word}&quot;</h4>
@@ -94,13 +97,10 @@ const Simplify = ({ word, ignored, setIgnored }: Props) => {
 
         {/* statuses */}
         {simplifyLoading && (
-          <Notification type="loading" text="Getting synonyms and definition" />
+          <Status type="loading" text="Getting synonyms and definition" />
         )}
         {simplifyError && (
-          <Notification
-            type="error"
-            text="Error getting synonyms and definition"
-          />
+          <Status type="error" text="Error getting synonyms and definition" />
         )}
       </div>
     </Flex>

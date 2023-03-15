@@ -11,7 +11,7 @@ import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Meta from "@/components/Meta";
-import Notification from "@/components/Notification";
+import { clearNotification, notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
 
@@ -26,17 +26,15 @@ const LogIn = () => {
   });
 
   /** mutation for logging in */
-  const {
-    mutate: loginMutate,
-    isLoading: loginLoading,
-    isError: loginError,
-    error: loginErrorMessage,
-  } = useMutation({
+  const { mutate: loginMutate } = useMutation({
     mutationFn: login,
+    onMutate: () => notification("loading", "Logging in"),
     onSuccess: async (data) => {
       setCurrentUser(data);
+      clearNotification();
       await navigate("/");
     },
+    onError: (error) => notification("loading", ["Error logging in", error]),
   });
 
   /** when login form submitted */
@@ -78,15 +76,6 @@ const LogIn = () => {
         <Button text="Log In" icon={<FaSignInAlt />} form="login" />
         <Link to="/forgot-password">Forgot password</Link>
       </Flex>
-
-      {/* statuses */}
-      {loginLoading && <Notification type="loading" text="Logging in" />}
-      {loginError && (
-        <Notification
-          type="error"
-          text={["Error logging in", loginErrorMessage]}
-        />
-      )}
 
       <Form id="login" onSubmit={onLogin} />
     </Section>

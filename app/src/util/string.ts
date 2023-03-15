@@ -11,7 +11,7 @@ export const tokenize = (value: string) =>
 
 /** is word */
 export const isWord = (value: string) =>
-  value.match(new RegExp("[" + token.source + "+", "u"));
+  value.match(new RegExp("[" + token.source + "]+", "u"));
 
 /** split comma-separated list */
 export const splitComma = (value: string) =>

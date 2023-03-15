@@ -27,7 +27,7 @@
     "react-router-dom": "^6.6.2",
     "react-time-ago": "^7.2.1",
     "react-use": "^17.4.0",
-    "react-wrap-balancer": "^0.3.0",
+    "use-debounce": "^9.0.3",
     "use-query-params": "^2.1.2"
   },
   "devDependencies": {

@@ -1,3 +1,4 @@
+// import { sleep } from "@/util/debug";
 import { prettyError } from "@/util/string";
 
 const api = import.meta.env.VITE_API;
@@ -7,6 +8,10 @@ export const request = async <T>(
   url = "",
   options: RequestInit = {}
 ): Promise<T> => {
+  /** debug */
+  // await sleep(1000);
+  // throw new Error("Test error");
+
   /** set request headers */
   const headers = new Headers();
   headers.append("Content-Type", "application/json");

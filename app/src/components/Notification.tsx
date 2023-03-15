@@ -1,123 +1,135 @@
-import { ReactNode, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, ReactNode, useCallback, useRef, useState } from "react";
 import { FaExclamationCircle, FaRegCheckCircle, FaTimes } from "react-icons/fa";
-import { useLocation } from "react-router";
 import { useEvent } from "react-use";
 import { css } from "@stitches/react";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
-import Section from "@/components/Section";
 import Spinner from "@/components/Spinner";
-import { accent, dark, deep } from "@/global/palette";
-import { sleep } from "@/util/debug";
+import { accent, dark, deep, pale, rounded } from "@/global/palette";
 
-type Props = {
-  /** determins icon and color */
-  type: "loading" | "error" | "success";
-  /** text to show */
-  text: string | Array<unknown>;
-  /** whether to scroll notification into view */
-  scroll?: boolean;
-  children?: ReactNode;
+/** types of notifications */
+const types: Record<
+  string,
+  { icon: ReactNode; timeout: number; color: string }
+> = {
+  loading: { icon: <Spinner />, timeout: 60 * 5, color: dark },
+  success: { icon: <FaRegCheckCircle />, timeout: 5, color: deep },
+  error: { icon: <FaExclamationCircle />, timeout: 10, color: accent },
 };
 
-const notificationStyle = css({
-  margin: "60px 0",
+type Props = {
+  /** type of notification */
+  type: keyof typeof types;
+  /** text to show */
+  text: string | Array<unknown>;
+};
+
+const statusStyle = css({
+  margin: "30px 0 !important",
   fontWeight: "400",
-  color: dark,
   svg: {
+    width: "25px",
     height: "25px",
-    flexShrink: 0,
-  },
-  span: {
-    whiteSpace: "pre",
-  },
-  "&[data-type='error'] svg": {
-    color: accent,
-  },
-  "&[data-type='success'] svg": {
-    color: deep,
   },
 });
 
-/** notification for status with icon and text */
-const Notification = ({ type, text, scroll = false, children }: Props) => {
-  const ref = useRef<HTMLDivElement>(null);
+const notificationStyle = css({
+  position: "fixed",
+  right: "10px",
+  bottom: "10px",
+  maxWidth: "100%",
+  padding: "10px",
+  borderRadius: rounded,
+  background: dark,
+  color: pale,
+  fontWeight: "400",
+  zIndex: 99,
+  svg: {
+    width: "25px",
+    height: "25px",
+  },
+  button: {
+    color: "inherit",
+  },
+});
 
-  useEffect(() => {
-    if (!scroll) return;
-    const timer = window.setTimeout(
-      () =>
-        ref.current?.scrollIntoView({ behavior: "smooth", block: "nearest" }),
-      500
-    );
-    return () => window.clearTimeout(timer);
-  });
+/** turn possible array of text into separate lines */
+const textLines = (text: Props["text"]) =>
+  [text]
+    .flat()
+    .filter(Boolean)
+    .map((line, index) => (
+      <Fragment key={index}>
+        {String(line)}
+        <br />
+      </Fragment>
+    ));
 
-  return (
-    <Flex
-      ref={ref}
-      className={notificationStyle()}
-      gap="small"
-      wrap={false}
-      data-type={type}
-    >
-      {type === "loading" && <Spinner />}
-      {type === "error" && <FaExclamationCircle />}
-      {type === "success" && <FaRegCheckCircle />}
-      {text && <span>{[text].flat().filter(Boolean).join("\n")}</span>}
-      {children}
-    </Flex>
-  );
-};
+/** status with icon and text */
+const Status = ({ type, text }: Props) => (
+  <Flex
+    gap="small"
+    wrap={false}
+    className={statusStyle()}
+    style={{ color: types[type].color }}
+  >
+    {types[type].icon}
+    <span>{textLines(text)}</span>
+  </Flex>
+);
 
-export default Notification;
+export default Status;
 
-/** function to dispatch global notification */
-export const notification = async (
-  type: Props["type"],
-  text: Props["text"]
-) => {
-  await sleep();
+/** dispatch global notification */
+export const notification = (type: Props["type"], text: Props["text"]) =>
   window.dispatchEvent(
     new CustomEvent("notification", { detail: { type, text } })
   );
-  await sleep(500);
-  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });
-};
 
-/** global singleton notification at top of page */
-export const TopNotification = () => {
-  const [type, setType] = useState<Props["type"]>();
-  const [text, setMessage] = useState<Props["text"]>();
+/** clear current global notification */
+export const clearNotification = () =>
+  window.dispatchEvent(new CustomEvent("clear-notification"));
 
-  /** clear */
-  const reset = useCallback(() => {
-    setType(undefined);
-    setMessage(undefined);
+/** global notification */
+export const Notification = () => {
+  const [notification, setNotification] = useState<Props | null>(null);
+  const timeout = useRef<number>();
+
+  /** clear notification */
+  const clear = useCallback(() => {
+    window.clearTimeout(timeout.current);
+    setNotification(null);
   }, []);
+  useEvent("clear-notification", clear);
 
-  const route = useLocation();
-
-  /** clear when page changes */
-  useEffect(() => {
-    reset();
-  }, [reset, route]);
-
-  /** listen for global notification event */
-  const onNotification = useCallback((event: CustomEvent) => {
-    const { type, text } = event.detail as Props;
-    setType(type);
-    setMessage(text);
-  }, []);
+  /** set notification */
+  const onNotification = useCallback(
+    (event: CustomEvent) => {
+      const notification = event.detail as Props;
+      window.clearTimeout(timeout.current);
+      setNotification(notification);
+      if (event.detail)
+        timeout.current = window.setTimeout(
+          clear,
+          types[notification.type].timeout * 1000
+        );
+    },
+    [clear]
+  );
   useEvent("notification", onNotification);
 
-  if (!type || !text) return <></>;
+  if (notification === null) return <></>;
 
   return (
-    <Section fill="offWhite">
-      <Notification type={type} text={text}>
-        <Button icon={<FaTimes />} fill={false} onClick={reset} />
-      </Notification>
-    </Section>
+    <Flex
+      display="inline"
+      gap="small"
+      wrap={false}
+      className={notificationStyle()}
+    >
+      {types[notification.type].icon}
+      <span>{textLines(notification.text)}</span>
+      <Button icon={<FaTimes />} fill={false} onClick={clear} />
+    </Flex>
   );
 };

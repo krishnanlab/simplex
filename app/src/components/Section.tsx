@@ -20,6 +20,9 @@ const pageWidth = "1000px";
 
 const sectionStyle = css({
   padding: `60px max(60px, calc((100% - ${pageWidth})/2));`,
+  "&:last-child": {
+    flexGrow: 1,
+  },
   "& > *:first-child": {
     marginTop: "0",
   },

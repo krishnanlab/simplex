@@ -10,13 +10,18 @@ type Props = {
   label: string;
   /** question mark text on hover */
   help?: string;
+  /** whether field is multi-line */
+  multi?: boolean;
   /** whether field is optional for form */
   optional?: boolean;
   /** whether to check and show password strength */
   strength?: boolean;
   onChange?: (value: string) => unknown;
   children?: ReactNode;
-} & Omit<InputHTMLAttributes<HTMLInputElement>, "onChange">;
+} & Omit<
+  InputHTMLAttributes<HTMLInputElement | HTMLTextAreaElement>,
+  "onChange"
+>;
 
 const wrapperStyle = css({
   display: "block",
@@ -41,6 +46,7 @@ const inputStyle = css({
   fontWeight: "inherit",
   boxShadow: shadow,
   appearance: "none",
+  resize: "vertical",
   "&::placeholder": {
     color: dark,
     opacity: 0.5,
@@ -58,34 +64,44 @@ const Field = ({
   label,
   help,
   disabled,
+  multi = false,
   optional = false,
   strength = false,
   onChange,
   children,
   ...props
-}: Props) => (
-  <label className={wrapperStyle()}>
-    <Flex hAlign="left" gap="tiny" className={labelStyle()}>
-      {help && <Help tooltip={help} />}
-      <span>
-        {label}: {optional || disabled ? "" : "*"}
-      </span>
-    </Flex>
-    {children ? (
-      <div className={childStyle()}>{children}</div>
-    ) : (
+}: Props) => {
+  let content = <></>;
+
+  if (children) content = <div className={childStyle()}>{children}</div>;
+  else {
+    const Component = multi ? "textarea" : "input";
+    content = (
       <>
-        <input
+        <Component
           required={!optional}
           disabled={disabled}
           className={inputStyle()}
+          rows={8}
           {...props}
           onChange={(event) => onChange?.(event.target.value as string)}
         />
         {strength && <PasswordMeter />}
       </>
-    )}
-  </label>
-);
+    );
+  }
+
+  return (
+    <label className={wrapperStyle()}>
+      <Flex hAlign="left" gap="tiny" className={labelStyle()}>
+        {help && <Help tooltip={help} />}
+        <span>
+          {label}: {optional || disabled ? "" : "*"}
+        </span>
+      </Flex>
+      {content}
+    </label>
+  );
+};
 
 export default Field;

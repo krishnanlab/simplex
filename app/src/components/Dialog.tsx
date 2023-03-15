@@ -34,7 +34,7 @@ const dialogStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  width: "min(calc(100vw - 40px), 350px)",
+  width: "min(calc(100vw - 40px), 500px)",
   padding: "30px",
   borderRadius: rounded,
   background: white,

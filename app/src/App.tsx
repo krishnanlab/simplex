@@ -5,7 +5,7 @@ import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { TopNotification } from "@/components/Notification";
+import { Notification } from "@/components/Notification";
 import StateProvider from "@/global/state";
 import globalStyles from "@/global/styles";
 import About from "@/pages/About";
@@ -62,7 +62,7 @@ const Layout = () => (
         adapter={ReactRouter6Adapter}
         options={{ updateType: "replaceIn" }}
       >
-        <TopNotification />
+        <Notification />
         <Outlet />
       </QueryParamProvider>
     </main>
