@@ -1,6 +1,5 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { css } from "@stitches/react";
-import { classNames } from "@/util/string";
 
 type Props = {
   /** max number of columns */
@@ -10,39 +9,28 @@ type Props = {
 
 const gridStyle = css({
   display: "grid",
+  gridTemplateColumns: "repeat(min(var(--cols), var(--max)), 1fr)",
   gap: "30px",
   margin: "40px 0",
   "& > *": {
     margin: "0 !important",
   },
+  "@media (min-width: 0)": {
+    "--cols": "1",
+  },
+  "@media (min-width: 600px)": {
+    "--cols": "2",
+  },
+  "@media (min-width: 900px)": {
+    "--cols": "3",
+  },
 });
 
-const breakpointStyles = [
-  css({
-    "@media (min-width: 0)": {
-      gridTemplateColumns: "1fr",
-    },
-  }),
-  css({
-    "@media (min-width: 600px)": {
-      gridTemplateColumns: "1fr 1fr",
-    },
-  }),
-  css({
-    "@media (min-width: 900px)": {
-      gridTemplateColumns: "1fr 1fr 1fr",
-    },
-  }),
-];
-
 /** util grid wrapper */
-const Grid = ({ cols = 3, children }: Props) => {
-  // const items = Array.isArray(children) ? children.length : 3;
-  const breakpoints = breakpointStyles.map((style) => style()).slice(0, cols);
-
-  return (
-    <div className={classNames([gridStyle(), ...breakpoints])}>{children}</div>
-  );
-};
+const Grid = ({ cols = 3, children }: Props) => (
+  <div className={gridStyle()} style={{ "--max": cols } as CSSProperties}>
+    {children}
+  </div>
+);
 
 export default Grid;
