@@ -2,10 +2,18 @@ import { IconContext } from "react-icons";
 import { createBrowserRouter, Outlet, RouterProvider } from "react-router-dom";
 import { QueryParamProvider } from "use-query-params";
 import { ReactRouter6Adapter } from "use-query-params/adapters/react-router-6";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  QueryCache,
+  QueryClient,
+  QueryClientProvider,
+} from "@tanstack/react-query";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
-import { TopNotification } from "@/components/Notification";
+import {
+  clearNotification,
+  notification,
+  Notification,
+} from "@/components/Notification";
 import StateProvider from "@/global/state";
 import globalStyles from "@/global/styles";
 import About from "@/pages/About";
@@ -35,6 +43,19 @@ const queryClient = new QueryClient({
       networkMode: "always",
     },
   },
+  queryCache: new QueryCache({
+    /** global callbacks
+     * useMutation callbacks run even if component unmounts, useQuery callbacks do not.
+     * thus, only needed for useQuery instances that start infinite notifications, e.g. loading.
+     */
+    onSuccess: (_, query) => {
+      if (query.queryKey[0] === "analyze") clearNotification();
+    },
+    onError: (_, query) => {
+      if (query.queryKey[0] === "analyze")
+        notification("error", "Error analyzing");
+    },
+  }),
 });
 
 /** main app entry point */
@@ -62,7 +83,7 @@ const Layout = () => (
         adapter={ReactRouter6Adapter}
         options={{ updateType: "replaceIn" }}
       >
-        <TopNotification />
+        <Notification />
         <Outlet />
       </QueryParamProvider>
     </main>

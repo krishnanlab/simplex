@@ -1,4 +1,5 @@
 import {
+  Fragment,
   ReactElement,
   ReactEventHandler,
   useCallback,
@@ -174,36 +175,32 @@ const Editor = ({
       {highlights && (
         <div ref={mark} className={markStyle()}>
           {words.map((word, index, array) => {
-            /** if word is highlight-able */
+            let element = <></>;
+
+            /** if word is highlight-able, show mark */
             if (scores[word.toLowerCase()] !== undefined) {
               const background = getColor(scores[word.toLowerCase()]);
-
-              if (index === selected && tooltip)
-                /** if selected, show tooltip */
-                return (
-                  <Tooltip
-                    key={index}
-                    reference={<mark style={{ background }}>{word}</mark>}
-                    content={tooltip(word)}
-                    open={true}
-                    onClose={() => setSelected(-1)}
-                  />
-                );
-              else {
-                /** otherwise just show mark */
-                return (
-                  <mark key={index} style={{ background }}>
-                    {word}
-                  </mark>
-                );
-              }
+              element = <mark style={{ background }}>{word}</mark>;
             } else if (index === array.length - 1) {
               /** correct end of input peculiarity */
-              return word.replace(/\n$/, "\n ");
+              element = <span>{word.replace(/\n$/, "\n ")}</span>;
             } else {
               /** pass through as string */
-              return word;
+              element = <span>{word}</span>;
             }
+
+            /** if selected, wrap in tooltip */
+            if (index === selected && tooltip)
+              return (
+                <Tooltip
+                  key={index}
+                  reference={element}
+                  content={tooltip(word)}
+                  open={true}
+                  onClose={() => setSelected(-1)}
+                />
+              );
+            else return <Fragment key={index}>{element}</Fragment>;
           })}
         </div>
       )}

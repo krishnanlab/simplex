@@ -21,7 +21,6 @@ const valueStyle = css({ color: deep, lineHeight: 1 });
 /** simple left/right key/value text with help text */
 const Stat = ({ help, label, value, title }: Props) => (
   <Flex display="inline" gap="tiny" hAlign="left" title={title}>
-    {help && <Help tooltip={help} />}
     {label && (
       <span className={labelStyle()}>
         {label}
@@ -29,6 +28,7 @@ const Stat = ({ help, label, value, title }: Props) => (
       </span>
     )}
     {value !== undefined && <span className={valueStyle()}>{value}</span>}
+    {help && <Help tooltip={help} />}
   </Flex>
 );
 

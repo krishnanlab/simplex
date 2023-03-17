@@ -8,6 +8,7 @@ import {
   offset,
   safePolygon,
   shift,
+  size,
   useDismiss,
   useFloating,
   useFocus,
@@ -19,7 +20,7 @@ import { css } from "@stitches/react";
 import { rounded, shadow, white } from "@/global/palette";
 
 type Props = {
-  /** element that triggers tooltip */
+  /** base/anchor element of tooltip */
   reference: ReactElement;
   /** content in opened tooltip */
   content: ReactNode;
@@ -33,8 +34,7 @@ const tooltipStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  width: "min(calc(100vw - 40px), 500px)",
-  maxWidth: "max-content",
+  maxWidth: "min(var(--available-width), 600px)",
   padding: "15px 20px",
   borderRadius: rounded,
   background: white,
@@ -97,6 +97,13 @@ const Tooltip = ({
       offset(arrowSize / 2),
       flip(),
       shift({ padding: 20 }),
+      size({
+        apply({ availableWidth, availableHeight, elements }) {
+          const style = elements.floating.style;
+          style.setProperty("--available-width", availableWidth + "px");
+          style.setProperty("--available-height", availableHeight + "px");
+        },
+      }),
       arrow({ element: arrowRef }),
     ],
     placement: "top",

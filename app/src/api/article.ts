@@ -1,7 +1,7 @@
 import { sortBy } from "lodash";
 import { request } from "./";
 import { Article, ArticleSummary, ArticleWrite, Id } from "@/global/types";
-import { setStorage } from "@/util/storage";
+import { getStorage, setStorage } from "@/util/storage";
 
 /** lookup latest revision of article */
 export const getLatestArticle = (id: Id) => request<Article>(`/articles/${id}`);
@@ -30,6 +30,11 @@ export const getArticles = (ids: Array<Id>) =>
 export const getUserArticles = () =>
   request<Array<ArticleSummary>>("/articles");
 
+/** local storage key for saving anonymous articles */
+export const anonArticleKey = "anonymous-articles";
+/** schema of saved anon articles */
+export type AnonArticles = Array<Article>;
+
 /** save new article */
 export const saveNewArticle = async (article: ArticleWrite) => {
   const response = await request<Article>("/articles", {
@@ -38,8 +43,11 @@ export const saveNewArticle = async (article: ArticleWrite) => {
   });
 
   /** save anonymously created articles locally so they aren't lost */
-  if (response.author === null)
-    setStorage("anonymous-articles", (value) => value + "," + response.id);
+  if (response.author === null) {
+    const anon = (getStorage(anonArticleKey) || []) as Array<Article>;
+    anon.push(response);
+    setStorage("anonymous-articles", anon);
+  }
 
   return response;
 };

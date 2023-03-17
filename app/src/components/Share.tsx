@@ -1,56 +1,94 @@
-import { useCallback, useState } from "react";
-import { FaCheckCircle, FaRegCopy, FaShareAlt } from "react-icons/fa";
+import { MouseEventHandler, ReactElement, useCallback } from "react";
+import { FaMastodon, FaTwitter } from "react-icons/fa";
+import { capitalize, truncate } from "lodash";
 import Button from "@/components/Button";
 import { Dialog } from "@/components/Dialog";
 import Field from "@/components/Field";
 import Flex from "@/components/Flex";
+import { notification } from "@/components/Notification";
 
 type Props = {
-  /** heading in dialog */
-  heading: string;
-  /** field title in dialog  */
-  field: string;
+  /** element that triggers dialog */
+  trigger: ReactElement;
+  /** article or collection */
+  type: string;
+  /** title of article or collection */
+  title: string;
+  /** link to article or collection */
+  link?: string;
   /** question mark text on hover */
   help?: string;
 };
 
-/** share button with dialog HOC */
-const Share = ({ heading, ...rest }: Props) => (
+/** share dialog HOC */
+const Share = (props: Props) => (
   <Dialog
-    reference={<Button text="Share" icon={<FaShareAlt />} />}
-    content={<Content {...rest} />}
-    heading={heading}
+    trigger={props.trigger}
+    content={<Content {...props} />}
+    heading={`Share ${capitalize(props.type)}`}
   />
 );
 
 export default Share;
 
 /** dialog content */
-const Content = ({ field, help }: Omit<Props, "heading">) => {
-  const [link, setLink] = useState(window.location.href);
-  const [copied, setCopied] = useState(false);
+const Content = ({ type, title, link, help }: Omit<Props, "heading">) => {
+  /** fallback to current tab url */
+  link ??= window.location.href;
 
-  /** copy link to clipboard */
-  const copy = useCallback(async () => {
-    await window.navigator.clipboard.writeText(link);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1000);
-  }, [link]);
+  const message = `
+✍️ Check out this ${type} on Simplex, an app for simplifying scientific and medical writing:
+
+"${truncate(title, { length: 40 })}"
+${link}
+
+#simplex #simple #writing #${type}
+`.trim();
+
+  /** copy input contents to clipboard */
+  const copy = useCallback<
+    MouseEventHandler<HTMLInputElement | HTMLTextAreaElement>
+  >((event) => {
+    const target = event.target as HTMLInputElement;
+    window.navigator.clipboard
+      .writeText(target.value)
+      .then(() => notification("success", "Copied to clipboard"));
+  }, []);
 
   return (
     <Flex dir="col" hAlign="stretch">
       <Field
-        label={field}
+        label={`Link to this ${type}`}
         help={help}
         optional={true}
         value={link}
-        onChange={setLink}
-      />
-      <Button
-        text={copied ? "Copied" : "Copy"}
-        icon={copied ? <FaCheckCircle /> : <FaRegCopy />}
         onClick={copy}
       />
+      <Field
+        label={`Message about this ${type}`}
+        optional={true}
+        multi={true}
+        value={message}
+        onClick={copy}
+      />
+      <Flex gap="small">
+        <Button
+          to={`https://twitter.com/intent/tweet?text=${encodeURIComponent(
+            message
+          )}`}
+          target="_blank"
+          rel="noreferrer"
+          icon={<FaTwitter />}
+          text="Twitter"
+        />
+        <Button
+          to={`https://mastodonshare.com/?text=${encodeURIComponent(message)}`}
+          target="_blank"
+          rel="noreferrer"
+          icon={<FaMastodon />}
+          text="Mastodon"
+        />
+      </Flex>
     </Flex>
   );
 };

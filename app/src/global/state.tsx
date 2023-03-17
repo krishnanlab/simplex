@@ -5,16 +5,16 @@ import { notification } from "@/components/Notification";
 import { Author } from "@/global/types";
 
 export type StateType = {
-  /** current (logged-in) user/author  */
-  currentUser: Author | null;
-  setCurrentUser: (author: Author) => void;
+  /** current (logged-in) user/author. null = not logged in, undefined = not checked yet.  */
+  currentUser: Author | null | undefined;
+  refreshCurrentUser: () => void;
   clearCurrentUser: () => void;
 };
 
 /** global app-wide state */
 export const State = createContext<StateType>({
   currentUser: null,
-  setCurrentUser: () => null,
+  refreshCurrentUser: () => null,
   clearCurrentUser: () => null,
 });
 
@@ -24,28 +24,16 @@ type Props = {
 
 /** provider for global state */
 const StateProvider = ({ children }: Props) => {
-  /** flag to ensure current user event only dispatched once */
-  const [dispatch, setDispatch] = useState(false);
+  const [currentUser, setCurrentUser] =
+    useState<StateType["currentUser"]>(undefined);
 
-  const [currentUser, setCurrentUser] = useState<
-    StateType["currentUser"] | null
-  >(null);
+  const refreshCurrentUser = () => getCurrentUser().then(setCurrentUser);
   const clearCurrentUser = () => setCurrentUser(null);
 
   /** check if user logged in on app load */
   useEffect(() => {
-    getCurrentUser()
-      .then(setCurrentUser)
-      .then(() => setDispatch(true));
+    refreshCurrentUser();
   }, []);
-
-  /** dispatch global event that current user has been checked */
-  useEffect(() => {
-    if (dispatch) {
-      window.dispatchEvent(new Event("current-user"));
-      setDispatch(false);
-    }
-  }, [dispatch]);
 
   /** on auth expired event, logout */
   useEvent("auth-expired", () => {
@@ -54,7 +42,9 @@ const StateProvider = ({ children }: Props) => {
   });
 
   return (
-    <State.Provider value={{ currentUser, setCurrentUser, clearCurrentUser }}>
+    <State.Provider
+      value={{ currentUser, refreshCurrentUser, clearCurrentUser }}
+    >
       {children}
     </State.Provider>
   );

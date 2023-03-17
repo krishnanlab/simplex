@@ -17,7 +17,7 @@ import { dark, rounded, shadow, white } from "@/global/palette";
 
 type Props = {
   /** element that triggers dialog */
-  reference: ReactElement;
+  trigger: ReactElement;
   /** content in opened dialog */
   content: ReactElement;
   /** text at top of dialog */
@@ -34,7 +34,7 @@ const dialogStyle = css({
   display: "flex",
   flexDirection: "column",
   gap: "20px",
-  width: "min(calc(100vw - 40px), 350px)",
+  width: "min(calc(100vw - 40px), 500px)",
   padding: "30px",
   borderRadius: rounded,
   background: white,
@@ -54,7 +54,7 @@ const headingStyle = css({
 });
 
 /** popup modal */
-export const Dialog = ({ reference, content, heading }: Props) => {
+export const Dialog = ({ trigger, content, heading }: Props) => {
   const [open, setOpen] = useState(false);
 
   const {
@@ -77,7 +77,7 @@ export const Dialog = ({ reference, content, heading }: Props) => {
   return (
     <>
       {/* reference */}
-      {cloneElement(reference, getReferenceProps({ ref, ...reference.props }))}
+      {cloneElement(trigger, getReferenceProps({ ref, ...trigger.props }))}
 
       {/* dialog */}
       <FloatingPortal>

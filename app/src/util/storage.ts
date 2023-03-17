@@ -1,14 +1,7 @@
-const prefix = "simplex-";
-
 /** simple set interface for local storage */
-export const setStorage = (
-  key: string,
-  value: string | ((value: string) => string)
-) => {
+export const setStorage = (key: string, value: unknown) => {
   try {
-    const currentValue = getStorage(prefix + key);
-    const newValue = typeof value === "function" ? value(currentValue) : value;
-    window.localStorage.setItem(prefix + key, newValue);
+    window.localStorage.setItem(key, JSON.stringify(value));
     return true;
   } catch (error) {
     return false;
@@ -16,10 +9,10 @@ export const setStorage = (
 };
 
 /** simple get interface for local storage */
-export const getStorage = (key: string) => {
+export const getStorage = (key: string): unknown => {
   try {
-    return window.localStorage.getItem(prefix + key) || "";
+    return JSON.parse(window.localStorage.getItem(key) || "");
   } catch (error) {
-    return "";
+    return null;
   }
 };

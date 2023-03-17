@@ -30,6 +30,8 @@ const globalStyles = globalCss({
     minHeight: "100vh",
   },
   main: {
+    display: "flex",
+    flexDirection: "column",
     flexGrow: "1",
   },
   h1: {

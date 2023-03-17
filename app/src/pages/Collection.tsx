@@ -1,5 +1,11 @@
 import { useCallback, useContext, useEffect, useState } from "react";
-import { FaPlus, FaRegSave, FaRegTrashAlt, FaTimes } from "react-icons/fa";
+import {
+  FaPlus,
+  FaRegSave,
+  FaRegTrashAlt,
+  FaShareAlt,
+  FaTimes,
+} from "react-icons/fa";
 import { useNavigate, useParams } from "react-router";
 import { capitalize } from "lodash";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,6 +31,8 @@ import Share from "@/components/Share";
 import Stat from "@/components/Stat";
 import { State } from "@/global/state";
 import { blankAuthor, blankCollection, Collection } from "@/global/types";
+import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 import { authorString } from "@/util/string";
 
 /** new/edit/view page for collection */
@@ -57,7 +65,10 @@ const CollectionPage = () => {
 
   /** anonymous collections not supported, so redirect */
   useEffect(() => {
-    if (mode === "anon") navigate("/");
+    if (mode === "anon") {
+      navigate("/");
+      scrollToTop();
+    }
   });
 
   /** heading and title text */
@@ -93,6 +104,7 @@ const CollectionPage = () => {
   } = useQuery({
     queryKey: ["getUserArticles", currentUser?.id],
     queryFn: getUserArticles,
+    enabled: !!currentUser?.id,
   });
 
   /** query for getting collection's articles */
@@ -119,43 +131,36 @@ const CollectionPage = () => {
   };
 
   /** mutation for saving collection */
-  const {
-    mutate: save,
-    isLoading: saveLoading,
-    isError: saveError,
-    error: saveErrorMessage,
-  } = useMutation({
+  const { mutate: save, isLoading: saveLoading } = useMutation({
     mutationFn: () =>
       id
         ? saveCollection(editableCollection, id)
         : saveNewCollection(editableCollection),
+    onMutate: () => notification("loading", "Saving collection"),
     onSuccess: async (data) => {
+      notification("success", `Saved collection "${editableCollection.title}"`);
+      await sleep(1000);
       clearCache();
       if (data?.id) await navigate("/collection/" + data.id);
-      notification("success", `Saved collection "${editableCollection.title}"`);
     },
+    onError: () => notification("error", "Error saving collection"),
   });
 
   /** mutation for deleting collection */
-  const {
-    mutate: trash,
-    isLoading: trashLoading,
-    isError: trashError,
-    error: trashErrorMessage,
-  } = useMutation({
-    mutationFn: async () => {
-      if (!window.confirm("Are you sure you want to delete this collection?"))
-        return;
-      await deleteCollection(id);
-    },
+  const { mutate: deleteMutate, isLoading: deleteLoading } = useMutation({
+    mutationFn: async () => deleteCollection(id),
+    onMutate: () => notification("loading", "Deleting collection"),
     onSuccess: async () => {
-      clearCache();
-      await navigate("/my-articles");
       notification(
         "success",
         `Deleted collection "${editableCollection.title}"`
       );
+      await sleep(1000);
+      clearCache();
+      await navigate("/my-articles");
+      scrollToTop();
     },
+    onError: () => notification("error", "Error deleting collection"),
   });
 
   /** helper func to edit collection data state */
@@ -283,10 +288,15 @@ const CollectionPage = () => {
                 key={index}
                 article={article}
                 editable={true}
-                action={{
-                  icon: <FaTimes />,
-                  onClick: () => removeArticle(article.id),
-                }}
+                actions={[
+                  <Button
+                    key={0}
+                    fill={false}
+                    icon={<FaTimes />}
+                    onClick={() => removeArticle(article.id)}
+                    tooltip="Remove article from collection"
+                  />,
+                ]}
               />
             ))}
           </Grid>
@@ -297,10 +307,15 @@ const CollectionPage = () => {
                 key={index}
                 article={article}
                 editable={true}
-                action={{
-                  icon: <FaPlus />,
-                  onClick: () => addArticle(article.id),
-                }}
+                actions={[
+                  <Button
+                    key={0}
+                    fill={false}
+                    icon={<FaPlus />}
+                    onClick={() => addArticle(article.id)}
+                    tooltip="Add article to collection"
+                  />,
+                ]}
               />
             ))}
           </Grid>
@@ -321,49 +336,44 @@ const CollectionPage = () => {
 
       {/* actions */}
       <Flex>
+        {/* save */}
         {mode !== "view" && (
           <Button
             text="Save"
             icon={<FaRegSave />}
-            disabled={saveLoading || trashLoading}
+            disabled={saveLoading || deleteLoading}
             type="submit"
             form="collection-form"
           />
         )}
+
+        {/* share */}
         {mode !== "new" && (
-          <Share heading="Share Collection" field="URL to this collection" />
+          <Share
+            trigger={<Button text="Share" icon={<FaShareAlt />} />}
+            type="collection"
+            title={loadedCollection.title}
+          />
         )}
+
+        {/* delete */}
         {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
-            disabled={saveLoading || trashLoading}
-            onClick={() => trash()}
+            disabled={saveLoading || deleteLoading}
+            onClick={() => {
+              if (
+                window.confirm(
+                  "Are you sure you want to delete this collection?"
+                )
+              )
+                return;
+              deleteMutate();
+            }}
           />
         )}
       </Flex>
-
-      {/* action statuses */}
-      {saveLoading && (
-        <Notification type="loading" text="Saving collection" scroll={true} />
-      )}
-      {saveError && (
-        <Notification
-          type="error"
-          text={["Error saving collection", saveErrorMessage]}
-          scroll={true}
-        />
-      )}
-      {trashLoading && (
-        <Notification type="loading" text="Deleting collection" scroll={true} />
-      )}
-      {trashError && (
-        <Notification
-          type="error"
-          text={["Error deleting collection", trashErrorMessage]}
-          scroll={true}
-        />
-      )}
 
       {/* associated form */}
       <Form id="collection-form" onSubmit={() => save()} />

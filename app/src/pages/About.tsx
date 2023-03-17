@@ -118,25 +118,24 @@ const About = () => (
         Yes are, but they have multiple issues. Let’s begin with one of the most
         used approaches to improve the readability of text. There have been many
         readability scores created with the intention of capturing a succinct
-        measure of a given text&apos;s ease of understanding. The most
-        well-known and widely used of these is the Flesch-Kincaid (FK) grade
-        level score. The FK score is the weighted addition of 1) the average
-        number of words per sentence, and 2) the average number of syllables per
-        word. This score, or its variants, are used in tools like Microsoft Word
-        or Grammarly. FK and its related readability formulae have the same
-        issue: they only measure syntactic (or structural) complexity, but fail
-        to account for semantic complexity of the passage or its usage in
-        contemporary writing. There is no penalty for using more complex
-        terminology so long as the number of syllables remains constant. Some
-        readability formulas, such as the New Dale-Chall readability formula,
-        introduced the concept of difficult words by using a predefined word
-        list (the New Dale-Chall is computed with a list of 3,000 “familiar
-        words”). For example, Simple Wikipedia is based on restricting the
-        vocabulary to a set of predefined ~1,500 simple words. Yet, the usage of
-        a predefined list of simple words introduces its own challenges. The
-        selection of terms in the word list is largely unquantified, and cannot
-        be easily altered to accommodate a target audience or evolving
-        contemporary language.
+        measure of a given text’s ease of understanding. The most well-known and
+        widely used of these is the Flesch-Kincaid (FK) grade level score. The
+        FK score is the weighted addition of 1) the average number of words per
+        sentence, and 2) the average number of syllables per word. This score,
+        or its variants, are used in tools like Microsoft Word or Grammarly. FK
+        and its related readability formulae have the same issue: they only
+        measure syntactic (or structural) complexity, but fail to account for
+        semantic complexity of the passage or its usage in contemporary writing.
+        There is no penalty for using more complex terminology so long as the
+        number of syllables remains constant. Some readability formulas, such as
+        the New Dale-Chall readability formula, introduced the concept of
+        difficult words by using a predefined word list (the New Dale-Chall is
+        computed with a list of 3,000 “familiar words”). For example, Simple
+        Wikipedia is based on restricting the vocabulary to a set of predefined
+        ~1,500 simple words. Yet, the usage of a predefined list of simple words
+        introduces its own challenges. The selection of terms in the word list
+        is largely unquantified, and cannot be easily altered to accommodate a
+        target audience or evolving contemporary language.
       </p>
     </Section>
 

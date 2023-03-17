@@ -17,9 +17,9 @@ export const restartAnimations = (element: Element): void => {
 
   /** restart forward */
   const delay = Math.max(...animations.map(getAnimationLength)) / reverseSpeed;
-  type ElementWithTimer = Element & { animationTimer: number };
-  window.clearTimeout((element as ElementWithTimer).animationTimer);
-  (element as ElementWithTimer).animationTimer = window.setTimeout(() => {
+  type ElementWithTimeout = Element & { animationTimeout: number };
+  window.clearTimeout((element as ElementWithTimeout).animationTimeout);
+  (element as ElementWithTimeout).animationTimeout = window.setTimeout(() => {
     animations.forEach((animation) => {
       animation.playbackRate = 1;
       animation.cancel();
@@ -38,3 +38,7 @@ const getAnimationLength = (animation: Animation) => {
 /** get css duration in ms */
 const getDurationMs = (duration: string) =>
   (parseFloat(duration) || 0) * (duration.indexOf("ms") !== -1 ? 1 : 1000);
+
+/** smooth scroll to top */
+export const scrollToTop = () =>
+  window.scrollTo({ top: 0, left: 0, behavior: "smooth" });

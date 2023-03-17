@@ -2,6 +2,7 @@ import { CSSProperties } from "@stitches/react";
 
 /** colors */
 const deep = "#0081A7";
+const muted = "#79d2ed";
 const pale = "#F8F1ED";
 const light = "#FFB4A2";
 const accent = "#F08080";
@@ -39,6 +40,7 @@ const title: CSSProperties = {
 
 export {
   deep,
+  muted,
   pale,
   light,
   accent,

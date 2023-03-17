@@ -1,7 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { FaLock } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { forgotPassword } from "@/api/account";
 import Button from "@/components/Button";
@@ -9,9 +8,10 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form, { FormValues } from "@/components/Form";
 import Meta from "@/components/Meta";
-import Notification, { notification } from "@/components/Notification";
+import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import { scrollToTop } from "@/util/dom";
 
 /** forgot password page */
 const ForgotPassword = () => {
@@ -19,22 +19,24 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEvent("current-user", () => {
-    if (currentUser) navigate("/");
+  useEffect(() => {
+    if (currentUser) {
+      navigate("/");
+      scrollToTop();
+    }
   });
 
   /** mutation for requesting reset */
-  const {
-    mutate: resetMutate,
-    isLoading: resetLoading,
-    isError: resetError,
-    error: resetErrorMessage,
-  } = useMutation({
+  const { mutate: resetMutate, isLoading: forgotLoading } = useMutation({
     mutationFn: forgotPassword,
+    onMutate: () => notification("loading", "Requesting password reset"),
     onSuccess: async () => {
-      await navigate("/");
-      notification("success", "Sent password reset email");
+      notification(
+        "success",
+        "If your account is in our system, you should receive a password reset email soon."
+      );
     },
+    onError: () => notification("error", "Error requesting password reset"),
   });
 
   /** when forgot form submitted */
@@ -58,19 +60,13 @@ const ForgotPassword = () => {
         form="forgot"
       />
       <Flex>
-        <Button text="Request Reset" icon={<FaLock />} form="forgot" />
-      </Flex>
-
-      {/* statuses */}
-      {resetLoading && (
-        <Notification type="loading" text="Requesting password reset" />
-      )}
-      {resetError && (
-        <Notification
-          type="error"
-          text={["Error requesting password reset", resetErrorMessage]}
+        <Button
+          text="Request Reset"
+          icon={<FaLock />}
+          disabled={forgotLoading}
+          form="forgot"
         />
-      )}
+      </Flex>
 
       <Form id="forgot" onSubmit={onReset} />
     </Section>

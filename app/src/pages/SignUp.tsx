@@ -1,7 +1,6 @@
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import { FaUserPlus } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
-import { useEvent } from "react-use";
 import { useMutation } from "@tanstack/react-query";
 import { signup } from "@/api/account";
 import Button from "@/components/Button";
@@ -12,32 +11,34 @@ import Form, { FormValues } from "@/components/Form";
 import Grid from "@/components/Grid";
 import Help from "@/components/Help";
 import Meta from "@/components/Meta";
-import Notification from "@/components/Notification";
+import { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import { State } from "@/global/state";
+import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
 
 /** signup page */
 const SignUp = () => {
-  const { currentUser, setCurrentUser } = useContext(State);
+  const { currentUser, refreshCurrentUser } = useContext(State);
   const navigate = useNavigate();
 
   /** redirect if already logged in */
-  useEvent("current-user", () => {
+  useEffect(() => {
     if (currentUser) navigate("/");
   });
 
   /** mutation to signup */
-  const {
-    mutate: signupMutate,
-    isLoading: signupLoading,
-    isError: signupError,
-    error: signupErrorMessage,
-  } = useMutation({
+  const { mutate: signupMutate } = useMutation({
     mutationFn: signup,
-    onSuccess: async (data) => {
-      setCurrentUser(data);
+    onMutate: () => notification("loading", "Signing up"),
+    onSuccess: async () => {
+      notification("success", "Signed up");
+      await sleep(1000);
       await navigate("/");
+      scrollToTop();
+      refreshCurrentUser();
     },
+    onError: (error) => notification("error", ["Error signing up", error]),
   });
 
   /** when signup form submitted */
@@ -73,6 +74,18 @@ const SignUp = () => {
       <Section>
         <Meta title="Sign Up" />
         <h2>Sign Up</h2>
+      </Section>
+
+      {/* pitch */}
+      <Section fill="offWhite">
+        <p>
+          <strong>Why sign up?</strong>
+        </p>
+        <ul>
+          <li>Track revisions to your articles.</li>
+          <li>Organize your articles into collections and share them.</li>
+          <li>Get important updates via our newsletter.</li>
+        </ul>
       </Section>
 
       {/* form */}
@@ -132,28 +145,7 @@ const SignUp = () => {
           <Button text="Sign Up" icon={<FaUserPlus />} form="signup" />
         </Flex>
 
-        {/* statuses */}
-        {signupLoading && <Notification type="loading" text="Signing up" />}
-        {signupError && (
-          <Notification
-            type="error"
-            text={["Error signing up", signupErrorMessage]}
-          />
-        )}
-
         <Form id="signup" onSubmit={onSignup} />
-      </Section>
-
-      {/* pitch */}
-      <Section fill="offWhite">
-        <p>
-          <strong>Why sign up?</strong>
-        </p>
-        <ul>
-          <li>Track revisions to your articles.</li>
-          <li>Organize your articles into collections and share them.</li>
-          <li>Get important updates via our newsletter.</li>
-        </ul>
       </Section>
     </>
   );

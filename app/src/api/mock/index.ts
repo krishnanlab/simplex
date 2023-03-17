@@ -7,14 +7,13 @@ import { isWord, tokenize } from "@/util/string";
 
 /** dummy cache store of word scores */
 const scoreStore: Record<string, number> = {};
-
-export const getWordScore = (word: string) =>
+const getWordScore = (word: string) =>
   scoreStore[word] || (scoreStore[word] = Math.random() * 100);
 
 /** mock api responses */
 export const handlers = [
-  rest.get(/\/check-login$/, async (req, res, ctx) =>
-    res(ctx.status(200), ctx.json({}))
+  rest.get(/\/current-user$/, async (req, res, ctx) =>
+    res(ctx.status(200), ctx.json(authors[0]))
   ),
 
   rest.post(/\/signup$/, async (req, res, ctx) =>
@@ -36,11 +35,11 @@ export const handlers = [
     else return res(ctx.status(404));
   }),
 
-  rest.post(/\/save-info$/, async (req, res, ctx) =>
+  rest.put(/\/save-info$/, async (req, res, ctx) =>
     res(ctx.status(200), ctx.json(authors[0]))
   ),
 
-  rest.post(/\/change-password$/, async (req, res, ctx) =>
+  rest.put(/\/change-password$/, async (req, res, ctx) =>
     res(ctx.status(200), ctx.json({}))
   ),
 
@@ -132,7 +131,7 @@ export const handlers = [
   ),
 
   rest.put(/\/articles\/\w+$/, (req, res, ctx) =>
-    res(ctx.status(401), ctx.json({}))
+    res(ctx.status(200), ctx.json({}))
   ),
 
   rest.delete(/\/articles\/\w+$/, (req, res, ctx) =>

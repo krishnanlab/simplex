@@ -1,11 +1,17 @@
-import { ComponentProps, useContext, useEffect, useState } from "react";
-import { FaRegLightbulb, FaRegSave, FaRegTrashAlt } from "react-icons/fa";
+import { ComponentProps, useContext, useEffect } from "react";
+import {
+  FaCopy,
+  FaRegLightbulb,
+  FaRegSave,
+  FaRegTrashAlt,
+  FaShareAlt,
+} from "react-icons/fa";
 import { useLocation, useNavigate, useParams } from "react-router";
 import { Link } from "react-router-dom";
 import { useLocalStorage } from "react-use";
-import { capitalize } from "lodash";
+import { capitalize, isEqual } from "lodash";
+import { useDebounce } from "use-debounce";
 import { QueryParamConfig, useQueryParam } from "use-query-params";
-import { css } from "@stitches/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthor } from "@/api/account";
 import {
@@ -28,18 +34,17 @@ import Field from "@/components/Field";
 import Flex from "@/components/Flex";
 import Form from "@/components/Form";
 import Grid from "@/components/Grid";
+import Help from "@/components/Help";
 import Meta from "@/components/Meta";
-import Notification, { notification } from "@/components/Notification";
+import Status, { notification } from "@/components/Notification";
 import Section from "@/components/Section";
 import Select from "@/components/Select";
 import Share from "@/components/Share";
 import Simplify from "@/components/Simplify";
-import Spinner from "@/components/Spinner";
 import Stat from "@/components/Stat";
-import { dark, light } from "@/global/palette";
+import { light } from "@/global/palette";
 import { State } from "@/global/state";
 import {
-  Analysis,
   Article,
   Audience,
   audiences,
@@ -48,15 +53,9 @@ import {
   blankAuthor,
 } from "@/global/types";
 import { sleep } from "@/util/debug";
+import { scrollToTop } from "@/util/dom";
+import { setStorage } from "@/util/storage";
 import { authorString, dateString, shortenUrl } from "@/util/string";
-
-const spinnerStyle = css({
-  position: "fixed",
-  right: "10px",
-  bottom: "10px",
-  color: dark,
-  height: "30px",
-});
 
 /** methods for syncing revision with url param */
 const RevisionParam: QueryParamConfig<number> = {
@@ -86,12 +85,6 @@ const ArticlePage = () => {
   const location = useLocation();
   const { currentUser } = useContext(State);
   const queryClient = useQueryClient();
-
-  /** whether to show loading spinner */
-  const [analyzing, setAnalyzing] = useState(false);
-
-  /** results of complexity analysis */
-  const [analysis, setAnalysis] = useState<Analysis>(blankAnalysis);
 
   /** editable article state */
   const [
@@ -208,39 +201,32 @@ const ArticlePage = () => {
   };
 
   /** mutation for saving article details */
-  const {
-    mutate: save,
-    isLoading: saveLoading,
-    isError: saveError,
-    error: saveErrorMessage,
-  } = useMutation({
+  const { mutate: save, isLoading: saveLoading } = useMutation({
     mutationFn: () =>
       id ? saveArticle(editableArticle, id) : saveNewArticle(editableArticle),
+    onMutate: () => notification("loading", "Saving article"),
     onSuccess: async (data) => {
+      notification("success", `Saved article "${editableArticle.title}"`);
+      await sleep(1000);
       clearCache();
       removeArticleStorage();
       if (data?.id) await navigate("/article/" + data.id);
-      notification("success", `Saved article "${editableArticle.title}"`);
     },
+    onError: () => notification("error", "Error saving article"),
   });
 
   /** mutation for deleting article */
-  const {
-    mutate: trash,
-    isLoading: trashLoading,
-    isError: trashError,
-    error: trashErrorMessage,
-  } = useMutation({
-    mutationFn: async () => {
-      if (!window.confirm("Are you sure you want to delete this article?"))
-        return;
-      await deleteArticle(id);
-    },
+  const { mutate: deleteMutate, isLoading: deleteLoading } = useMutation({
+    mutationFn: async () => deleteArticle(id),
+    onMutate: () => notification("loading", "Deleting article"),
     onSuccess: async () => {
+      notification("success", `Deleted article "${editableArticle.title}"`);
+      await sleep(1000);
       clearCache();
       await navigate("/my-articles");
-      notification("success", `Deleted article "${editableArticle.title}"`);
+      scrollToTop();
     },
+    onError: () => notification("error", "Error deleting article"),
   });
 
   /** helper func to edit article data state */
@@ -280,6 +266,22 @@ const ArticlePage = () => {
   /** whether controls are editable */
   const editable = mode !== "view" && revision === 0;
 
+  /** query for complexity analysis */
+  const [analysisParams] = useDebounce<Parameters<typeof analyze>>(
+    [article.text, audience.value, article.ignoreWords || []],
+    300,
+    { equalityFn: isEqual }
+  );
+  const { data: analysis = blankAnalysis } = useQuery({
+    queryKey: ["analyze", analysisParams],
+    queryFn: () => {
+      notification("loading", "Analyzing");
+      return analyze(...analysisParams);
+    },
+    enabled: !!analysisParams[0].trim(),
+    /** see global callbacks in QueryCache */
+  });
+
   /** initialize editable article from latest revision */
   useEffect(() => {
     if (latestArticle.id) setEditableArticle(latestArticle);
@@ -297,59 +299,14 @@ const ArticlePage = () => {
       /** latest revision defined */
       revisions.length
     )
-      setRevision(revisions.length - 1);
+      setRevision(revisions.length);
   });
-
-  /** when params that would affect the analysis change */
-  /** if we did this w/ react-query, we'd need debounced duplicates of every param */
-  useEffect(() => {
-    let latest = true;
-
-    /** run analysis */
-    (async () => {
-      /** if blank, exit */
-      if (!article.text.trim()) return;
-
-      /** debounce all analysis params simultaneously */
-
-      await sleep(500);
-
-      /** if more recent query, exit */
-      if (!latest) return;
-
-      try {
-        /** set status */
-        setAnalyzing(true);
-
-        /** perform analysis */
-        const analysis = await analyze(
-          article.text,
-          audience.value,
-          article.ignoreWords || []
-        );
-
-        /** if more recent query, exit */
-        if (!latest) return;
-
-        /** finish */
-        setAnalysis(analysis);
-        setAnalyzing(false);
-      } catch (error) {
-        console.error(error);
-        setAnalyzing(false);
-      }
-    })();
-
-    return () => {
-      latest = false;
-    };
-  }, [article.text, audience, article.ignoreWords]);
 
   /** overall loading */
   if (articleLoading || latestLoading || authorLoading || revisionsLoading)
     return (
       <Section>
-        <Notification type="loading" text="Loading article" />
+        <Status type="loading" text="Loading article" />
       </Section>
     );
 
@@ -357,7 +314,7 @@ const ArticlePage = () => {
   if (articleError || latestError || authorError || revisionsError)
     return (
       <Section>
-        <Notification
+        <Status
           type="error"
           text={[
             "Error loading article",
@@ -430,19 +387,19 @@ const ArticlePage = () => {
           />
         )}
         {(mode === "edit" || mode === "view") && (
-          <Select
-            label="Revision"
-            options={revisionOptions}
-            value={
-              (revision === 0
-                ? revisionOptions.at(-1)
-                : revisionOptions[revision - 1]
-              )?.value || ""
-            }
-            onChange={(value, index) =>
-              setRevision(index === revisionOptions.length - 1 ? 0 : index + 1)
-            }
-          />
+          <Flex display="inline" gap="small">
+            <Select
+              label="Revision"
+              options={revisionOptions}
+              value={revisionOptions.at(revision - 1)?.value || ""}
+              onChange={(value, index) =>
+                setRevision(
+                  value.label.toLowerCase().includes("new") ? 0 : index + 1
+                )
+              }
+            />
+            <Help tooltip="Snapshots of this article's text/title/etc. over time." />
+          </Flex>
         )}
         <Flex display="inline" hAlign="left">
           <Select
@@ -478,14 +435,21 @@ const ArticlePage = () => {
           />
         )}
       />
-      {analyzing && <Spinner className={spinnerStyle()} />}
 
       {/* results */}
       <Flex>
         <Flex display="inline">
           <Flex display="inline" gap="small">
+            <Stat label="Complex" />
+            <svg viewBox="0 0 30 10" width="60px">
+              <g fill={light}>
+                <rect x="0" y="0" width="10" height="10" opacity="1" />
+                <rect x="10" y="0" width="10" height="10" opacity="0.66" />
+                <rect x="20" y="0" width="10" height="10" opacity="0.33" />
+              </g>
+            </svg>
             <Stat
-              label="Complex"
+              label="Simpler"
               help={
                 <>
                   <SelectAnimation />
@@ -494,25 +458,32 @@ const ArticlePage = () => {
                 </>
               }
             />
-            <svg viewBox="0 0 30 10" width="60px">
-              <g fill={light}>
-                <rect x="0" y="0" width="10" height="10" opacity="1" />
-                <rect x="10" y="0" width="10" height="10" opacity="0.66" />
-                <rect x="20" y="0" width="10" height="10" opacity="0.33" />
-              </g>
-            </svg>
-            <Stat label="Simpler" />
           </Flex>
 
           <Stat
             label="Overall Complexity"
             value={analysis.complexity.toFixed(0) + "%"}
-            help="Percentage of words that are difficult to understand for the selected audience. Improve this score by replacing complex and jargon words with more common and simpler ones. To learn how we calculate this score, see the About page."
+            help={
+              <span>
+                Percentage of words that are difficult to understand for the
+                selected audience. Improve this score by replacing complex and
+                jargon words with more common and simpler ones. To learn how we
+                calculate this score, see the <Link to="about">About page</Link>
+                .
+              </span>
+            }
           />
           <Stat
             label="Grade Level"
             value={analysis.gradeLevelText}
-            help={`Flesch-kincaid grade level score (${analysis.gradeLevel}), calculated based on average word and sentence length. Improve this score by breaking long sentences into shorter ones, and replacing long, multi-syllabic words with shorter ones.`}
+            help={
+              <>
+                Flesch-kincaid grade level score ({analysis.gradeLevel}),
+                calculated based on average word and sentence length. Improve
+                this score by breaking long sentences into shorter ones, and
+                replacing long, multi-syllabic words with shorter ones.
+              </>
+            }
           />
         </Flex>
       </Flex>
@@ -539,70 +510,79 @@ const ArticlePage = () => {
 
       {/* actions */}
       <Flex>
-        {mode !== "view" && (
-          <Button
-            text={
-              mode === "new"
-                ? "Save"
-                : mode === "anon"
-                ? "Save Anonymously"
-                : "Save"
-            }
-            icon={<FaRegSave />}
-            disabled={saveLoading || trashLoading}
-            type="submit"
-            form="article-form"
-          />
-        )}
-        {mode === "anon" && (
-          <span>
-            <Link to="/login">Log in</Link> to save to your account
-          </span>
-        )}
+        {/* save */}
+        <Flex display="inline" gap="small">
+          {mode !== "view" && (
+            <Button
+              text="Save"
+              icon={<FaRegSave />}
+              disabled={saveLoading || deleteLoading}
+              type="submit"
+              form="article-form"
+            />
+          )}
+          {/* note */}
+          {(mode === "new" || mode === "anon") && (
+            <Stat
+              label={mode === "anon" ? "Anonymous" : ""}
+              help={
+                <span>
+                  {mode === "anon" && (
+                    <>
+                      You’re not logged in, so this article will be saved
+                      anonymously. <Link to="/login">Log in</Link> to save this
+                      article to your account and edit or delete it later.{" "}
+                    </>
+                  )}
+                  Saving will create a shareable link.
+                </span>
+              }
+            />
+          )}
+        </Flex>
+
+        {/* share */}
         {mode !== "new" && mode !== "anon" && (
           <Share
-            heading="Share Article"
-            field="URL to this article"
-            help="With currently selected options (revision, audience, highlights)."
+            trigger={<Button text="Share" icon={<FaShareAlt />} />}
+            type="article"
+            title={loadedArticle.title}
+            help="With currently selected revision, audience, and highlights."
           />
         )}
+
+        {/* delete */}
         {mode === "edit" && (
           <Button
             text="Delete"
             icon={<FaRegTrashAlt />}
-            disabled={saveLoading || trashLoading}
-            onClick={() => trash()}
+            disabled={saveLoading || deleteLoading}
+            onClick={() => {
+              if (
+                window.confirm("Are you sure you want to delete this article?")
+              )
+                deleteMutate();
+            }}
           />
         )}
-      </Flex>
 
-      {/* note */}
-      <Flex>
-        {(mode === "new" || mode === "anon") &&
-          "Save this article to share it!"}
+        {/* copy */}
+        {mode === "view" && (
+          <Flex display="inline" gap="small">
+            <Button
+              text="Copy to new"
+              icon={<FaCopy />}
+              disabled={saveLoading || deleteLoading}
+              onClick={async () => {
+                setStorage("article-/", loadedArticle);
+                await navigate("/");
+                scrollToTop();
+              }}
+            />
+            <Help tooltip="You can't directly edit this article, but you can copy its content into a new article." />
+          </Flex>
+        )}
       </Flex>
-
-      {/* action statuses */}
-      {saveLoading && (
-        <Notification type="loading" text="Saving article" scroll={true} />
-      )}
-      {saveError && (
-        <Notification
-          type="error"
-          text={["Error saving article", saveErrorMessage]}
-          scroll={true}
-        />
-      )}
-      {trashLoading && (
-        <Notification type="loading" text="Deleting article" scroll={true} />
-      )}
-      {trashError && (
-        <Notification
-          type="error"
-          text={["Error deleting article", trashErrorMessage]}
-          scroll={true}
-        />
-      )}
 
       {/* associated form */}
       <Form id="article-form" onSubmit={() => save()} />
