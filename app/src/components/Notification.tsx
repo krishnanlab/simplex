@@ -1,20 +1,43 @@
-import { Fragment, ReactNode, useCallback, useRef, useState } from "react";
+import { cloneElement, Fragment, useCallback, useRef, useState } from "react";
 import { FaExclamationCircle, FaRegCheckCircle, FaTimes } from "react-icons/fa";
+import { Transition, TransitionStatus } from "react-transition-group";
 import { useEvent } from "react-use";
 import { css } from "@stitches/react";
+import { CssComponent } from "@stitches/react/types/styled-component";
 import Button from "@/components/Button";
 import Flex from "@/components/Flex";
 import Spinner from "@/components/Spinner";
-import { accent, dark, deep, pale, rounded } from "@/global/palette";
+import {
+  accent,
+  dark,
+  deep,
+  light,
+  muted,
+  pale,
+  rounded,
+} from "@/global/palette";
+import { classNames } from "@/util/string";
 
 /** types of notifications */
-const types: Record<
-  string,
-  { icon: ReactNode; timeout: number; color: string }
-> = {
-  loading: { icon: <Spinner />, timeout: 60 * 5, color: dark },
-  success: { icon: <FaRegCheckCircle />, timeout: 5, color: deep },
-  error: { icon: <FaExclamationCircle />, timeout: 10, color: accent },
+const types = {
+  loading: {
+    icon: <Spinner />,
+    timeout: 60 * 5,
+    color: dark,
+    darkColor: pale,
+  },
+  success: {
+    icon: <FaRegCheckCircle />,
+    timeout: 5,
+    color: deep,
+    darkColor: muted,
+  },
+  error: {
+    icon: <FaExclamationCircle />,
+    timeout: 10,
+    color: accent,
+    darkColor: light,
+  },
 };
 
 type Props = {
@@ -43,6 +66,8 @@ const notificationStyle = css({
   background: dark,
   color: pale,
   fontWeight: "400",
+  transition: "250ms ease",
+  transitionProperty: "opacity, clip-path",
   zIndex: 99,
   svg: {
     width: "25px",
@@ -52,6 +77,16 @@ const notificationStyle = css({
     color: "inherit",
   },
 });
+
+/** transition group states */
+const enter = css({ opacity: 1 });
+const exit = css({ opacity: 0 });
+const states: Partial<Record<TransitionStatus, CssComponent>> = {
+  entering: enter,
+  entered: enter,
+  exiting: exit,
+  exited: exit,
+};
 
 /** turn possible array of text into separate lines */
 const textLines = (text: Props["text"]) =>
@@ -92,13 +127,18 @@ export const clearNotification = () =>
 
 /** global notification */
 export const Notification = () => {
-  const [notification, setNotification] = useState<Props | null>(null);
+  const [show, setShow] = useState(false);
+  const [notification, setNotification] = useState<Props>({
+    type: "success",
+    text: "",
+  });
   const timeout = useRef<number>();
+  const ref = useRef();
 
   /** clear notification */
   const clear = useCallback(() => {
     window.clearTimeout(timeout.current);
-    setNotification(null);
+    setShow(false);
   }, []);
   useEvent("clear-notification", clear);
 
@@ -107,6 +147,7 @@ export const Notification = () => {
     (event: CustomEvent) => {
       const notification = event.detail as Props;
       window.clearTimeout(timeout.current);
+      setShow(true);
       setNotification(notification);
       if (event.detail)
         timeout.current = window.setTimeout(
@@ -118,18 +159,23 @@ export const Notification = () => {
   );
   useEvent("notification", onNotification);
 
-  if (notification === null) return <></>;
-
   return (
-    <Flex
-      display="inline"
-      gap="small"
-      wrap={false}
-      className={notificationStyle()}
-    >
-      {types[notification.type].icon}
-      <span>{textLines(notification.text)}</span>
-      <Button icon={<FaTimes />} fill={false} onClick={clear} />
-    </Flex>
+    <Transition nodeRef={ref} in={show} timeout={250}>
+      {(state) => (
+        <Flex
+          ref={ref}
+          display="inline"
+          gap="small"
+          wrap={false}
+          className={classNames([notificationStyle(), states[state]?.()])}
+        >
+          {cloneElement(types[notification.type].icon, {
+            style: { color: types[notification.type].darkColor },
+          })}
+          <span>{textLines(notification.text)}</span>
+          <Button icon={<FaTimes />} fill={false} onClick={clear} />
+        </Flex>
+      )}
+    </Transition>
   );
 };
