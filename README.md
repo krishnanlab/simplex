@@ -1,9 +1,5 @@
 # Simplex
 
-Work in progress
+Scientific and medical writing is often hard for non-experts to understand because it's full of jargon. Simplex helps you identify complexity in your writing and simplify it.
 
-## Frontend (`/app`)
-
-#### Tips
-
-- If you are seeing import resolve errors from VSCode's eslint extension, either open the `/app` folder directly with VSCode, or add `"eslint.workingDirectories": ["app"]` to your VSCode settings.
+[⭐️ **Go to the App** ⭐️](https://gosimplex.app/)
