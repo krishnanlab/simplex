@@ -22,9 +22,8 @@ jobs:
         working-directory: app
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
-        working-directory: app
         with:
           keep_files: false
           publish_branch: gh-pages
-          publish_dir: dist
+          publish_dir: app/dist
           github_token: ${{ secrets.GITHUB_TOKEN }}
